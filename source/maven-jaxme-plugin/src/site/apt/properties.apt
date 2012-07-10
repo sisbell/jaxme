@@ -1,0 +1,201 @@
+~~
+~~
+~~  Copyright 2005  The Apache Software Foundation
+~~
+~~  Licensed under the Apache License, Version 2.0 (the "License");
+~~  you may not use this file except in compliance with the License.
+~~  You may obtain a copy of the License at
+~~
+~~  http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~  Unless required by applicable law or agreed to in writing, software
+~~  distributed under the License is distributed on an "AS IS" BASIS,
+~~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~  See the License for the specific language governing permissions and
+~~  limitations under the License.
+~~
+~~
+		   ----------
+           Properties
+           ----------
+
+File Sets
+
+  Several properties are configured by file sets. A file set is a directory with
+  inclusions, exclusions and default exclusions. For example, the following might
+  be used to configure the set of schema files, which are being compiled.
+
+--------------------------------------------------------------------
+  <schemas>
+    <schema>
+      <directory>src/main/jaxme
+      <includes>
+        <include>*.xsd</include>
+      </includes>
+      <excludes>
+        <exclude>dontCompileMe.xsd</exclude>
+      </excludes>
+      <skipDefaultExcludes>false</skipDefaultExcludes>
+    </schema>
+  </schemas>
+--------------------------------------------------------------------
+
+  The properties, which accept file sets, are: <<<bindings>>>, <<<depends>>>,
+  <<<produces>>> and <<<schemas>>>.
+
+Schema Collections
+
+  A schema collection is a set of schema files, which are being processed, plus configuration.
+  The plugins purpose is to compile one or more schema collections.
+
+  Any schema collection may be configured differently. For example, you may have a schema
+  collection, which is compiled strictly compliant to the JAXB specification. Another
+  schema collection might require the JaxMe vendor extensions.
+
+  A schema collection is configured through the following properties:
+
+*--------------------+---------------------------------------------------------------------------+
+| Name               | Description                                                               |
+*--------------------+---------------------------------------------------------------------------+
+| bindings           | Specifies one or more file sets with external binding files, which are    |
+|                    | being applied to the schema file or the schema files. Example:            |
+|                    | \<bindings\>\<binding\>                                                   |
+|                    |   \<directory\>src/main/jaxme\</directory\>                               |
+|                    |   \<includes\>\<include\>*.jxb\</include\>\</includes\>                   |
+|                    | \<binding\>\</bindings\>                                                  |
+*--------------------+---------------------------------------------------------------------------+
+| depends            | Specifies one or more file sets with additional dependencies. Typically,  |
+|                    | these are files, which are imported from within one or more schema files, |
+|                    | but aren't compiled themselves. The plugin uses these files within the    |
+|                    | uptodate check: Generated sources aren't considered uptodate, if an       |
+|                    | additional dependency has a more recent modification date. Example:       |
+|                    | \<depends\>\<depend\>                                                     |
+|                    |   \<directory\>src/main/jaxme\</directory\>                               |
+|                    |   \<includes\>\<include\>*.xsi\</include\>\</includes\>                   |
+|                    | \<depends\>\</depend\>                                                    |
+*--------------------+---------------------------------------------------------------------------+
+| entityResolverMode | Configures the entity resolver mode. See the special section on           |
+|                    | "Entity Resolvers" below for more details.                                |
+*--------------------+---------------------------------------------------------------------------+
+| extension          | A boolean property, which may be used to enable JaxMe's vendor extensions.|
+|                    | By default, JaxMe is strictly compliant to the JAXB specification.        |
+*--------------------+---------------------------------------------------------------------------+
+| packageName        | Specifies the package name, in which the generated sources are being      |
+|                    | placed. The preferred way of specifying a package name is within the      |
+|                    | jaxb:schemaBindings tag of the schema itself or an external binding file. |
+*--------------------+---------------------------------------------------------------------------+
+| produces           | Specifies a set of files, which are being produced. Using these property  |
+|                    | enables the uptodate check: The generator will compare the modification   |
+|                    | dates of the input files (given by the "schema" and "depends" properties) |
+|                    | with the output files, given by "produces". This property is also used,   |
+|                    | if "removeOldOutput" is set to true, in which case it specifies the set   |
+|                    | of files, which are being deleted. Example:                               |
+|                    | \<produces\>\<produce\>                                                   |
+|                    |   \<directory\>target/generated-sources/jaxme\</directory\>               |
+|                    | \<depends\>\</depend\>                                                    |
+*--------------------+---------------------------------------------------------------------------+
+| properties         | Specifies properties, which are being set on the generator object.        |
+|                    | Example:                                                                  |
+|                    | \<properties\>\<key\>value\</key\>\</properties\>                         |
+*--------------------+---------------------------------------------------------------------------+
+| removeOldOutput    | A boolean property, which specifies, whether generated files are being    |
+|                    | removed before invoking the generator. This is useful, if you have elder  |
+|                    | sources floating around, which are no longer compilable. On the other     |
+|                    | hand, a simple "mvn clean" will do the same trick, so you probably can do |
+|                    | very well without "removeOldOutput".                                      |
+*--------------------+---------------------------------------------------------------------------+
+| resourceTarget     | Sets the target directory, in which generated resource files are being    |
+|                    | created. Defaults to                                                      |
+|                    | "${project.build.directory}/generated-resources".                         |
+*--------------------+---------------------------------------------------------------------------+
+| schemaReader       | By default, the generator will use an instance of                         |
+|                    | org.apache.ws.jaxme.generator.sg.impl.JAXBSchemaReader for processing its |
+|                    | input files. If the "extension" property is set, then the default         |
+|                    | changes to org.apache.ws.jaxme.generator.sg.impl.JaxMeSchemaReader.       |
+|                    | But the "schemaReader" option allows you to have a completely different   |
+|                    | schema reader class.                                                      |
+*--------------------+---------------------------------------------------------------------------+
+| schemas            | Specifies the set of input schemata, which are being processed by the     |
+|                    | generator. You may have multiple "schema" elements, each of which         |
+|                    | containing wildcard characters. The default "src/main/jaxme/*.xsd" is     |
+|                    | used, if you do not specify any "schema" element. Example:                |
+|                    | \<schemas\>\<schema\>                                                     |
+|                    |   \<directory\>src/main/jaxme\</directory\>                               |
+|                    |   \<includes\>\<include\>*.xsd\</include\>\</includes\>                   |
+|                    | \<schemas\>\</schema\>                                                    |
+*--------------------+---------------------------------------------------------------------------+
+| schemaTargetPrefix | Setting this property enables copying the schema files into the resource  |
+|                    | target directory. For example, you might want to have the schema files    |
+|                    | embedded into the jar file for documentation or validation purposes.      |
+|                    | The property value is the prefix within the resource target directory.    |
+|                    | Example: \<schemaTargetPrefix\>META-INF/schema\</schemaTargetPrefix\>     |
+*--------------------+---------------------------------------------------------------------------+
+| sgFactoryChains    | An instance of SGFactoryChain is an object, which modifies the source     |
+|                    | generators behaviour. Multiple "sgFactoryChain" elements may be used,     |
+|                    | each containing the fully qualified class name of another chain.          |
+*--------------------+---------------------------------------------------------------------------+
+| srcTarget          | Sets the target directory, in which generated Java sources are being      |
+|                    | created. Defaults to                                                      |
+|                    | "${project.build.directory}/generated-sources/jaxme".                |
+*--------------------+---------------------------------------------------------------------------+
+| validating         | By default, the XML schema files are being read with a non-validating     |
+|                    | parser. Setting this property to "true" turns on validation.              |
+*--------------------+---------------------------------------------------------------------------+
+  
+
+Properties
+
+  The plugin is configured through the following properties:
+
+*-------------------+----------------------------------------------------------------------------+
+| Name              | Description                                                                |
+*-------------------+----------------------------------------------------------------------------+
+| forceCreation     | A boolean property, which disables the uptodate check: The value "true"    |
+|                   | will force invocation of the binding compiler. This property is mainly     |
+|                   | usefull when developing the generator itself. The default value is         |
+|                   | ${jaxme.forceCreation}, so that you can force creation from the command    |
+|                   | line.                                                                      |
+*-------------------+----------------------------------------------------------------------------+
+| readOnly          | Specifies, whether the generated files are being made read-only.           |
+*-------------------+----------------------------------------------------------------------------+
+| schemaCollections | Specifies the schema collections, which are being compiled. Example:       |
+|                   | \<schemaCollections\>\<schemaCollection\>                                  |
+|                   |   \<schemas\>\<schema\>                                                    |
+|                   |      \<directory\>src/main/jaxme/*.xsd\</directory\>                       |
+|                   |   \</schema\>\</schemas\>                                                  |
+|                   | \</schemaCollection\>\</schemaCollections\>                                |
+*-------------------+----------------------------------------------------------------------------+
+
+  Additionally, the plugin is itself an implicit schema collection. In other words, all
+  properties of a schema collection apply as well.
+
+
+Entity Resolvers
+
+  If your schema collection is using xs:include, xs:import or xs:redefine, then it might be
+  important to configure an entity resolver. This applies, in particular, if one or more og
+  the schema files are located elsewhere.
+
+  An entity resolver is configured per schema collection through the property entityResolverMode.
+  This property is a string, which consists of a prefix and a suffix. Possible prefixes are:
+
+*----------------+------------------------------------------------------------------------------+
+| Prefix         | Description                                                                  |
+*----------------+------------------------------------------------------------------------------+
+| class:         | The suffix is the fully qualified name of a class, which implements the      |
+|                | EntityResolver interface. An instance of this class is created using         |
+|                | Class.newInstance() and this instance is used to resolve entities.           |
+*----------------+------------------------------------------------------------------------------+
+| classpath:     | Entities are resolved through ClassLoader.getResource(String). The suffix is |
+|                | prepended to the entity name. For example, if your entities are in the       |
+|                | "META-INF/schema" directory of a jar file, then you would use                |
+|                | "classpath:META-INF/schema/". (Note the trailing slash!)                     |
+*----------------+------------------------------------------------------------------------------+
+| files:         | Entities are located in a directory on your file system. The suffix is the   |
+|                | directory name. Example: "files:/usr/local/schemas/". (Note the trailing     |
+|                | slash!)                                                                      |
+*----------------+------------------------------------------------------------------------------+
+| url:           | Entities are resolved by appending the entity name to an URL, which is the   |
+|                | schema modes prefix. Example: "url:http://www.foo.org/schemas/". (Note the   |
+|                | trailing slash!)                                                             |
+*----------------+------------------------------------------------------------------------------+

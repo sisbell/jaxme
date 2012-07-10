@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>Proxy objects</title>
+  </properties>
+
+  <body>
+	<anchor id="proxy_objects"/>
+    <section name="Proxy objects">
+      <p>A proxy class is a class that implements a list of interfaces specified at
+        compile time. The proxy object typically holds a reference to an internal
+        object that implements the same interfaces (or parts of them). The proxy
+        object is implemented by delegating method calls to the internal object.
+        This is the same principle as implemented by the class
+        <code>java.lang.reflect.Proxy</code>, which created proxy objects dynamically
+        at runtime using Java reflection.</p>
+      <p>Compared to the standard Proxy class, the generator has the obvious
+        disadvantage, that you have to specify the implemented interfaces at runtime.
+        On the other hand, it allows both to select the proxy objects super class and
+        the derivation of subclasses. In fact the derivation of a subclass is much
+        more obvious, simple and faster than the use of an InvocationHandler.</p>
+      <p>The proxy generator is implemented by the class
+        <a href="../apidocs/org/apache/ws/jaxme/js/pattern/ProxyGenerator.html">ProxyGenerator</a>.
+        Use of the ProxyGenerator is demonstrated in the Ant target "generate.proxy".</p>
+      <p>The proxy generator Ant task supports the following attributes:</p>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Required<br/>Default</th>
+        </tr>
+        <tr>
+          <td>classpathRef</td>
+          <td>Reference to a class path, being used to load Java
+            classes or sources. See the "type" attribute in the
+            nested element "implementedInterface" below for details.
+            Use of the "classpathRef" attribute is mutually exclusive
+            with the nested element "classpath".
+          </td>
+          <td>No<br/>Ant's class path</td>
+        </tr>
+        <tr>
+          <td>destDir</td>
+          <td>Path of the directory, where the generated sources are
+            being created. A package structure will be created below.
+            In other words, if a class "org.apache.Foo" is generated,
+            then it will be found in the file ${destDir}/org/apache/Foo.class.
+          </td>
+          <td>No<br/>Current directory</td>
+        </tr>
+        <tr>
+          <td>extendedClass</td>
+          <td>Specifies the fully qualified name of a class, which is being
+            extended by the generated sources.</td>
+          <td>No<br/>java.lang.Object</td>
+        </tr>
+      </table>
+      <p>The proxy generator Ant task also supports the following nested elements:</p>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Required<br/>Default</th>
+        </tr>
+        <tr>
+          <td>classPath</td>
+          <td>Specifies a path, which is being used for loading
+            Java classes or sources. See the "type" attribute in
+            the nested element "implementedInterface" below for
+            details. The "classpath" element is mutually exclusive
+            with the "classpathRef" attribute.</td>
+          <td>No<br/>Ant's class path</td>
+        </tr>
+        <tr>
+          <td>implementedInterface</td>
+          <td>Specifies an additional interface being implemented.
+            This element must have an attribute "interface" with
+            the fully qualified name of a Java interface which is
+            being implemented by the generated classes.<br/>
+            The generator needs to determine the methods specified
+            by the interface.
+            If the element has an attribute "type" with the value
+            "Reflection", then the specified interface will be
+            loaded as a compiled Java class. Otherwise, if the
+            attribute "type" has the value "Source", then the
+            generator attempts to load a Java source file with
+            the same name from the class path and parse it.
+            Otherwise, if the "type" attribute is missing, it will
+            attempt both "Reflection" and "Source", in that order.
+          </td>
+          <td>
+            Yes, at least one
+          </td>
+        </tr>
+      </table>
+    </section>
+
+	<anchor id="multiple_inheritance"/>
+    <section name="Multiple Inheritance">
+      <p>Multiple inheritance is a design pattern which is not so easy to implement
+        in Java - unless you use the
+        <a href="../../apidocs/org/apache/ws/jaxme/js/pattern/ProxyGenerator.html">ProxyGenerator</a>.
+        This is demonstrated by the JUnit test
+        <a href="../../apidocs/org/apache/ws/jaxme/js/junit/MultipleInheritanceTest.html">MultipleInheritanceTest</a>,
+        which creates a subclass of <code>java.util.Observable</code>, that also inherits
+        from <code>java.util.ArrayList</code>. The example implements a list, which
+        notifies its observers whenever the <code>add()</code> method is invoked.</p>
+    </section>
+  </body>
+</document>

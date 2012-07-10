@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<document> 
+  <properties> 
+    <title>JaxMe News</title> 
+  </properties> 
+  <body>
+  <section name="JaxMe News"> 
+    <dl>
+      <dt>2005-Aug-09: JaxMe 0.5 released</dt>
+      <dd>Compared to 0.5beta, several bugs have been fixed.</dd>
+      <dt>2005-Jul-13: JaxMe 0.5beta released</dt>
+      <dd>This release introduces support for mixed content and
+        proper inheritance of the code generated for xs:extension.</dd>
+      <dt>2005-May-19: JaxMe 0.4 released</dt>
+      <dd>Compared to the beta version, no new features have been introduced.
+        A few bugs have been fixed, mainly concerning the nested group support.</dd>
+      <dt>2005-Apr-12: JaxMe 0.4beta released</dt>
+      <dd>This release introduces support for nested groups with multiplicity &lt;= 1.
+        In particular, xs:extension is supported now.</dd>
+      <dt>2004-Sep-03: JaxMe 0.3.1 released</dt>
+      <dd>This is a bug fix release, driven mostly by user input and feedback.
+        In particular, recursive schemas are now supported.</dd>
+      <dt>2004-Jul-25: JaxMe 0.3 released</dt>
+      <dd>The JaxMe team are proud to present the first release since 
+      leaving the incubator.</dd>
+	  <dt>2004-Mar-09: JaxMe has graduated to become a subproject of Apache WS</dt>
+	  <dd>The <link href="ext:incubator">Apache Incubator PMC</link> has voted
+	    for JaxMe to become a true subproject of the
+	    <link href="ext:ws">Apache Webservices</link>.</dd>
+      <dt>2003-Nov-18: incubated-jaxme 0.2 has been released.</dt>
+      <dd>Compared to the previous release from sf.net, there haven't been
+        too many updates. This release is mainly to allow using the updated
+        package names. Besides, JaxMePM has been introduced.</dd>
+      <dt>2003-Sep-25: The JaxMe site is online</dt>
+      <dd>The new JaxMe site is online at <link href="site:jaxme">http://ws.apache.org/jaxme/</link>.</dd>
+    </dl>
+    </section>
+  </body>
+</document>

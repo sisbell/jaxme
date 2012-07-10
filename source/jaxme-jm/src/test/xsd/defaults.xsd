@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+  
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+ <xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xml:lang="EN"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/defaults"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>
+      This schema is soley designed to test default values in elements.
+    </xs:documentation> 
+  </xs:annotation>
+  
+  <xs:element name="Persons">
+    <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="Person" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+	        <xs:sequence>
+              <xs:element name="Name" minOccurs="0">
+                <xs:complexType>
+	              <xs:sequence>
+   		            <xs:element name="First" type="xs:string" default="Anonymous" minOccurs="0"/>
+		            <xs:element name="Last" type="xs:string"/>
+	              </xs:sequence>
+	            </xs:complexType>
+	          </xs:element>
+   		      <xs:element name="Age" type="xs:int" default="25" minOccurs="0"/>
+	        </xs:sequence>
+	        <xs:attribute name="Alias" type="xs:string" default="Ias"/>
+	      </xs:complexType>
+	    </xs:element>
+	  </xs:sequence>
+	</xs:complexType>
+  </xs:element>
+
+  <xs:element name="defaultValuesElt">
+  	<xs:complexType>
+  		<xs:attribute name="string" type="xs:string" default="string" />
+  		<xs:attribute name="boolean" type="xs:boolean" default="true" />
+  		<xs:attribute name="float" type="xs:float" default="1" />
+  		<xs:attribute name="double" type="xs:double" default="1" />
+  		<xs:attribute name="decimal" type="xs:decimal" default="1" />
+  		<xs:attribute name="duration" type="xs:duration"
+  			default="P1D" />
+  		<xs:attribute name="dateTime" type="xs:dateTime"
+  			default="2001-12-31T12:30:30" />
+  		<xs:attribute name="time" type="xs:time" default="12:00:00" />
+  		<xs:attribute name="date" type="xs:date" default="2002-01-01" />
+  		<xs:attribute name="hexBinary" type="xs:hexBinary"
+  			default="0F00" />
+  		<xs:attribute name="base64Binary" type="xs:base64Binary"
+  			default="B64S" />
+  		<xs:attribute name="anyURI" type="xs:anyURI"
+  			default="http://tempuri.org" />
+  		<xs:attribute name="QName" type="xs:QName" default="QName" />
+  		<xs:attribute name="normalizedString"
+  			type="xs:normalizedString" default="" />
+  		<xs:attribute name="token" type="xs:token" default="token" />
+  		<xs:attribute name="language" type="xs:language" default="EN" />
+		<xs:attribute name="NMTOKEN" type="xs:NMTOKEN"
+			default="NMTOKEN" />
+		<xs:attribute name="NMTOKENS" type="xs:NMTOKENS"
+			default="NMTOKENS,NMTOKENS1"/>  		
+  		<xs:attribute name="Name" type="xs:Name" default="Name" />
+  		<xs:attribute name="NCName" type="xs:NCName" default="NCName" />
+  		<xs:attribute name="integer" type="xs:integer" default="1" />
+  		<xs:attribute name="nonPositiveInteger"
+  			type="xs:nonPositiveInteger" default="-1" />
+  		<xs:attribute name="negativeInteger" type="xs:negativeInteger"
+  			default="-1" />
+  		<xs:attribute name="long" type="xs:long" default="1" />
+  		<xs:attribute name="int" type="xs:int" default="1" />
+  		<xs:attribute name="short" type="xs:short" default="1" />
+  		<xs:attribute name="byte" type="xs:byte" default="1" />
+  		<xs:attribute name="nonNegativeInteger"
+  			type="xs:nonNegativeInteger" default="1" />
+  		<xs:attribute name="unsignedLong" type="xs:unsignedLong"
+  			default="1" />
+  		<xs:attribute name="unsignedInt" type="xs:unsignedInt"
+  			default="1" />
+  		<xs:attribute name="unsignedShort" type="xs:unsignedShort"
+  			default="1" />
+  		<xs:attribute name="unsignedByte" type="xs:unsignedByte"
+  			default="1" />
+  		<xs:attribute name="positiveInteger" type="xs:positiveInteger"
+  			default="1" />
+  	</xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<appendix><title>FAQ</title>
+  <para>This section contains a list of frequently asked questions. And, of course, their answers. :-)</para>
+  <qandaset defaultlabel="qanda">
+    <qandadiv><title>General questions</title>
+      <para>This subsection contains questions concerning the whole project as such.</para>
+      <qandaentry>
+        <question><para>What is it?</para></question>
+        <answer><para>
+          JaxMe 2 is an implementation of JAXB, the specification for Java/XML binding. In short you can
+          describe JaxMe as a source generator that takes various sources as input (for example, an XML schema,
+          a DTD, a Java bean class) and creates sources that allow you to convert a matching XML document into
+          a Java object or vice versa, convert the Java object into XML. JaxMe extends JAXB with a lot of features.
+          See the next question on that topic.</para>
+        </answer>
+      </qandaentry>
+
+	  <qandaentry>
+	    <question><para>Why should I choose JaxMe and not JAXB?</para></question>
+	    <answer>
+	      <para>That's definitely a question you should ask yourself. The JAXB reference implementation is
+            implemented by a team of excellent technicians who have a vision. It is supported by Sun and other
+            large vendors.</para>
+          <para>On the other hand, you should understand that JAXB has a limited scope. As a reference
+            implementation, it has to follow the specification, but can hardly do a step beyond. And in
+            some sense the scope can be described as the lowest common denominator of Sun and the other
+            vendors. JaxMe is (at least as of this writing) definitely less tested, less stable, less
+            mature and all that stuff you don't want. On the other hand, it has some nice features which
+            you possibly really want:
+            <orderedlist>
+              <listitem>JaxMe is much, much more extensible and customizable than JAXB: It was written
+                from the ground up for that. And you have the source. The main problem of source generators
+                has always been whether you have the source or not. If you do, then a source generator can
+                do everything for you that you want and become really, really useful, grow with your
+                abilities and the project. On the other hand, without the source you will almost definitely
+                at some point ask yourself why you didn't implement all the stuff manually.</listitem>
+              <listitem>
+                <para>It includes a persistency layer. The persistency layer is a database abstraction
+                  and allows you to read XML from a database or store it into the database with just a few
+                  instructions. You do not care for the hazzle of low level API's like xml:db or JDBC, you
+                  just say "save it" and it does. The most important advantage of a persistency framework
+                  is that you become more independent from the database. With JaxMe 1 projects have been
+                  developed on an SQL database, for example MySQL and later on moved to Tamino, an XML
+                  database. It also happened vice versa, where it makes sense.</para>
+                <para>Even more, you aren't restricted to a single database. You can mix data sources,
+                  depending on the document type, and choose for any document type whichever suites the
+                  most.</para>
+              </listitem>
+              <listitem>We definitely recommend the use of an XML database. After all, why not use the
+                features that XML gives you? Normalization definitely has its goods and should still be
+                applied where it makes sense. However, in the real life, this is not always the case.
+                Besides, some of us (in particular the developers) are still stuck in the relational world.
+                JaxMe can create a mapping between Java objects and SQL databases for you. The persistency
+                layer translates "create", "update", "delete" or "read" operations into a set of SQL
+                instructions. These SQL instructions are performed by JaxMe on your demand. There is almost
+                no difference (besides the structural limitations, of course) between working with an SQL
+                database and an XML database.</listitem>
+            </orderedlist></para>
+          </answer>
+      </qandaentry>
+
+      <qandaentry>
+        <question><para>Why the name "JaxMe"?</para></question>
+        <answer>
+          <para>After working with JAXP, JAXB, JAXM and all the other stuff for quite some time I began to
+            automatically associate "JAXsomethingE" with anything related to Java and XML. So this is "Me"
+            JAX or JaxMe.</para>
+          <para>The name is ridiculous. I know. Sometimes we'll probably find something better. (And, who
+            knows, perhaps we even find someone changing the sources then ... :-)</para>
+        </answer>
+      </qandaentry>
+
+      <qandaentry>
+        <question><para>Are there any reference projects?</para></question>
+        <answer>
+          <para>As of this writing, JaxMe 2 isn't sufficiently mature for large projects.
+            However, JaxMe 1 has been used for really serious issues:
+            <itemizedlist>
+              <listitem>FleetBoard (http://www.fleetboard.com/) is a telematics and logistics solution.
+                Large parts of it are realized with the JaxMe EJB generator and a DB2 database as the
+                backend. Other parts are based on a JaxMe predecessor and Tamino.</listitem>
+              <listitem>Justus II (http://www.softwareag.com/germany/referenzen/PDF/CR_Justus_D.pdf) is
+                a large XML application running on Tomcat and an Oracle database as the backend. It is
+                built from the ground up using JaxMe.</listitem>
+            </itemizedlist>
+          </para>
+          <para>If you know of other projects, please let us know.</para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+
+    <qandadiv><title>The Generator</title>
+      <para>The following questions are related to the JaxMe generator</para>
+
+      <qandaentry>
+        <question><para>What is the supported subset of XML Schema?</para></question>
+        <answer>
+          <para>As of this writing, the following is supported:
+            <itemizedlist>
+              <listitem>All simple datatypes, excluding time intervals (minor issue, some hours work,
+                if anyone needs it)</listitem>
+              <listitem>Atomic elements, with and without attributes</listitem>
+              <listitem>Complex elements with content type empty, sequence, choice, or all.</listitem>
+              <listitem>Groups (but not nested groups)</listitem>
+            </itemizedlist></para>
+          <para>The following is not yet supported:
+            <itemizedlist>
+              <listitem>Complex elements with simple content (minor issue, mainly requires writing a
+                test suite)</listitem>
+              <listitem>Mixed content</listitem>
+              <listitem>Wildcards</listitem>
+              <listitem>Key specifications</listitem>
+              <listitem>Recursion (Minor issue, mainly requires writing a test suite)</listitem>
+            </itemizedlist></para>
+        </answer>
+      </qandaentry>
+
+      <qandaentry>
+        <question><para>What is the supported subset of JAXB?</para></question>
+        <answer>
+          <para>Lots of features are missing, in particular:
+          <itemizedlist>
+            <listitem>External schema binding (requires writing a stylesheet generator)</listitem>
+            <listitem>Model group binding</listitem>
+            <listitem>Mixed content</listitem>
+          </itemizedlist></para>
+        </answer>
+      </qandaentry>
+
+      <qandaentry>
+        <question><para>How is the EJB support working?</para></question>
+        <answer>
+          <para>As of this writing, the following applies for JaxMe 1 only.
+            EJB support is not yet included in JaxMe 2. This will hopefully change soon.</para>
+          <para>JaxMe 1 contains a generator for entity beans with bean managed persistence.
+            In short these can very well be compared with CMP entity beans, only you use JaxMe
+            to create it and the query language is unavailable. On the other hand, they are
+            typically faster, because they follow the design pattern of value objects.</para>
+          <para>The bean generator also supports the generation of stateless session beans that perform
+            queries and return XML data. (So called list methods.)</para>
+        </answer>
+      </qandaentry>
+
+      <qandaentry>
+        <question><para>What are JaxMe's "find methods" and "list methods"?</para></question>
+        <answer>
+          <para>As of this writing, the following applies for JaxMe 1 only.
+            EJB support is not yet included in JaxMe 2. This will hopefully change soon.</para>
+          <para>You know what an SQL view is? Forgetting updateable views, one could describe them as a
+            stored query, that returns some data in a fixed format. In essence this is what JaxMe's find
+            and list methods are: You specify a query that is compiled by the source code generator. The
+            result are Java sources that can perform the specified query, possibly configured with some
+            parameters that you specify as well.</para>
+          <para>The difference between find and list methods is that the former return objects which you
+            may modify and store back. So find methods are somewhat closer to updateable views, because
+            they are bound to a specific table.</para>
+        </answer>
+      </qandaentry>
+
+      <qandaentry>
+        <question><para>Why are the field names uppercased when using the JaxMeJdbcSG?</para></question>
+        <answer>
+          <para>Field names are built from column names, which are in turn read via JDBC metadata.
+            However, most databases are storing column names uppercased internally.</para>
+          <para>As a workaround, you may specify an alternative field name. See the IPADDRESS column
+            in the Session example for how to do that.</para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+
+    <qandadiv><title>The runtime</title>
+      <para>The following questions are related to the JaxMe runtime.</para>
+
+      <qandaentry>
+        <question><para>How is Tamino supported?</para></question>
+        <answer>
+          <para>Software AG, the vendor of Tamino, is the employer of Jochen Wiedmann (JaxMe's head
+            developer). Jochen uses Tamino in his daily work, so support for Tamino is essential. He
+            considers work with Tamino as definitely much more fun than using DB2, Oracle, or
+            whatsoever.</para>
+          <para>The current Tamino manager is a simple thing implementing native HTTP access to Tamino.
+            It is a generic manager, not a specific manager per document type. (Working with XML databases
+            is much simpler for an XML application than using JDBC.) However, the following is not yet
+            supported, although it really should:
+            <itemizedlist>
+              <listitem>Tamino transactions</listitem>
+              <listitem>Find and list methods (truly important for the XQuery language)</listitem>
+              <listitem>Use of the official TaminoAPI4J (the current manager is based on a simple SAX handler)</listitem>
+            </itemizedlist></para>
+        </answer>
+      </qandaentry>
+
+      <qandaentry>
+        <question><para>How is XML:DB supported?</para></question>
+        <answer>
+          <para>There is a generic XmlDbManager, which is tested in a JUnit test against eXist. It
+            is a generic manager, not a specific manager per document type. (Working with XML databases
+            is much simpler for an XML application than using JDBC.) However, so far no productive use
+            is known.</para>
+        </answer>
+      </qandaentry>
+    </qandadiv>
+  </qandaset>
+</appendix>

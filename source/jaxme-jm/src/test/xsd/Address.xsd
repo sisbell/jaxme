@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+  
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xml:lang="EN"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/address"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>
+      A simple JaxMe example: Personal address collection.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="Address">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Name">
+          <xs:annotation>
+            <xs:documentation>
+              A name consists of two required (first and last name)
+              and two optional parts (middle name and initials).
+            </xs:documentation>
+          </xs:annotation>
+
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="First" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The first name.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Middle" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation>
+                    The middle name, may occur multiple times
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Last" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The surname.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Initials" minOccurs="0" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    For example: JW
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Postal">
+          <xs:annotation>
+            <xs:documentation>
+              Details of the postal address
+            </xs:documentation>
+          </xs:annotation>
+
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Street" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The street, including a number, if any. For
+                    example, "Fasanenhofstr. 28", or "Main street, 28".
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="ZIP">
+                <xs:annotation>
+                  <xs:documentation>
+                    The ZIP code, for example 70565, as in 70565 Stuttgart.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+			      <xs:restriction base="xs:string">
+				  </xs:restriction>
+				</xs:simpleType>
+			  </xs:element>
+              <xs:element name="City" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>
+                    The city, for example Stuttgart.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="State" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>
+                    For US only: The state.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+              <xs:element name="Country" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                  <xs:documentation>
+                    For US only: The state.
+                  </xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="PhoneDetails" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Phone" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation>
+                    Details about a single phone number.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="PhoneNumber" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>
+                          The actual phone number
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="type" use="required">
+                    <xs:annotation>
+                      <xs:documentation>
+                        Either of "Fax", "Mobile", "Private" or "Office".
+                      </xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="EmailDetails" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Email" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation>
+                    Details about a single email address
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="EmailAddress" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>
+                          The actual email address
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="type" use="required">
+                    <xs:annotation>
+                      <xs:documentation>
+                        Either of "Private" or "Office".
+                      </xs:documentation>
+                    </xs:annotation>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>  
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="id"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+

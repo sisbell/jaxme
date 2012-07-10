@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://purl.org/rss/1.0/" xmlns:rss="http://purl.org/rss/1.0/" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>last modification: 2003-06-10, based on RSS v1.0</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+	<xs:import namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" schemaLocation="rdf.xsd"/>
+	<xs:element name="channel">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="rss:title"/>
+				<xs:element ref="rss:link" minOccurs="0"/>
+				<xs:element ref="rss:description" minOccurs="0"/>
+				<xs:any namespace="http://purl.org/dc/elements/1.1/" maxOccurs="unbounded"/>
+				<xs:element name="image">
+					<xs:complexType>
+						<xs:anyAttribute namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" processContents="strict"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="rss:items"/>
+			</xs:sequence>
+			<xs:anyAttribute namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" processContents="strict"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="items">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" processContents="strict"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+			<xs:element name="image">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="rss:title"/>
+							<xs:element ref="rss:url"/>
+							<xs:element ref="rss:link"/>
+						</xs:sequence>
+						<xs:anyAttribute namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" processContents="strict"/>
+					</xs:complexType>
+				</xs:element>
+		<xs:element name="title" type="xs:string"/>
+	<xs:element name="url" type="xs:anyURI"/>
+	<xs:element name="link" type="xs:anyURI"/>
+	<xs:element name="description" type="xs:string"/>
+	<xs:element name="item">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="rss:title"/>
+				<xs:element ref="rss:link" minOccurs="0"/>
+				<xs:any namespace="http://purl.org/dc/elements/1.1/" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:anyAttribute namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" processContents="strict"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

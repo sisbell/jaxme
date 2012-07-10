@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<document> 
+  <properties> 
+    <title>Miscellaneous</title> 
+  </properties> 
+  <body>
+    <section name="Miscellaneous"> 
+    <p>This page contains miscellaneous informations for developers.</p>
+	</section>
+    <section name="Clover">
+      <p><link href="site:clover">Clover</link> is a tool that allows to trace the
+      	coverage of a test suite. In short, you compile your classes using clover,
+      	run the unit tests and finally receive a report which tells you, which
+      	methods and lines are covered by the unit tests and, more important,
+      	which aren't.</p>
+      <p>The nice thing with Clover is, that it is available at no cost for
+      	open source projects like JaxMe. In other words, one can use it to
+        determine the coverage of JaxMe's test suite. Here's how to do that:</p>
+      <ol>
+      	<li>To obtain a copy of Clover, you have to use the
+      	  <link href="site:cloverkey">JaxMe license key</link>. After accepting
+      	  the Clover license, you may download a ZIP file with "Clover for Ant".
+      	  Extract the file and copy the file lib\clover.jar to the lib folder
+      	  in your Ant home directory.</li>
+      	<li>Choose a temporary directory. In what follows, I will assume /tmp/cloverdb.</li>
+      	<li>Invoke the following Ant targets, in the same order</li>
+      </ol>
+      <source>
+      	ant clean
+      	ant -Dbuild.clover.db=/tmp/cloverdb all
+      	ant -Dbuild.clover.db=/tmp/cloverdb test
+      	ant -Dbuild.clover.db=/tmp/cloverdb test
+      	ant -Dbuild.clover.db=/tmp/cloverdb clover.swing
+      </source>
+      <p>Don't ask me, why we have to call the "test" target twice. Alternatively
+      	you may replace "clover.swing" with "clover.html": This will create a
+      	set of HTML files with the same report.</p>
+    </section>
+  </body>
+</document>

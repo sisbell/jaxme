@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+  
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xml:lang="EN"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/jaxb"
+    xmlns:jx="http://ws.apache.org/jaxme/test/misc/jaxb"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    jaxb:version="1.0">
+  <xs:annotation>
+    <xs:documentation>
+      Demonstration of the jaxb:class and jaxb:property elements
+    </xs:documentation>
+    <xs:appinfo>
+      <jaxb:globalBindings
+        typesafeEnumBase="xs:string xs:int xs:long xs:short xs:double xs:float"/>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:element name="MyClass">
+    <xs:annotation>
+      <xs:documentation>This element would by default be called "MyClass".
+        We use an instance of jaxb:class to rename it to "SomeClass".
+        Likewise, the implementation would by default be called
+        "SomeClassImpl". We move it to a subpackage "impl" and call it
+        "SomeClass".
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:annotation>
+        <xs:appinfo>
+          <jaxb:class name="SomeClass"
+              implClass="org.apache.ws.jaxme.test.misc.jaxb.impl.SomeClass">
+            <jaxb:javadoc>This is the implementation of the XML element "MyClass".</jaxb:javadoc>
+          </jaxb:class>
+        </xs:appinfo>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="x" type="xs:int">
+          <xs:annotation>
+            <xs:documentation>
+              This attribute would by default be called have a getter "getX()" and
+              a setter "setX()". We rename these to "getSomeElement()" and
+              "setSomeElement()".
+            </xs:documentation>
+            <xs:appinfo>
+              <jaxb:property name="SomeElement"/>
+            </xs:appinfo>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="foo" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            This attribute would by default be called have a getter "getFoo()" and
+            a setter "setFoo()". We rename these to "getSomeAttribute()" and
+            "setSomeAttribute()".
+          </xs:documentation>
+          <xs:appinfo>
+            <jaxb:property name="SomeAttribute"/>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<document> 
+  <properties> 
+    <title>Creating a JaxMe release</title> 
+  </properties> 
+  <body>
+    <section name="Creating a release">
+    <p>This page provides information about the steps required to create a
+      JaxMe release.</p>
+    <ol>
+      <li>Update the "version" property in "build.xml".</li>
+      <li>Make sure that you have the file jimi-1.0.jar in src/documentation/lib.
+        This file is required for generating PDF's including PNG images.
+        Unfortunately it cannot be added to the repository, due to licensing
+        issues. See the Forrest FAQ on how to obtain the file.</li>
+      <li>Update the file src/documentation/content/xdocs/news.xml in the
+        ws-jaxme repository.</li>
+      <li>Make sure that you have gpg or a similar tool installed. The
+        easiest way is via the CygWin installer (Windows) or using a
+        RPM package provided by your vendor (Linux). If you
+        haven't yet created a secret key, do so using "gpg --gen-key".
+        Also, create a KEYS file using
+        "gpg --list-sigs jochen@apache.org" >>KEYS"
+        "gpg --armor --export jochen@apache.org" >> KEYS.
+        Add the contents of the KEYS file to "etc/KEYS" in the SVN
+        directory.</li>
+      <li>In src/documentation/content/xdocs/site.xml: Make sure, that
+        the section build.online.site=true is commented out and the
+        section build.online.site=false is active.</li>
+      <li>Create the distribution files using "ant dist". This will create,
+        for example, four files called "ws-jaxme-0.3-bin.tar.gz",
+        "ws-jaxme-0.3-bin.tar.gz.md5",
+        "ws-jaxme-0.3-src.tar.gz", and
+        "ws-jaxme-0.3-src.tar.gz.md5". The extension .MD5 indicates
+        that these are no true distribution files, but simply contain
+        an MD5 checksum over the others.<br/>
+        As of this writing, Java 5.0.4 with Xalan 2.6.0 in Ant's lib
+        directory was required to build the site. Other configurations
+        failed, due to problems in fop, or jimi.</li>
+      <li>Sign all distribution files, creating additional files with the
+        same names and an ending ".asc". For example:
+        "gpg --output ws-jaxme-0.3-bin.tar.gz.asc --detach-sig
+        --armor ws-jaxme-0.3-bin.tar.gz"</li>
+      <li>Upload all the files to minotaur.apache.org using scp. For
+        example:
+        "scp etc/KEYS dist/ws-jaxme-0.3* jochen@minotaur.apache.org:"</li>
+      <li>Move the files to the directory /www/www.apache.org/dist/ws/jaxme
+        and ensure proper permissions:
+        "chgrp ws KEYS ws-jaxme-0.3*"
+        "chmod 664 KEYS ws-jaxme-0.3*"
+        "mv KEYS ws-jaxme-0.3* /www/www.apache.org/dist/ws/jaxme"</li>
+      <li>Update the file "/www/www.apache.org/dist/ws/jaxme/README.html".</li>
+      <li>Upload numbered versions of the jars released to the Apache Java Repository
+        together with md5 sums and signatures. At the moment, this should be done by
+        uploading to your home directory on www.apache.org and then moving them into the
+        /www/www.apache.org/dist/java-repository/jaxme/jars/. Finally, update the 
+        SNAPSHOT symlinks in that directory. Note that the processes for the repository
+        are still under development so it would probably be a good idea to 
+        contact the repository team (subscribe to repository at apache.org).</li>
+      <li>In src/documentation/content/xdocs/downloads.ehtml: Add the new
+        version and the checksums.</li>
+      <li>Build a new version of the online site. See the separate section
+        below.</li>
+      <li>Wait one day, until the Apache mirrors are in sync.</li>
+      <li>Update the files mirrors.ehtml and news.xml in the directory
+        src/documentation/content/xdocs of the ws-site repository.</li>
+      <li>Announce the new release on <link href="ext:freshmeat">FreshMeat</link>.
+        There are three projects that might need notifications: JaxMe, JaxMeJS, and
+        JaxMeXS. Creating an announcement on freshmeat requires that you have an
+        account and be administrator for the respective projects. If you aren't
+        yet, contact <link href="mailto:jochen@apache.org">Jochen Wiedmann</link>.</li>
+      <li>Announce the new release on all Apache appropriate mailing lists. This should include
+      the JaxMe list and the announcement lists for the WebServices and Xml projects.
+      Note that it is important to include a description of JaxMe when posting 
+      announcements to project level lists. Note that you should post from your apache
+      email address and you will need to subscribe.</li>
+    </ol>
+    </section>
+
+	<section name="Creating the online site">
+	  <p>The online site is created like this:</p>
+	  <ol>
+        <li>In src/documentation/content/xdocs/site.xml: Make sure, that
+          the section build.online.site=false is commented out and the
+          section build.online.site=true is active.</li>
+        <li>Run the build script: "ant -Dbuild.online.site=true clean Docs.all".</li>
+        <li>To export the contents of build/docs/build/site to the ws-site
+          directory, extract the CVS module ws-site/targets/jaxme (for example,
+          to /tmp/jaxme and run "ant -Dws.site.dir=/tmp/jaxme export.site".
+          After checking in this directory, everything should work well.</li>
+	  </ol>
+	</section>
+  </body>
+</document>

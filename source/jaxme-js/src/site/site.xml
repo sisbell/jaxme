@@ -1,0 +1,40 @@
+<project name="jaxme-js">
+  <bannerLeft>
+    <name>Apache JaxMe</name>
+    <src>http://ws.apache.org/jaxme/images/group-logo.gif</src>
+    <href>http://ws.apache.org/jaxme/</href>
+  </bannerLeft>
+  <body>
+    <links>
+      <item name="Apache" href="http://www.apache.org/"/>
+      <item name="Webservices" href="http://ws.apache.org/"/>
+      <item name="JaxMe" href="http://ws.apache.org/jaxme/"/>
+      <item name="JaxMe JS" href="http://ws.apache.org/jaxme/js/"/>
+    </links>
+
+    <menu name="JaxMe JS">
+      <item name="About"                    href="index.html"/>
+      <item name="The JavaSource factory"   href="factory.html"/>
+      <item name="Writing methods"          href="methods.html"/>
+      <item name="Placeholders"             href="placeholders.html"/>
+      <item name="Optimizations"            href="optimizations.html"/>
+      <item name="Writing SQL"              href="sql.html"/>
+      <item name="Java Source Reflection"   href="jparser.html"/>
+      <item name="Patterns" collapse="true" href="patterns/index.html">
+        <item name="Proxy Objects"          href="patterns/proxy.html"/>
+        <item name="Multiple Inheritance"   href="patterns/proxy.html#multiple_inheritance"/>
+	    <item name="Typesafe Enumerations"  href="patterns/typesafeenum.html"/>
+	    <item name="Proxy chains"           href="patterns/chains.html"/>
+	    <item name="Versioning"             href="patterns/versioning.html"/>
+      </item>
+      <item name="Applications" collapse="true" href="apps/index.html">
+        <item name="Apache XML-RPC Clients" href="apps/xmlrpc.html"/>
+      </item>
+      <item name="License"                  href="license.html"/>
+      <item name="Javadocs"                 href="apidocs/index.html"/>
+      <item name="Mailing Lists"  href="mail-lists.html"/>
+    </menu>
+
+    ${reports}
+  </body>
+</project>

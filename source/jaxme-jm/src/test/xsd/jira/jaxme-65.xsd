@@ -1,0 +1,15 @@
+<xs:schema targetNamespace='http://ws.apache.org/jaxme/test/jira/jaxme65'
+	elementFormDefault='qualified'
+	xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+  <xs:element name='jaxme65'>
+    <xs:complexType mixed='true'>
+      <xs:choice minOccurs='0' maxOccurs='1'>
+        <xs:element name='problem' type='xs:string'/>
+        <xs:element name='reason' type='xs:string'/>
+        <xs:element name='solution' type='xs:string'/>
+      </xs:choice>
+      <xs:attribute name='id' type='xs:string'/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+

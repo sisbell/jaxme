@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>Writing methods</title>
+  </properties>
+  <body>
+    <section name="Writing methods">
+      <p>Generating a method is supported through various shortcuts. These shortcuts and
+        their value are probably best demonstrated by examples.</p>
+    </section>
+
+    <anchor id="throwingExceptions"/>
+    <section name="Throwing exceptions">
+      <p>Throwing exceptions using the standard method <code>addLine()</code>
+        works roughly like this:</p>
+      <source>
+  public JavaMethod getDifficultMethod(JavaSource pSource) {
+    JavaMethod jm = pSource.newJavaMethod("difficultMethod", "void", "public");
+    jm.addLine("throw new (", NotImplementedException.class, "(",
+               JavaSource.getQuoted("The method 'difficultMethod' is not yet implemented."),
+               ");");
+    return jm;
+  }
+      </source>
+      <p>Using the method <code>addThrowNew()</code>, this could be rewritten as follows:</p>
+      <source>
+  public JavaMethod getDifficultMethod(JavaSource pSource) {
+    JavaMethod jm = pSource.newJavaMethod("difficultMethod", "void", "public");
+    jm.addThrowNew(NotImplementedException.class,
+                  JavaSource.getQuoted("The method 'difficultMethod' is not yet implemented."));
+    return jm;
+  }
+      </source>
+    </section>
+
+    <anchor id="ifBlock"/>
+    <section name="If .. elseif .. else .. blocks">
+      <p>Suggest the following example:</p>
+      <source>
+  public JavaMethod getValueOfMethod(JavaSource pSource) {
+    JavaMethod jm = pSource.newJavaMethod("valueOf", "int", "public");
+    jm.addParam(String.class, "s");
+    jm.addLine("if (", JavaSource.getQuoted("FOO"), ".equals(s)) {");
+    jm.indent();
+    jm.addLine("return foo;");
+    jm.unindent();
+    jm.addLine("} else if (", JavaSource.getQuoted("BAR"), ".equals(s)) {");
+    jm.indent();
+    jm.addLine("return bar;");
+    jm.unindent();
+    jm.addLine("} else {");
+    jm.indent();
+    jm.addThrowNew(IllegalArgumentException.class,
+                   JavaSource.getQuoted("Invalid value for s: "), " + s");
+    jm.unindent();
+    jm.addLine("}");
+    return jm;
+  }
+      </source>
+      <p>This example could also be written like this:</p>
+      <source>
+  public JavaMethod getValueOfMethod(JavaSource pSource) {
+    JavaMethod jm = pSource.newJavaMethod("valueOf", "int", "public");
+    jm.addParam(String.class, "s");
+    jm.addIf(JavaSource.getQuoted("FOO"), ".equals(s)");
+    jm.addLine("return foo;");
+    jm.addElseIf(JavaSource.getQuoted("BAR"), ".equals(s)");
+    jm.addLine("return bar;");
+    jm.addElse();
+    jm.addThrowNew(IllegalArgumentException.class,
+                   JavaSource.getQuoted("Invalid value for s: "), " + s");
+    jm.addEndIf();
+    return jm;
+  }
+      </source>
+      <p>The rewritten example is both shorter and more readable.</p>
+    </section>
+
+    <anchor id="catchBlock"/>
+    <section name="Try .. catch .. finally .. blocks">
+      <p>A try .. catch block is typically written like this:</p>
+      <source>
+  public JavaMethod getAsIntMethod(JavaSource pSource) {
+    JavaMethod jm = pSource.newJavaMethod("asInt", "int", "public");
+    jm.addParam(String.class, "s");
+    jm.addLine("try {");
+    jm.indent();
+    jm.addLine("return Integer.toString(s);");
+    jm.unindent();
+    jm.addLine("} catch (", NumberFormatException.class, " e) {");
+    jm.indent();
+    jm.addLine("e.printStackTrace();");
+    jm.addLine("return 1;");
+    jm.unindent();
+    jm.addLine("}");
+    return jm;
+  }
+      </source>
+      <p>To simplify the example, use the <code>addTry()</code> and
+        <code>addCatch()</code> methods:</p>
+      <source>
+  public JavaMethod getAsIntMethod(JavaSource pSource) {
+    JavaMethod jm = pSource.newJavaMethod("asInt", "int", "public");
+    jm.addParam(String.class, "s");
+    jm.addTry();
+    jm.addLine("return Integer.toString(s);");
+    jm.addCatch(NumberFormatException.class, "e");
+    jm.addLine("e.printStackTrace();");
+    jm.addLine("return 1;");
+    jm.addEndTry();
+    return jm;
+  }
+      </source>
+      <p>An even shorter version would be to replace</p>
+      <source>
+    jm.addCatch(NumberFormatException.class, "e");
+      </source>
+      <p>with</p>
+      <source>
+    jm.addCatch(NumberFormatException.class);
+      </source>
+      <p>The method version with a single parameter generates a local variable name, which
+        is returned as a result by the <code>addCatch()</code> method.</p>
+    </section>
+  </body>
+</document>

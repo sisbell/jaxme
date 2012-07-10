@@ -1,0 +1,30 @@
+<document>
+  <properties>
+    <title>Changes in JaxMe JAXB API</title>
+  </properties>
+  <body>
+    <release version="0.6" date="Not yet released">
+      <action dev="jochen" type="update">
+        Maven 2 is now used as the build system.
+      </action>
+      <action dev="jochen" type="add">
+        Upgraded implemented API version from 1.0 to 2.1.
+        Renamed jar file from jaxme-api.jar to
+        jaxme-jaxb-2.1-api.jar.
+      </action>
+    </release>
+    <release version="0.5.2" date="25-Oct-2006"/>
+    <release version="0.5.1" date="6-Jan-2006"/>
+    <release version="0.5" date="2005-Aug-08"/>
+    <release version="0.5beta" date="2005-Jul-13"/>
+    <release version="0.4" date="2005-May-19"/>
+    <release version="0.4beta" date="2005-Apr-17">
+      <action dev="jochen" type="enhancement" context="api">
+        Replaced JAXBSource with a streaming implementation.
+        Richard Zschech, richard.zschech at cqrdata.com
+      </action>
+    </release>
+    <release version="0.3.1" date="2004-Sep-03"/>
+    <release version="0.3" date="2004-Jul-19"/>
+  </body>
+</document>

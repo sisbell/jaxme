@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!--
+Forrest site.xml
+
+This file contains an outline of the site's information content.  It is used to:
+- Generate the website menus (though these can be overridden - see docs)
+- Provide semantic, location-independent aliases for internal 'site:' URIs, eg
+<link href="site:changes"> links to changes.html (or ../changes.html if in
+  subdir).
+- Provide aliases for external URLs in the external-refs section.  Eg, <link
+  href="ext:cocoon"> links to http://xml.apache.org/cocoon/ 
+
+See http://xml.apache.org/forrest/linking.html for more info
+-->
+
+<site label="JaxMe2" href="" xmlns="http://apache.org/forrest/linkmap/1.0">
+
+  <about label="Project">
+    <index label="About" href="index.html"/>
+    <news label="News" href="news.html"/>
+    <downloads label="Downloads" href="downloads.html"/>
+    <support label="Mailing Lists" href="mailinglists.html"/>
+    <license label="License" href="license.html"/>
+    <related label="Resources" href="resources.html"/>
+    <related label="Related projects" href="related.html"/>
+  </about>
+
+  <docs label="Documentation">
+<!-- build.online.site=false -->
+    <manual label="Manual" href="manual/index.html"/>
+    <javadoc label="Javadocs" href="apidocs/index.html"/>    
+<!-- build.online.site -->
+<!-- build.online.site=true
+    <manual label="Manual">
+        <manual label="Current" href="manual/index.html"/>
+        <manual label="0.4" href="release-0.4/manual/index.html"/>
+        <manual label="0.3" href="release-0.3/manual/index.html"/>
+    </manual>
+    <javadoc label="Javadocs">
+        <javadoc label="Current" href="apidocs/index.html"/>    
+        <javadoc label="0.4" href="release-0.4/apidocs/index.html"/>
+        <javadoc label="0.3" href="release-0.3/apidocs/index.html"/>
+    </javadoc>
+-->
+  </docs>
+
+  <developers label="Developer Resources">
+    <release label="How to create a release" href="release.html"/>
+    <todo label="Missing features" href="features.html"/>
+    <misc label="Miscellaneous" href="misc.html"/>
+  </developers>
+
+  <external-refs>
+    <ant.apache.org href="http://ant.apache.org/">
+      <ant href=""/>
+      <antwritingowntask href="manual/develop.html#writingowntask"/>
+    </ant.apache.org>
+    <incubator href="http://incubator.apache.org/"/>
+    <cocoon.apache.org href="http://cocoon.apache.org/">
+      <cocoon href=""/>
+    </cocoon.apache.org>
+    <cvs.sourceforge.net href="http://cvs.sourceforge.net/">
+      <jaxmecvsweb href="cgi-bin/viewcvs.cgi/jaxme/"/>
+    </cvs.sourceforge.net>
+    <exist.sf.net href="http://exist.sf.net/">
+      <exist href=""/>
+    </exist.sf.net>
+    <hsqldb.sf.net href="http://hsqldb.sf.net/">
+       <hsqldb href=""/>
+    </hsqldb.sf.net>
+    <jaxb.dev.java.net href='https://jaxb.dev.java.net/'>
+       <jaxb-si href=''/>
+    </jaxb.dev.java.net>
+    <java.sun.com href="http://java.sun.com/">
+      <jaxb href="xml/jaxb/"/>
+      <ri href="webservices/downloads/webservicespack.html"/>
+    </java.sun.com>
+    <www.apache.org href="http://www.apache.org/">
+      <foundation href="foundation/"/>
+    </www.apache.org>
+    <jaxme.sf.net href="http://jaxme.sf.net/">
+      <jaxme1 href="JaxMe1/"/>
+    </jaxme.sf.net>
+    <lists.sourceforge.net href="http://lists.sourceforge.net/">
+      <jaxmeuserslist href="lists/listinfo/jaxme-users"/>
+      <jaxmejaxbdevlist href="lists/listinfo/jaxme-jaxb-dev"/>
+      <jaxmecvslist href="lists/listinfo/jaxme-cvs"/>
+    </lists.sourceforge.net>
+    <mailto href="mailto:">
+      <mailtojaxmeuser href="jaxme-user@ws.apache.org"/>
+      <mailtojaxmedev href="jaxme-dev@ws.apache.org"/>
+    </mailto>
+    <marc.theaimsgroup.com href="http://marc.theaimsgroup.com/">
+      <jaxme-dev-marc href="?l=jaxme-dev"/>
+    </marc.theaimsgroup.com>
+    <issues.apache.org href="http://issues.apache.org/">
+      <jira href="jira/secure/Dashboard.jspa"/>
+    </issues.apache.org>
+    <opensource.org href='http://www.opensource.org/'>
+        <open-source-definition href='docs/definition.php'/>
+    </opensource.org>
+    <ws.apache.org href="http://ws.apache.org/">
+      <ws href=""/>
+      <jaxme href="jaxme/"/>
+      <jaxme2 href="jaxme/"/>
+      <jaxmejs href="jaxme/js/"/>
+      <jaxmexs href="jaxme/xs/"/>
+      <jaxmeapi href="jaxme/api/"/>
+      <jaxmedownloads href="jaxme/downloads.cgi"/>
+    </ws.apache.org>
+    <jakarta.apache.org href='http://jakarta.apache.org/'>
+        <commons href='commons/'>
+            <jelly href='jelly/'>
+                <jaxme-jelly-tag-library href='libs/jaxme/index.html'/>
+                <jaxme-jelly-tags href='libs/jaxme/tags.html'/>
+            </jelly>
+        </commons>
+    </jakarta.apache.org>
+    <www.freshmeat.net href="http://freshmeat.net/">
+      <freshmeat href=""/>
+    </www.freshmeat.net>
+    <www.mail-archive.com href="http://www.mail-archive.com">
+      <jaxmeusersarchive2 href="jaxme-users%40lists.sourceforge.net"/>
+      <jaxmejaxbdevarchive2 href="jaxme-jaxb-dev%40lists.sourceforge.net"/>
+    </www.mail-archive.com>
+    <www.mysql.com href="http://www.mysql.com/">
+      <mysql href=""/>
+    </www.mysql.com>
+    <www.softwareag.com href="http://www.softwareag.com/">
+      <sag href=""/>
+      <tamino href="tamino/"/>
+    </www.softwareag.com>
+    <www.antlr.org href="http://www.antlr.org/">
+      <antlr href=""/>
+    </www.antlr.org>
+    <www.thecortex.net href="http://www.thecortex.net/">
+      <clover href="clover/"/>
+      <cloverkey href="clover/dl.jsp?key=0e65b4c0eea09ff233b124771"/>
+    </www.thecortex.net>
+    <sourceforge.net href="http://sourceforge.net/">
+      <jaxmeproject href="projects/jaxme/"/>
+      <jaxmedownloads href="project/showfiles.php?group_id=42590"/>
+      <jaxmecvs href="cvs/?group_id=42590"/>
+      <jaxmeusersarchive href="mailarchive/forum.php?forum_id=7699"/>
+      <jaxmejaxbdevarchive href="mailarchive/forum.php?forum_id=11443"/>
+    </sourceforge.net>
+    <xml.apache.org href="http://xml.apache.org/">
+      <forrest href="forrest/">
+        <validation href="validation.html"/>
+        <webapp href="your-project.html#webapp"/>
+      </forrest>
+      <xindice href="xindice/"/>
+    </xml.apache.org>
+    <cvs.apache.org href='http://cvs.apache.org/'>
+        <viewcvs href='viewcvs.cgi'>
+            <jaxme-viewcvs href='/ws-jaxme/'/>
+        </viewcvs>
+    </cvs.apache.org>
+    <svn.apache.org href='http://svn.apache.org/'>
+    	<asfrepo href='repos/asf/'>
+    		<jaxmerepo href='webservices/jaxme'/>
+    	</asfrepo>
+    </svn.apache.org>
+    <wiki.apache.org href='http://wiki.apache.org/'>
+        <wiki href='ws/JaxMe'>
+            <faq href='/FrequentlyAskedQuestions'/>
+        </wiki>
+    </wiki.apache.org>
+    <zeus.objectweb.org href='http://zeus.objectweb.org/'>
+        <zeus href=''/>
+    </zeus.objectweb.org>
+  </external-refs>
+</site>

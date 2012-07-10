@@ -1,0 +1,323 @@
+<?xml version="1.0"?>
+<!--
+
+  Copyright 2005  The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+-->
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.ws.jaxme</groupId>
+    <artifactId>jaxme-parent</artifactId>
+    <version>2</version>
+  </parent>
+  <artifactId>jaxme2</artifactId>
+  <version>0.6-SNAPSHOT</version>
+  <name>JaxMe JM</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.ws.jaxme</groupId>
+      <artifactId>jaxmejs</artifactId>
+      <version>0.6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ws.jaxme</groupId>
+      <artifactId>jaxmexs</artifactId>
+      <version>0.6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.8.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.5.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <version>2.7.6</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>${basedir}/target/generated-test-sources/antrun</directory>
+        <includes>
+          <include>**/*.properties</include>
+          <include>**/*.xml</include>
+        </includes>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <id>gen-src</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <sourceRoot>${project.build.directory}/generated-sources/antrun/</sourceRoot>
+              <tasks>
+                <property name="srcGenDir"	value="${project.build.directory}/generated-sources/antrun/"/>
+
+                <mkdir dir="${srcGenDir}"/>
+
+                <taskdef name="chainGenerator" classname="org.apache.ws.jaxme.js.pattern.Ant$AntChainGenerator"
+                  classpathref="maven.test.classpath"
+                />
+
+                <chainGenerator destDir="${srcGenDir}">
+                  <classpath>
+                    <pathelement location="${basedir}/src/main/java"/> <!-- ?? -->
+                  </classpath>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.AttributeSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.AttributeSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.AttributeSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.AttributeSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.ComplexContentSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.ComplexContentSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.ComplexContentSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.ComplexContentSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.ComplexTypeSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.ComplexTypeSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.ComplexTypeSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.ComplexTypeSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.GroupSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.GroupSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.GroupSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.GroupSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.ObjectSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.ObjectSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.ObjectSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.ObjectSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.ParticleSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.ParticleSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.ParticleSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.ParticleSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.PropertySG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.PropertySGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.PropertySGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.PropertySGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.SchemaSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.SchemaSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.SchemaSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.SchemaSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.SGFactory"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.SGFactoryChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.SGFactoryChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.SGFactoryImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.SimpleContentSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.SimpleContentSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.SimpleContentSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.SimpleContentSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.SimpleTypeSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.SimpleTypeSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.SimpleTypeSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.SimpleTypeSGImpl"/>
+                  <chain
+                    controllerInterfaceName="org.apache.ws.jaxme.generator.sg.TypeSG"
+                    chainInterfaceName="org.apache.ws.jaxme.generator.sg.TypeSGChain"
+                    proxyClassName="org.apache.ws.jaxme.generator.sg.impl.TypeSGChainImpl"
+                    implementationClassName="org.apache.ws.jaxme.generator.sg.impl.TypeSGImpl"/>
+                </chainGenerator>
+
+              </tasks>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>gen-test</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <testSourceRoot>${project.build.directory}/generated-test-sources/antrun/</testSourceRoot>
+              <tasks>
+                <property name="testSrcGenDir" value="${project.build.directory}/generated-test-sources/antrun/"/>
+
+                <mkdir dir="${testSrcGenDir}"/>
+
+                <taskdef name="xjc" classname="org.apache.ws.jaxme.generator.XJCTask"
+                  classpathref="maven.test.classpath"
+                />
+
+                <xjc target="${testSrcGenDir}">
+                  <schema dir="${basedir}/src/test/xsd">
+                    <include name="*.xsd"/>
+                    <include name="jira/*.xsd"/>
+                    <exclude name="enumeration.xsd"/>
+                    <exclude name="wildcards.xsd"/>
+                    <exclude name="rss.xsd"/>
+                    <exclude name="**/xjc*.xsd"/>
+                  </schema>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/misc/address/*"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/misc/defaults/*"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/misc/group/*"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/misc/jaxb/*"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/misc/rss/*"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/misc/types/*"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/recursion/*"/>
+                </xjc>
+                <xjc target="${testSrcGenDir}" extension="true">
+                  <schema dir="${basedir}/src/test/xsd">
+                    <include name="enumeration.xsd"/>
+                    <include name="wildcards.xsd"/>
+                <!--  <include name="rss.xsd"/>  -->
+                    <include name="**/xjc*.xsd"/>
+                  </schema>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/misc/enumeration/*"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/misc/wildcards/*"/>
+                </xjc>
+  	            <xjc target="${testSrcGenDir}">
+  	              <schema dir="${basedir}/src/test/xsd/bindings" includes="*.xsd"/>
+                  <binding dir="${basedir}/src/test/xsd/bindings" includes="*.jxb"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/bindings/**/*"/>
+                </xjc>
+              </tasks>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+      <!--plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <property>
+              <name>js.src</name>
+              <value>${basedir}/src/main/java</value>
+            </property>
+            <property>
+              <name>jdbc.driver</name>
+              <value>org.hsqldb.jdbcDriver</value>
+            </property>
+            <property>
+              <name>jdbc.url</name>
+              <value>jdbc:hsqldb:${basedir}/target/db/db</value>
+            </property>
+            <property>
+              <name>jdbc.user</name>
+              <value>sa</value>
+            </property>
+            <property>
+              <name>jdbc.password</name>
+              <value></value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin-->
+
+    </plugins>
+  </build>
+
+  <contributors>
+    <contributor>
+      <name>Geert Barentsen</name>
+      <email>geert.barentsen at telenet.be</email>
+    </contributor>
+    <contributor>
+      <name>Doru Sular</name>
+      <email>dorus at savatech.ro</email>
+    </contributor>
+    <contributor>
+      <name>Fredrik Vraalsen</name>
+      <email>fredrik at vraalsen.no</email>
+    </contributor>
+    <contributor>
+      <name>Dogan Atay</name>
+      <email>doganatay at yahoo.com</email>
+    </contributor>
+    <contributor>
+      <name>Marcin Kuthan</name>
+      <email>mkuthan at pit.edu.pl</email>
+    </contributor>
+    <contributor>
+      <name>Peter Nagy</name>
+      <email>peter.1.nagy at nokia.com</email>
+    </contributor>
+    <contributor>
+      <name>Chris Kirk</name>
+      <email>mrck1996 at yahoo.co.uk</email>
+    </contributor>
+    <contributor>
+      <name>Colin Bendell</name>
+      <email>cbendell at point2.com</email>
+    </contributor>
+    <contributor>
+      <name>David Holscher</name>
+      <email>David.Holscher at Nav-International.com</email>
+    </contributor>
+    <contributor>
+      <name>Nicolas De Loof</name>
+      <email>nicolas.deloof at cgey.com</email>
+    </contributor>
+    <contributor>
+      <name>Veniamin Fichin</name>
+      <email>3ca28f66 at mail.ru</email>
+    </contributor>
+    <contributor>
+      <name>Andreas Arrgård</name>
+      <email>andreas.arrgard at octagroup.com</email>
+    </contributor>
+    <contributor>
+      <name>Vincent Reviol</name>
+      <email>vincent.reviol@gmail.com</email>
+    </contributor>
+    <contributor>
+      <name>Tobias Hühner</name>
+      <email>tobias.huehner@softwareag.com</email>
+    </contributor>
+  </contributors>
+
+  <profiles>
+    <profile>
+    
+    </profile>
+  </profiles>
+</project>

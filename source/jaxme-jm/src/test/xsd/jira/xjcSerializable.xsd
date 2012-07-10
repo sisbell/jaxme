@@ -1,0 +1,26 @@
+ <xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    jaxb:extensionBindingPrefixes="xjc"
+    targetNamespace="http://ws.apache.org/jaxme/tests/printparse"
+    elementFormDefault="qualified">
+  <xs:annotation><xs:appinfo>
+    <jaxb:globalBindings>
+      <xjc:serializable uid="12343"/>
+      <!-- JAXB marshalls boolean types to valid schema values "false" and "true"
+           we override this to use "0" and "1" instead -->
+      <jaxb:javaType name="boolean" xmlType="xs:boolean"
+        printMethod="org.apache.ws.jaxme.junit.PrintParse.printBoolean"
+        parseMethod="org.apache.ws.jaxme.junit.PrintParse.parseBoolean"/>
+    </jaxb:globalBindings>
+  </xs:appinfo></xs:annotation>
+ 
+  <xs:element name="Test">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Bool" type="xs:boolean"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,1767 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.w3.org/2001/XMLSchema structures.xsd">
+  <xs:element name="pmiod_smioc">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="component"/>
+        <xs:element ref="code"/>
+        <xs:element maxOccurs="unbounded" ref="gridfamily"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="transient"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="persistent"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="dependency"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- COMPONENT -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <xs:element name="component">
+    <xs:complexType>
+      <xs:attribute name="local_name" use="required"/>
+      <xs:attribute name="long_name"/>
+      <xs:attribute name="simulated" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="ocean"/>
+            <xs:enumeration value="sea_ice"/>
+            <xs:enumeration value="ocean_biogeochemistry"/>
+            <xs:enumeration value="atmosphere"/>
+            <xs:enumeration value="atmospheric_chemistry"/>
+            <xs:enumeration value="land"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- The user does not modify "component" in the SMIOC -->
+  <!--
+    The coherence between the PMIOD/SMIOC component local_name and
+    the ones chosen in the SCC should be ensured by the GUI
+  -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- CODE -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <xs:element name="code">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="laboratory"/>
+        <xs:element ref="contact"/>
+        <xs:element ref="documentation"/>
+        <xs:element maxOccurs="unbounded" ref="Fortran_units"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- The user does not modify "code" in the SMIOC -->
+  <xs:element name="laboratory" type="xs:string"/>
+
+  <xs:element name="contact" type="xs:string"/>
+
+  <xs:element name="documentation" type="xs:string"/>
+
+  <xs:element name="Fortran_units">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="min_value"/>
+        <xs:element minOccurs="0" ref="max_value"/>
+        <xs:element minOccurs="0" ref="increment"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- Fortran_units needed by coupler -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- GRIDFAMILY -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <xs:element name="gridfamily">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="grid"/>
+      </xs:sequence>
+      <xs:attribute name="local_name" use="required" type="xs:ID"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    In the SMIOC, the user chooses one grid among the ones
+    described by the developer for each gridfamily in the PMIOD but
+    is not allowed to change anything in the chosen grid tree
+  -->
+  <xs:element name="grid">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="physical_space"/>
+        <xs:element ref="sampled_space"/>
+        <xs:element minOccurs="0" ref="computational_space"/>
+      </xs:sequence>
+      <xs:attribute name="local_name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="physical_space">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="longitude_dimension"/>
+        <xs:element ref="latitude_dimension"/>
+        <xs:element ref="vertical_dimension"/>
+      </xs:sequence>
+      <xs:attribute name="long_name" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="longitude_dimension">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="valid_min"/>
+        <xs:element ref="valid_max"/>
+      </xs:sequence>
+      <xs:attribute name="units" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="degrees_east"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="latitude_dimension">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="valid_min"/>
+        <xs:element ref="valid_max"/>
+      </xs:sequence>
+      <xs:attribute name="units" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="degrees_north"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vertical_dimension">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="valid_min"/>
+        <xs:element ref="valid_max"/>
+      </xs:sequence>
+      <xs:attribute name="units" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="meters"/>
+            <xs:enumeration value="bar"/>
+            <xs:enumeration value="millibar"/>
+            <xs:enumeration value="decibar"/>
+            <xs:enumeration value="atmosphere"/>
+            <xs:enumeration value="pascal"/>
+            <xs:enumeration value="hPa"/>
+            <xs:enumeration value="unitless"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="positive" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="down"/>
+            <xs:enumeration value="up"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="standard_name"/>
+      <xs:attribute name="long_name"/>
+      <xs:attribute name="formula_terms"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- All dimension units needed by coupler -->
+  <!--
+     All valid_min and valid_max may be needed by coupler
+    (coherence check)
+  -->
+  <xs:element name="sampled_space">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="structure"/>
+        <xs:element maxOccurs="unbounded" ref="indexing_dimension"/>
+      </xs:sequence>
+      <xs:attribute name="pole_covered" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="structure">
+    <xs:complexType>
+      <xs:attribute name="structure_type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="reglonlatvert"/>
+            <xs:enumeration value="irreglonlat_regvert"/>
+            <xs:enumeration value="irreglonlat_sigmavert"/>
+            <xs:enumeration value="reglonlat_sigmavert"/>
+            <xs:enumeration value="unstructlonlat_regvert"/>
+            <xs:enumeration value="unstructlonlat_sigmavert"/>
+            <xs:enumeration value="unstructlonlatvert"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="volume_type">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="type1"/>
+            <xs:enumeration value="type2"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- structure_type and volume_type needed by coupler -->
+  <xs:element name="indexing_dimension">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="extent"/>
+        <xs:element minOccurs="0" ref="nbr_overlap"/>
+      </xs:sequence>
+      <xs:attribute name="local_name" use="required"/>
+      <xs:attribute name="time_dependency">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="extent">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- extent may be needed by coupler for coherence check -->
+  <xs:element name="nbr_overlap">
+    <xs:complexType mixed="true">
+      <xs:attribute name="periodic" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- nbr_overlap needed by coupler -->
+  <xs:element name="computational_space">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="points"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="subgrid"/>
+      </xs:sequence>
+      <xs:attribute name="compute_type">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="arakawa_a"/>
+            <xs:enumeration value="arakawa_b"/>
+            <xs:enumeration value="arakawa_c"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- compute_type not needed by coupler -->
+  <xs:element name="points">
+    <xs:complexType>
+      <xs:attribute name="local_name" use="required"/>
+      <xs:attribute name="long_name"/>
+      <xs:attribute name="time_dependency">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- points local_name and time_dependency needed by driver -->
+  <xs:element name="subgrid">
+    <xs:complexType>
+      <xs:attribute name="local_name" use="required"/>
+      <xs:attribute name="long_name"/>
+      <xs:attribute name="associated_points_local_name"/>
+      <xs:attribute name="time_dependency">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    subgrid local_name associated_points_local_name
+    time_dependency needed by coupler
+  -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- TRANSIENT -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <xs:element name="transient">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="standard_name"/>
+        <xs:element ref="physics"/>
+        <xs:element ref="numerics"/>
+        <xs:element ref="computation"/>
+        <xs:element ref="intent"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="transient_dependency"/>
+      </xs:sequence>
+      <xs:attribute name="local_name" use="required" type="xs:ID"/>
+      <xs:attribute name="long_name"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- transient local_name needed by coupler with associate info -->
+  <!-- - - - - - - - - STANDARD_NAME - - - - - - - - - - - - - -->
+  <xs:element name="standard_name" type="xs:string"/>
+  <!--
+    Ideally, the units and the standard names should be checked
+    against the CF convention in the GUI for the PMIOD (and in SASA
+    for the SMIOCs).  How to make the link automatically?
+  -->
+  <!-- The user will not modify "standard_name" in the SMIOC -->
+  <!-- standard_name local_name needed by coupler (I/O) -->
+  <!-- - - - - - - - - - -  PHYSICS  - - - - - - - - - - - - - -->
+  <xs:element name="physics">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="units"/>
+        <xs:element minOccurs="0" ref="valid_min"/>
+        <xs:element minOccurs="0" ref="valid_max"/>
+        <xs:element minOccurs="0" ref="nbr_bundles"/>
+      </xs:sequence>
+      <xs:attribute name="transient_type">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="single"/>
+            <xs:enumeration value="vector"/>
+            <xs:enumeration value="bundle"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nbr_bundles">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- The user will not modify "physics" tree in the SMIOC -->
+  <!--
+    transient_type and nbr_bundles needed by coupler for coherence
+    checks
+  -->
+  <!-- - - - - - - - - - -  NUMERICS  - - - - - - - - - - - - - -->
+  <xs:element name="numerics">
+    <xs:complexType>
+      <xs:attribute name="type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="xs:float"/>
+            <xs:enumeration value="xs:double"/>
+            <xs:enumeration value="xs:string"/>
+            <xs:enumeration value="xs:integer"/>
+            <xs:enumeration value="xs:nonPositiveInteger"/>
+            <xs:enumeration value="xs:negativeInteger"/>
+            <xs:enumeration value="xs:positiveInteger"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- The user will not modify "numerics" tree in the SMIOC -->
+  <!-- numerics type needed by coupler for coherence checks -->
+  <!-- - - - - - - - - - -  COMPUTATION  - - - - - - - - - - - - - -->
+  <xs:element name="computation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="associated_gridfamily"/>
+        <xs:element maxOccurs="unbounded" ref="associated_points_or_subgrid"/>
+        <xs:element minOccurs="0" ref="method"/>
+      </xs:sequence>
+      <xs:attribute name="mask" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="mask_time_dependency">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="conditional_computation"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- The user will not modify "computation" tree in the SMIOC -->
+  <xs:element name="associated_gridfamily">
+    <xs:complexType>
+      <xs:attribute name="local_name" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- Must be chosen by the developer among gridfamily local_names -->
+  <!--
+    associated_gridfamily local_name needed by coupler
+    (coherence check)
+  -->
+  <xs:element name="associated_points_or_subgrid">
+    <xs:complexType>
+      <xs:attribute name="local_name"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    Must be chosen by the developer among points or subgrid 
+    local_names
+  -->
+  <!--
+    associated_points_or_subgrid local_name needed by coupler
+    (coherence check)
+  -->
+  <xs:element name="method">
+    <xs:complexType>
+      <xs:attribute name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="mean"/>
+            <xs:enumeration value="max"/>
+            <xs:enumeration value="min"/>
+            <xs:enumeration value="median"/>
+            <xs:enumeration value="variance"/>
+            <xs:enumeration value="CDATA"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    method type may be needed by coupler for local
+    transformation ?
+  -->
+  <!-- - - - - - - - - - - -  INTENT - - - - - - - - - - - - - - -->
+  <xs:element name="intent">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element minOccurs="0" ref="input"/>
+          <xs:element minOccurs="0" maxOccurs="unbounded" ref="output"/>
+        </xs:choice>
+        <xs:element minOccurs="0" ref="saved_in_restart"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="saved_in_restart" type="xs:string"/>
+  <!--  PRISM choices are true | false (false if not present) -->
+  <!--
+    needed by coupler when we will have a psmile function to save 
+    the restarts automatically
+  -->
+  <xs:element name="input">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="origin"/>
+        <xs:element minOccurs="0" ref="exchange_date"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded"
+ref="target_transformation"/>
+        <xs:element minOccurs="0" ref="coupling_restart_file"/>
+        <xs:element ref="debug_mode"/>
+      </xs:sequence>
+      <xs:attribute name="required_but_changeable">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="minimal_period" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- All elements contained in input are needed by the coupler -->
+  <!--
+    The user may remove the element input in the SMIOC, except
+    if input is required_but_changeable, in which case the user
+    must keep it in the SMIOC but may change its tree below
+  -->
+  <!--
+    The minimal period is the period at which the prism_get is
+    called in the code
+  -->
+  <xs:element name="debug_mode" type="xs:string"/>
+  <!--  PRISM choices are true | false (boolean?) -->
+  <!--
+    If debug_mode is true, the data will automatically be written to
+    a file below the prism_get after reception
+  -->
+  <!--
+    The user is allowed to change debug_mode value 
+    in the SMIOC
+  -->
+  <xs:element name="output">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="destination"/>
+        <xs:element ref="exchange_date"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded"
+ref="source_transformation"/>
+        <xs:element ref="debug_mode"/>
+      </xs:sequence>
+      <xs:attribute name="minimal_period" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- The user may remove and/or add element output in the SMIOC -->
+  <!--
+    The minimal period is the period at which the prism_put is
+    called in the code
+  -->
+  <!--
+    If debug_mode is true, the data will automatically be written to
+    a file below the prism_put before sending
+  -->
+  <!-- The user is allowed to change debug_mode value in the SMIOC -->
+  <!-- - - - - - - - - -  ORIGIN - - - - - - - - - - - - - -->
+  <xs:element name="origin">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="variable_name"/>
+        <xs:choice>
+          <xs:element ref="file"/>
+          <xs:element ref="src_component"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!--
+     The user is allowed to add or remove elements origin,
+    or modify the tree below origin in the SMIOC
+  -->
+  <!-- - - - - - - - - DESTINATION - - - - - - - - - - - - -->
+  <xs:element name="destination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="variable_name"/>
+        <xs:choice>
+          <xs:element ref="file"/>
+          <xs:element ref="tgt_component"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The user is allowed to modify in the SMIOC the tree below
+    destination
+  -->
+  <xs:element name="variable_name">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="src_component">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tgt_component">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- - - - - - -  - EXCHANGE_DATE - - - - - - - - - - - - -->
+  <xs:element name="exchange_date">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="period"/>
+        <xs:element maxOccurs="unbounded" ref="precise_day"/>
+        <xs:element ref="list"/>
+        <xs:element ref="once"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The user is allowed to change the exchange_date in the
+    SMIOC
+  -->
+  <xs:element name="period">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="nbr_years"/>
+        <xs:element minOccurs="0" ref="nbr_months"/>
+        <xs:element minOccurs="0" ref="nbr_days"/>
+        <xs:element minOccurs="0" ref="nbr_hours"/>
+        <xs:element minOccurs="0" ref="nbr_mins"/>
+        <xs:element minOccurs="0" ref="nbr_secs"/>
+        <xs:element minOccurs="0" ref="nbr_msecs"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="precise_day">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="daynbr_in_month"/>
+        <xs:element minOccurs="0" ref="hour"/>
+        <xs:element minOccurs="0" ref="minutes"/>
+        <xs:element minOccurs="0" ref="seconds"/>
+        <xs:element minOccurs="0" ref="milliseconds"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!--
+     The coupling or I/O can be performed every X day of
+    each month at a precise time (0:00:00:000 by default)
+  -->
+  <xs:element name="daynbr_in_month">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="list">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="date"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The coupling or I/O can be performed on different
+    precise dates
+  -->
+  <xs:element name="once" type="xs:string"/>
+  <!-- PRISM choices are beginning | end | beginning_and_end -->
+  <!--
+    The coupling or I/O can be performed only at the
+    beginning of the run, only at the end, or both
+  -->
+  <!-- - - - - - - -  TRANSFORMATIONS - - - - - - - - - - -->
+  <xs:element name="source_transformation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="source_time_operation"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="local_transformation"/>
+        <xs:element minOccurs="0" ref="interpolation"/>
+        <xs:element minOccurs="0" ref="conservation"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded"
+ref="algebraic_combination"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="statistics"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="target_transformation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="local_transformation"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="algebraic_correction"/>
+        <xs:element minOccurs="0" ref="target_time_operation"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="statistics"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The user is allowed to remove, add, change the
+    transformations in the SMIOC except the ones that have
+    the attribute required_as_is="true" (false by default)
+  -->
+  <xs:element name="source_time_operation">
+    <xs:complexType mixed="true">
+      <xs:attribute name="required_as_is">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- PRISM choices are average | accumul |  t_min | t_max -->
+  <xs:element name="local_transformation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice minOccurs="0">
+          <xs:element ref="scattering"/>
+          <xs:element ref="gathering"/>
+        </xs:choice>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="reduction"/>
+        <xs:element minOccurs="0" ref="masking"/>
+        <xs:element minOccurs="0" ref="extrapolation"/>
+        <xs:element minOccurs="0" ref="add_scalar"/>
+        <xs:element minOccurs="0" ref="mult_scalar"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="scattering">
+    <xs:complexType mixed="true">
+      <xs:attribute name="required_as_is">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- PRISM choices for scattering are scconvA | scconvB -->
+  <xs:element name="gathering">
+    <xs:complexType mixed="true">
+      <xs:attribute name="required_as_is">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- PRISM choices are gaconvA | gaconvB -->
+  <xs:element name="reduction">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="reduc_type"/>
+        <xs:element ref="reduc_dim"/>
+      </xs:sequence>
+      <xs:attribute name="required_as_is">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="reduc_type" type="xs:string"/>
+  <!-- PRISM choices are minimum | maximum | average -->
+  <xs:element name="reduc_dim" type="xs:string"/>
+  <!-- PRISM choices are first | second | third | fourth -->
+  <xs:element name="masking">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element ref="variable_mask"/>
+          <xs:element ref="external_mask"/>
+        </xs:choice>
+        <xs:element ref="mask_value"/>
+      </xs:sequence>
+      <xs:attribute name="required_as_is">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="variable_mask">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="external_mask">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="mask_value">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="extrapolation">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="nbr_neighbours"/>
+        <xs:element ref="weight"/>
+      </xs:choice>
+      <xs:attribute name="required_as_is">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nbr_neighbours">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="weight">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="add_scalar">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="required_as_is">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="mult_scalar">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="required_as_is">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="interpolation">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="interp3D"/>
+        <xs:sequence>
+          <xs:element ref="interp2D"/>
+          <xs:element ref="interp1D"/>
+        </xs:sequence>
+        <xs:sequence>
+          <xs:element ref="interp1D"/>
+          <xs:element ref="interp1D"/>
+          <xs:element ref="interp1D"/>
+        </xs:sequence>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="interp3D">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="nneighbour3D"/>
+        <xs:element ref="conservativ3D"/>
+        <xs:element ref="user3D"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nneighbour3D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="nbr_neighbours"/>
+        <xs:element minOccurs="0" ref="gaussian_variance"/>
+        <xs:element ref="restric_type3D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="para_search"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gaussian_variance">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="restric_type3D" type="xs:string"/>
+  <!-- PRISM choices are restrica3D | restricb3D -->
+  <xs:element name="nbr_bins">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="para_search" type="xs:string"/>
+  <!-- PRISM choices are approximate | precise -->
+  <xs:element name="conservativ3D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="restric_type3D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="order"/>
+        <xs:element minOccurs="0" ref="gradient_varname"/>
+        <xs:element ref="normalisation3D"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="order" type="xs:string"/>
+  <!-- PRISM choices are first | second -->
+  <xs:element name="normalisation3D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="methodnorm3D"/>
+        <xs:element ref="nearnei"/>
+        <xs:element ref="truevolume"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="methodnorm3D" type="xs:string"/>
+  <!-- PRISM choices are norma3D | normb3D | normc3D -->
+  <xs:element name="nearnei" type="xs:string"/>
+  <!-- PRISM choices are true | false -->
+  <xs:element name="truevolume" type="xs:string"/>
+  <!-- PRISM choices are true | false -->
+  <xs:element name="user3D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="interp2D">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="nneighbour2D"/>
+        <xs:element ref="bilinear"/>
+        <xs:element ref="bicubic"/>
+        <xs:element ref="conservativ2D"/>
+        <xs:element ref="user2D"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nneighbour2D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="nbr_neighbours"/>
+        <xs:element minOccurs="0" ref="gaussian_variance"/>
+        <xs:element ref="restric_type2D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="para_search"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="restric_type2D" type="xs:string"/>
+  <!-- PRISM choices are latlon | latitude -->
+  <xs:element name="bilinear">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="restric_type2D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="para_search"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bicubic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="bicubic_method"/>
+        <xs:element minOccurs="0" ref="gradient_varname"/>
+        <xs:element ref="restric_type2D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="para_search"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bicubic_method" type="xs:string"/>
+  <!-- PRISM choices are gradient | sixteen -->
+  <xs:element name="gradient_varname">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:string">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:string"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="conservativ2D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="restric_type2D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="order"/>
+        <xs:element minOccurs="0" ref="gradient_varname"/>
+        <xs:element ref="normalisation2D"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="normalisation2D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="methodnorm2D"/>
+        <xs:element ref="nearnei"/>
+        <xs:element ref="truearea"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="methodnorm2D" type="xs:string"/>
+  <!-- PRISM choices are fracarea | destarea | none) -->
+  <xs:element name="truearea" type="xs:string"/>
+  <!-- PRISM choices are true | false -->
+  <xs:element name="user2D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="interp1D">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="nneighbour1D"/>
+        <xs:element ref="linear"/>
+        <xs:element ref="cubic"/>
+        <xs:element ref="conservativ1D"/>
+        <xs:element ref="user1D"/>
+        <xs:element ref="none"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nneighbour1D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="nbr_neighbours"/>
+        <xs:element minOccurs="0" ref="gaussian_variance"/>
+        <xs:element ref="unit_logarithm"/>
+        <xs:element ref="restric_type1D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="para_search"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="restric_type1D" type="xs:string"/>
+  <!-- PRISM choices are restrica1D | restricb1D -->
+  <xs:element name="unit_logarithm" type="xs:string"/>
+  <!-- PRISM choices are true | false -->
+  <xs:element name="linear">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="unit_logarithm"/>
+        <xs:element ref="restric_type1D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="para_search"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="cubic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="unit_logarithm"/>
+        <xs:element ref="restric_type1D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="para_search"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="conservativ1D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="restric_type1D"/>
+        <xs:element ref="nbr_bins"/>
+        <xs:element ref="order"/>
+        <xs:element minOccurs="0" ref="gradient_varname"/>
+        <xs:element ref="normalisation1D"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="normalisation1D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="methodnorm1D"/>
+        <xs:element ref="nearnei"/>
+        <xs:element ref="truelength"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="methodnorm1D" type="xs:string"/>
+  <!-- PRISM choices are norma1D | normb1D | normc1D) -->
+  <xs:element name="truelength" type="xs:string"/>
+  <!-- PRISM choices are true | false -->
+  <xs:element name="user1D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="none">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="algebraic_combination">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element minOccurs="0" ref="operand"/>
+        <xs:element minOccurs="0" ref="scalar"/>
+        <xs:choice minOccurs="0">
+          <xs:element ref="variable_mask"/>
+          <xs:element ref="external_mask"/>
+        </xs:choice>
+        <xs:element minOccurs="0" ref="comb_method"/>
+        <xs:element minOccurs="0" ref="comb_parameter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="operand" type="xs:string"/>
+  <!-- PRISM choices are sinus | log | bundle_combine -->
+  <xs:element name="scalar">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="comb_method" type="xs:string"/>
+  <!-- PRISM choices are smooth | raw -->
+  <xs:element name="comb_parameter">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="conservation" type="xs:string"/>
+  <!-- PRISM choices are global (only one choice for now) -->
+  <xs:element name="algebraic_correction">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="file"/>
+        <xs:element minOccurs="0" ref="operand"/>
+        <xs:element minOccurs="0" ref="scalar"/>
+        <xs:element minOccurs="0" ref="external_mask"/>
+        <xs:element minOccurs="0" ref="comb_method"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="target_time_operation" type="xs:string"/>
+  <!-- PRISM choices are time_nneighbour | time_linear -->
+  <xs:element name="statistics" type="xs:string"/>
+  <!--
+    PRISM choices are fld_minimum | fld_maximum |
+    fld_integral | mask_integral | notmask_integral
+  -->
+  <!-- - - - - - -  TRANSIENT_DEPENDENCY - - - - - - - - - - - -->
+  <xs:element name="transient_dependency">
+    <xs:complexType>
+      <xs:attribute name="dep_variable" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    The developer specifies other transient variable
+    local_names in the PMIOD; the user cannot change that in
+    the SMIOC
+  -->
+  <!-- not needed by coupler -->
+  <!-- - - - - - - - COUPLING_RESTART_FILE - - - - - - - - - - - - -->
+  <xs:element name="coupling_restart_file">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="file"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!-- needed by coupler -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- PERSISTENT -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <xs:element name="persistent">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="standard_name"/>
+        <xs:element ref="physics"/>
+        <xs:element ref="numerics"/>
+        <xs:element ref="persistent_value"/>
+        <xs:element minOccurs="0" ref="saved_in_restart"/>
+      </xs:sequence>
+      <xs:attribute name="local_name" use="required"/>
+      <xs:attribute name="long_name"/>
+      <xs:attribute name="persist_type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="local"/>
+            <xs:enumeration value="global"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="persistent_value">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    If the developer wants to specify that the user cannot change the
+    value, he uses PCDATA and not configurable
+  -->
+  <!--
+    Should the global parameters (that need to be coherent) among all
+    components be in the SCC?
+  -->
+  <!--
+    all persistent elements needed by coupler to answer
+    prism_get_persist
+  -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- DEPENDENCY -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <xs:element name="dependency" type="xs:string"/>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- GENERIC ELEMENTS -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <xs:element name="valid_min">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="valid_max">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="value">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="min_value">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="max_value">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="increment">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    If there is no max_value and no increment specified, min_value is
+    the only possible value; if there is only min_value and
+    max_value, the increment is 1 by default.
+  -->
+  <xs:element name="name">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:string">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:string"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="configurable">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="default"/>
+        <xs:element ref="label"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="choice"/>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="guiattribute"/>
+      </xs:sequence>
+      <xs:attribute name="any_value">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    any_value="true" indicates that any value, besides the proposed
+    choices if any, is also acceptable  (false by default)
+  -->
+  <xs:element name="default" type="xs:string"/>
+  <xs:element name="label" type="xs:string"/>
+  <xs:element name="choice">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="min_choice"/>
+        <xs:element minOccurs="0" ref="max_choice"/>
+        <xs:element minOccurs="0" ref="inc_choice"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="guiattribute">
+    <xs:complexType mixed="true">
+      <xs:attribute name="key" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="min_choice" type="xs:string"/>
+  <xs:element name="max_choice" type="xs:string"/>
+  <xs:element name="inc_choice" type="xs:string"/>
+  <!--
+    If there is no max_choice and no increment specified, min_choice
+    is the only value of this choice "element"; if there is
+    min_choice and max_choice, the inc_choice is required
+  -->
+  <xs:element name="units">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="unit_element"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="unit_element">
+    <xs:complexType>
+      <xs:attribute name="std_unit_name">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="1"/>
+            <xs:enumeration value="m"/>
+            <xs:enumeration value="kg"/>
+            <xs:enumeration value="s"/>
+            <xs:enumeration value="Pa"/>
+            <xs:enumeration value="K"/>
+            <xs:enumeration value="W"/>
+            <xs:enumeration value="J"/>
+            <xs:enumeration value="degree"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="other_unit_name"/>
+      <xs:attribute name="exponent">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="-01"/>
+            <xs:enumeration value="-02"/>
+            <xs:enumeration value="-03"/>
+            <xs:enumeration value="01"/>
+            <xs:enumeration value="02"/>
+            <xs:enumeration value="03"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!--
+    I checked that the unit list covers 
+    http://www.knmi.nl/~velthove/PRISM/CF/PRISM_standard_names_V1.0.html
+  -->
+  <xs:element name="file">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name"/>
+        <xs:element ref="set"/>
+        <xs:element ref="format"/>
+        <xs:element ref="packing"/>
+        <xs:element minOccurs="0" ref="scaling"/>
+        <xs:element minOccurs="0" ref="adding"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="set" type="xs:string"/>
+  <!-- PRISM choices are single | multiple -->
+  <xs:element name="format" type="xs:string"/>
+  <!-- PRISM choices are binary | netCDF -->
+  <xs:element name="packing">
+    <xs:complexType mixed="true">
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- PRISM choices are  1 | 2 | 4 | 8 -->
+  <xs:element name="scaling">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- scaling is 1.0 by default -->
+  <xs:element name="adding">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:float">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <!-- adding is 0.0 by default -->
+  <xs:element name="nbr_years">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nbr_months">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nbr_days">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nbr_hours">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nbr_mins">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nbr_secs">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nbr_msecs">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="date">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="year"/>
+        <xs:element ref="month"/>
+        <xs:element ref="day"/>
+        <xs:element ref="hour"/>
+        <xs:element ref="minutes"/>
+        <xs:element ref="seconds"/>
+        <xs:element ref="milliseconds"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="year">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="month">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="day">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="hour">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="minutes">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="seconds">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="milliseconds">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="configurable"/>
+      </xs:sequence>
+      <xs:attribute name="type" default="xs:integer">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="xs:integer"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

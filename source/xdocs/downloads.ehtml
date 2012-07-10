@@ -1,0 +1,93 @@
+<html>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<body>
+   <h1>JaxMe Downloads</h1>
+
+   <a name="binaries"/>
+   <h3>Binaries</h3>
+   <p>JaxMe binaries are available from the <a href="#mirrors">Apache mirrors</a>.</p>
+
+   <a name="sources"/>
+   <h3>Sources</h3>
+   <p>The JaxMe sources are also available from the <a href="#mirrors">Apache mirrors</a>.
+     You may also use the <a href="#svn">Apache SVN server</a> to download the bleeding
+     edge version. For a quick view, you may <a href="#svnweb">browse</a> the SVN repository
+     online.
+   </p>
+
+   <a name="svn"/>
+   <h3>SVN Access</h3>
+   <p>Anonymous access to the subversion repository goes like this:
+     <pre>
+       svn co http://svn.apache.org/repos/asf/webservices/jaxme/trunk ws-jaxme
+     </pre>
+     User name and/or password are not required.</p>
+   <p>
+     For developers, a different repository is available, which requires HTTPS access:
+     <pre>
+       svn co https://userid@svn.apache.org/repos/asf/webservices/jaxme/trunk ws-jaxme
+     </pre>
+     Of course, you have to replace the <code>userid</code> with the name of your
+     committers account.
+   </p>
+
+   <a name="svnweb"/>
+   <h3>SVN Web Access</h3>
+   <p>
+     The SVN repository may also be browsed online at
+     <a href="http://svn.apache.org/repos/asf/webservices/jaxme/trunk">http://svn.apache.org/repos/asf/webservices/jaxme/trunk</a>.
+   </p>
+
+   <a name="mirrors"/>
+   <h3>Apache Mirrors</h3>
+   <p>The preferred way to obtain JaxMe distributions is through the various
+     archive sites aroung the world. The links below will allow you to select
+     a suitable archive near you. You are still free to switch to another
+     mirror, of course.</p>
+   <p>You are currently using the <strong>[preferred]</strong> mirror.
+     If you encounter a problem with this mirror, please select another
+     mirror.  If all mirrors are failing, there are <em>backup</em>
+     mirrors (at the end of the mirrors list) that should be available.
+   </p>
+	
+   <form action="[location]" method="get" id="SelectMirror">
+     Other mirrors: 		
+<select name="Preferred">
+[if-any http]
+  [for http]<option value="[http]">[http]</option>[end]
+[end]  
+[if-any ftp]
+  [for ftp]<option value="[ftp]">[ftp]</option>[end]
+[end]
+[if-any backup]
+  [for backup]<option value="[backup]">[backup] (backup)</option>[end]
+[end]
+        </select>
+		 <input type="submit" value="Change"/> 	 </form>
+
+   JaxMe distributions: <a href="[preferred]/ws/jaxme">[preferred]/ws/jaxme</a>
+    <p>
+   Please check the MD5 sums for any releases you download from the mirrors:
+    </p>
+    <ul>
+        <li>ws-jaxme-0.5-bin.tar.gz: <strong>d9e3151576fee5fc4f8af907a71f9096</strong></li>
+        <li>ws-jaxme-0.5-src.tar.gz: <strong>59991a2ecdfada900ad836f9cc581a1e</strong></li>
+    </ul>
+</body>
+</html>

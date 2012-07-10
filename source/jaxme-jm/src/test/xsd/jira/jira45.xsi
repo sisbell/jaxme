@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:b="http://ws.apache.org/jaxme/test/misc/xsimport/b"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/xsimport/b"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+  <xs:element name="inner1" type="xs:string"/>
+  <xs:element name="inner2" type="xs:int"/>
+</xs:schema>

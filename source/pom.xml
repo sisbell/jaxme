@@ -1,0 +1,210 @@
+<?xml version="1.0"?>
+<!--
+
+  Copyright 2005  The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+-->
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>3</version>
+  </parent>
+  <groupId>org.apache.ws.jaxme</groupId>
+  <artifactId>jaxme-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>JaxMe Parent</name>
+  <description>
+    JaxMe is a Java/XML binding compiler: It takes as input a schema
+    description (in most cases an XML schema but it may be a DTD or
+    a database schema as well). The output is a set of Java classes,
+    which allow to convert Java instances into XML documents matching
+    the schema (marshalling) and, vice versa, compliant XML instances
+    into Java objects (unmarshalling).
+  </description>
+  <version>2</version>
+  <url>http://ws.apache.org/jaxme</url>
+  <issueManagement>
+    <system>jira</system>
+    <url>http://issues.apache.org/jira/browse/JAXME</url>
+  </issueManagement>
+  <inceptionYear>2002</inceptionYear>
+  <mailingLists>
+    <mailingList>
+      <name>JaxMe Developers</name>
+      <subscribe>jaxme-dev-subscribe@ws.apache.org</subscribe>
+      <unsubscribe>jaxme-dev-unsubscribe@ws.apache.org</unsubscribe>
+      <post>jaxme-dev@ws.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/ws-jaxme-dev/</archive>
+      <otherArchives>
+        <otherArchive>http://marc.theaimsgroup.com/?l=jaxme-dev</otherArchive>
+      </otherArchives>
+    </mailingList>
+  </mailingLists>
+  <developers>
+    <developer>
+      <name>Jochen Wiedmann</name>
+      <id>jochen</id>
+      <email>jochen.wiedmann@gmail.com</email>
+    </developer>
+    <developer>
+      <name>Davanum Srinivas</name>
+      <id>dims</id>
+      <email>dims at yahoo.com</email>
+    </developer>
+    <developer>
+      <name>Robert Burrell Donkin</name>
+      <id>rdonkin</id>
+      <email>rdonkin at apache.org</email>
+    </developer>
+    <developer>
+      <name>Changshin Lee (Ias)</name>
+      <id>ias</id>
+      <email>iasandcb at tmax.co.kr</email>
+    </developer>
+    <developer>
+      <name>Nacho G. Mac Dowell</name>
+      <id>mac</id>
+      <email>mac at apache.org</email>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Robert Eric Reeves</name>
+      <email>robert@phurnace.com</email>
+    </contributor>
+    <contributor>
+      <name>Anthony Vito</name>
+      <email>anthony.vito@gmail.com</email>
+    </contributor>
+  </contributors>
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/webservices/jaxme/trunk/ws-jaxme/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/webservices/jaxme/trunk/ws-jaxme/</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/webservices/jaxme/trunk/ws-jaxme/</url>
+  </scm>
+  <organization>
+    <name>Apache Software Foundation</name>
+    <url>http://www.apache.org/</url>
+  </organization>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>changes-maven-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <distributionManagement>
+    <repository>
+      <id>${id.releases}</id>
+      <name>Apache Maven Repository</name>
+      <url>${url.releases}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${id.snapshots}</id>
+      <name>Apache Maven Snapshot Repository</name>
+      <url>${url.site}</url>
+    </snapshotRepository>
+    <site>
+      <id>${id.site}</id>
+      <name>JaxMe Site</name>
+      <url>${url.site}</url>
+    </site>
+  </distributionManagement>
+
+  <modules>
+    <module>jaxme-jaxb-api</module>
+    <module>jaxme-js</module>
+    <module>jaxme-pm</module>
+    <module>jaxme-jm</module>
+    <module>jaxme-xs</module>
+    <module>maven-jaxme-plugin</module>
+<!-- <module>maven-jaxme-plugin</module> -->
+  </modules>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>create-source-jar</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>create-javadoc-jar</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <source>${maven.compile.source}</source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <id.releases>apache-maven</id.releases>
+        <url.releases>scp://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url.releases>
+        <id.snapshots>apache-maven-snapshots</id.snapshots>
+        <url.snapshots>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url.snapshots>
+        <id.site>jaxme-site</id.site>
+        <url.site>scp://people.apache.org/www/ws.apache.org/jaxme</url.site>
+      </properties>
+    </profile>
+  </profiles>
+</project>

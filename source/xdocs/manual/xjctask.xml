@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<sect1><title>The JaxMe Ant Task</title>
+<para>The JaxMe Ant task was written with the following goals in mind:
+  <itemizedlist>
+    <listitem>To preserve as much compatibility as possible with the JAXB xjc task</listitem>
+    <listitem>To provide access to JaxMe extensions</listitem>
+  </itemizedlist>
+  In other words, if you have existing build scripts using JAXB's xjc, you should
+  be able to convert them to JaxMe with a single switch (by exchanging the
+  class name in the task definition). However, if you like to make use of JaxMe's
+  extensions at a later time, you are free to do so.</para>
+<para>A typical use of the Ant task looks like this:
+  <programlisting><![CDATA[
+    <target name="taskdef">
+      <taskdef name="xjc"
+        classname="org.apache.ws.jaxme.generator.XJCTask"
+        classpathref="generate.class.path"/>
+    </target>
+
+    <target name="generate" depends="taskdef">
+      <xjc schema="schema.xsd" target="build/src">
+        <produces includes="com/acme/*.java"/>
+      </xjc>
+    </target>
+]]></programlisting>
+  </para>
+<para>A target (called "taskdef" above) defines the
+  ant task under a given name ("xjc" in the above example). It is important to remember
+  to include the JaxMe jars in the classpath when defining the task.
+  This task is then called by the source generation target.</para>
+<para>The ant task supports the following attributes:
+  <table><title>Attributes of the JaxMe ant task</title>
+    <tgroup cols="3" colsep="1" rowsep="1" tocentry="1">
+      <thead>
+        <row>
+          <entry>Name</entry>
+          <entry>Description</entry>
+          <entry>Origin</entry>
+          <entry>Required/Default</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>binding</entry>
+          <entry><para>Name of an external binding file being applied to the schema file.
+            This attribute and the nested &lt;binding&gt; element are mutually exclusive.</para>
+            <para>As of this writing, external schema bindings are unsupported by JaxMe.
+              A BuildException is thrown, if you use this attribute anyways.</para></entry>
+          <entry>JAXB XJC</entry>
+          <entry>No</entry>
+        </row>
+		<row>
+		  <entry>extension</entry>
+		  <entry><para>If this attribute has the value "true", then the XJC binding compiler
+		    will run in the extension mode. Otherwise, it will run in the strict conformance mode.</para>
+		    <para>Extension mode indicates that the proprietary "xjc" tags 
+              (specific to the JAXB binding compiler) are accepted.</para></entry>
+          <entry>JAXB XJC</entry>
+		  <entry>No, defaults to "false"</entry>
+		</row>
+        <row>
+          <entry>force</entry>
+          <entry><para>Setting this option to "true" forces the up-to-date check to fail 
+            (and so the nested &lt;produces&gt; elements are ignored).</para>
+            <para>This attribute isn't of much use to the JaxMe user. It is mainly intended
+              for JaxMe developers who want to specify a value from the command line.
+              This is useful when they have updated the schema compiler 
+              and want to run against the old schema with the new version.</para></entry>
+          <entry>JaxMe</entry>
+          <entry>No, defaults to "false"</entry>
+        </row>
+        <row>
+          <entry>package</entry>
+          <entry>Specifies the package name of the generated sources. If this attribute is
+            specified, then it overrides any values specified in the schema bindings.</entry>
+          <entry>JAXB XJC</entry>
+          <entry>No, defaults to values specified in the schema bindings or to a package name
+            derived from the target namespace URI.</entry>
+        </row>
+        <row>
+          <entry>schema</entry>
+          <entry>Name of a schema file being compiled. This attribute and the nested
+            &lt;schema&gt; element are mutually exclusive.</entry>
+          <entry>JAXB XJC</entry>
+          <entry>Yes, unless a nested &lt;schema&gt; element is present</entry>
+        </row>
+        <row>
+          <entry>readonly</entry>
+          <entry>If this attribute has the value "true" then the generated source files
+            will have read-only mode.</entry>
+          <entry>JAXB XJC</entry>
+          <entry>No, defaults to "false"</entry>
+        </row>
+		<row>
+		  <entry>removeOldOutput</entry>
+		  <entry><para>If one or more nested &lt;produces&gt; elements are specified and this attribute is
+            set to "true", then the Ant task will ensure that only generated files will remain. In other
+            words, if you had removed an element named "Foo" from the previous schema version, then the
+            Ant task will remove <filename>Foo.java</filename>.</para>
+            <para>Note, that this behaviour is slightly different from the JAXB ant task "xjc", which
+              removes all files matched by any &lt;produces&gt; element, before running the binding
+              compiler.</para></entry>
+          <entry>JAXB XJC</entry>
+          <entry>No, defaults to "false"</entry>
+		</row>
+        <row>
+          <entry>stackSize</entry>
+          <entry><para>Specifies the thread stack size for the XJC binding compiler (J2SE SDK v1.4
+            or higher). The XJC binding compiler can fail to compile large schemas with
+            StackOverflowError and, in that case, this option can be used to extend the
+            stack size. If unspecified, the default VM size is used. The format is equivalent
+            to the -Xss command-line argument for Sun Microsystems JVM. This value can be
+            specified in bytes (stackSize="2097152"), kilobytes (stackSize="2048kb"),
+            or megabytes (stackSize="2mb").</para>
+            <para>This attribute is ignored by the JaxMe ant task and present for compatibility
+              reasons only. A warning is emitted, if you use it.</para></entry>
+          <entry>JAXB XJC</entry>
+          <entry>No</entry>
+        </row>
+        <row>
+          <entry>resourceTarget</entry>
+          <entry>Specifies the target directory for generating resource files.
+            If required, a package structure is created automatically below
+            the resource target directory. For example, if the "target" attribute
+            has the value "src" and the "package" attribute is "com.acme", then
+            the directory <filename>src/com/acme</filename> will be used.
+          </entry>
+          <entry>JaxMe</entry>
+          <entry>No, defaults to the "target" directory</entry>
+        </row>
+        <row>
+          <entry>target</entry>
+          <entry>Specifies the target directory for generating Java source files.
+            If required, a package structure is created automatically below
+            the resource target directory. For example, if the "target" attribute
+            has the value "src" and the "package" attribute is "com.acme", then
+            the directory <filename>src/com/acme</filename> will be used.</entry>
+          <entry>JAXB XJC</entry>
+          <entry>No, defaults to the current directory</entry>
+        </row>
+        <row>
+          <entry>validating</entry>
+          <entry>Depending on this attributes value, the XML parser used to parse the XML
+            schema file will either be validating or not.</entry>
+          <entry>JaxMe</entry>
+          <entry>No, defaults to "false"</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table></para>
+  <para>The ant task also supports the following nested elements:
+    <table><title>Nested elements of the JaxMe ant task</title>
+    <tgroup cols="3" colsep="1" rowsep="1" tocentry="1">
+      <thead>
+        <row>
+          <entry>Name</entry>
+          <entry>Description</entry>
+          <entry>Origin</entry>
+          <entry>Multiplicity</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>arg</entry>
+          <entry><para>This nested element is ignored by the JaxMe ant task and exists for
+            JAXB compatibility only. If this element is present, a warning 
+            will be logged.</para>
+            <para>In the case of JAXB it specifies additional command line arguments being
+              passed to the XJC. For details about the syntax, see the relevant section in
+              the Ant manual.</para>
+            <para>This nested element can be used to specify various options not natively
+              supported in the JAXB xjc Ant task. For example, currently there is no native
+              support for the following xjc command-line options:
+              <itemizedlist>
+                <listitem>-nv</listitem>
+                <listitem>-catalog</listitem>
+                <listitem>-use-runtime</listitem>
+                <listitem>-schema</listitem>
+                <listitem>-dtd</listitem>
+                <listitem>-relaxng</listitem>
+              </itemizedlist></para></entry>
+         <entry>JAXB XJC</entry>
+         <entry>0..Unbounded</entry>
+        </row>
+		<row>
+		  <entry>binding</entry>
+		  <entry><para>Multiple external binding files may be specified. The element syntax is equivalent
+            to a nested &lt;fileset&gt;. Use of a nested &lt;binding&gt; element is
+            mutually exclusive with the use of a "binding" attribute.</para>
+            <para>As of this writing, external schema bindings are unsupported by JaxMe.
+              A BuildException is thrown if this attribute is used.</para></entry>
+          <entry>JAXB XJC</entry>
+          <entry>0..Unbounded</entry>
+		</row>
+		<row>
+		  <entry>classpath</entry>
+		  <entry><para>This nested element specifies the classpath for loading user defined classes.
+		      For example, the schema reader specified by the "schemaReader" nested element may be 
+		      such a type.</para>
+		    <para>The JAXB binding compiler uses this classpath when loading user defined types,
+		      as specified by the &lt;javaType&gt; customization. This is currently not the case
+		      for JaxMe: The type names are simply compiled in without an attempt to actually load
+		      them. This has the advantage that user defined classes may refer to sources which will 
+                      generated.
+		      </para></entry>
+		  <entry>JAXB XJC</entry>
+		  <entry>0..Unbounded</entry>
+		</row>
+		<row>
+		  <entry>depends</entry>
+		  <entry><para>By default the up-to-date check (used by the JaxMe task) considers the specified
+		      schema and binding files only. This is insufficient when auxiliary schema files are included,
+              imported or redefined.</para>
+            <para>The nested &lt;depends&gt; element allows to specify additional files to consider
+              for the up-to-date check. Typically these are the additional schema files.</para>
+            <para>Syntactically the &lt;depends&gt; element specifies a nested &lt;fileset&gt;.</para>
+            </entry>
+          <entry>JAXB XJC</entry>
+          <entry>0..Unbounded</entry>
+		</row>
+		<row>
+		  <entry>produces</entry>
+		  <entry>Specifies the set of files to be created by the JaxMe ant task. These
+		    files are considered as targets for the up-to-date check. The syntax of the &lt;produces&gt;
+            element is equivalent to a nested &lt;fileset&gt;. However, you typically do not
+            need to set the "dir" attribute, because it defaults to the target directory.
+            (Note that the JAXB XJC requires setting the "dir" attribute.)</entry>
+          <entry>JAXB XJC</entry>
+          <entry>0..Unbounded</entry>
+		</row>
+		<row>
+		  <entry>property</entry>
+		  <entry>Sets a property value. These properties may be used to pass configuration
+                  information to the various source generators. For example, the JDBC schema reader uses
+            the options "jdbc.driver", "jdbc.url", "jdbc.user", and "jdbc.password" to
+            configure the database connection. Each property must have attributes "name" (the
+            property name) and "value" (the property value).</entry>
+          <entry>JaxMe</entry>
+          <entry>0..Unbounded</entry>
+		</row>
+        <row>
+          <entry>schema</entry>
+          <entry>Multiple schema files may be compiled in one or more nested &lt;schema&gt;
+            elements. The element syntax is equivalent to a nested &lt;fileset&gt;.
+            Use of a nested &lt;schema&gt; element is mutually exclusive with the use
+            of a "schema" attribute.</entry>
+		  <entry>JAXB XJC</entry>
+          <entry>0..Unbounded</entry>
+        </row>
+        <row>
+          <entry>sgFactoryChain</entry>
+          <entry>If the schema reader is an instance of <classname>JAXBSchemaReader</classname>,
+            then you may add instances of <classname>SGFactoryChain</classname> to
+            the schema generation process. For example, such chains are used to create
+            the persistency layer. The best example is the <classname>JaxMeJdbcSG</classname>,
+            which is able to populate the schema with tables and columns read from a database
+            via JDBC metadata.</entry>
+          <entry>JaxMe</entry>
+          <entry>0..Unbounded</entry>
+        </row>
+        <row>
+          <entry>dtd</entry>
+          <entry>Specifies, that the input files are no instances of XML Schema,
+            but DTD's. The schema reader will use the <classname>DTDParser</classname>
+            to convert the DTD's into instances of XML Schema. If you do use DTD's,
+            you will possibly also set the "targetNamespace" attribute, which
+            specifies a target namespace. (There is no possibility, to specify the
+            target namespace within a DTD.)</entry>
+          <entry>JaxMe; the JAXB RI has a similar possibility by
+            specifying the command line argument "-dtd".</entry>
+          <entry>0..1</entry>
+        </row>
+		<row>
+		  <entry>schemaReader</entry>
+		  <entry>Configures the schema reader to use. Defaults to
+            "org.apache.ws.jaxme.generator.sg.impl.JAXBSchemaReader", which is the JAXB compliant
+            schema reader. An alternative schema reader is, for example,
+            "org.apache.ws.jaxme.generator.sg.impl.JaxMeSchemaReader" 
+            (a subclass of JAXBSchemaReader with JaxMe specific extensions).</entry>
+          <entry>JaxMe</entry>
+          <entry>0..1</entry>
+		</row>
+		<row>
+		  <entry>xmlCatalog</entry>
+		  <entry>Adds an XML catalog, which is being used to resolve
+		    external entities and URI's. See the
+		    <ulink url="http://ant.apache.org/manual/CoreTypes/xmlcatalog.html">
+	           Ant documentation</ulink> for details on XML catalogs.
+	      </entry>
+	      <entry>JaxMe</entry>
+	      <entry>0..Unbounded</entry>
+		</row>
+      </tbody>
+    </tgroup>
+    </table>
+  </para>
+
+  <sect2><title>The Up-to-date check</title>
+    <para>By default, the JaxMe ant task will always run the generator and create new files. 
+      When this task is part of a general ant build script, this behaviour will result
+      in new files being generated and recompiled each time the build is run.</para>
+    <para>To achieve greater efficiency, use the nested &lt;produces&gt; and &lt;depends&gt; elements.
+      If one or more &lt;produces&gt; element is specified, then an up-to-date check is performed
+      as follows:
+      <orderedlist>
+        <listitem>If the "force" attribute is set to true, then the up-to-date check fails.</listitem>
+        <listitem>If there are no nested &lt;produces&gt; elements, then the up-to-date check fails.</listitem>
+        <listitem>Otherwise the set of target files will be computed by evaluating all the nested
+          &lt;produces&gt; elements. If either of these nested elements computes an empty set, then
+          the up-to-date check fails.</listitem>
+        <listitem>Otherwise the set of source files will be created by considering the
+          "schema" and "binding" attributes, and the nested &lt;schema&gt;, &lt;binding&gt;, and
+          &lt;depends&gt; elements. If either of the files in the source set is more recent than
+          any of the files in the target set, then the up-to-date check fails.</listitem>
+        <listitem>Otherwise the up-to-date check succeeds.</listitem>
+      </orderedlist></para>
+  </sect2>
+</sect1>

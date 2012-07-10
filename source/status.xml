@@ -1,0 +1,531 @@
+<?xml version="1.0"?>
+<!--
+ * Copyright 2002-2004  The Apache Software Foundation
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+
+-->
+<status>
+
+  <developers>
+    <person name="Jochen Wiedmann"       email="jochen.wiedmann at gmail dot com" id="JW" />
+    <person name="Davanum Srinivas"      email="dims at yahoo.com"          id="DS" />
+    <person name="Robert Burrell Donkin" email="rdonkin at apache.org"      id="RD" />
+    <person name="Changshin Lee (Ias)"   email="iasandcb at tmax.co.kr"     id="CL" />
+    <person name="Nacho G. Mac Dowell"   email="mac at apache.org"			id="NM" />
+    <!-- Add more people here -->
+  </developers>
+
+  <todo>
+  </todo>
+
+  <changes>
+    <release version="0.6-dev" date="Not yet published">
+      <action dev="JW" type="fix" context="generator">
+        The IDREF type has been implemented as string and not
+        as a reference to another object, as it should be.
+        (JAXME-58, Fredrik Vraalsen, fredrik at vraalsen.no)
+      </action>
+      <action dev="JW" type="enhancement" context="generator">
+        Added support for xs:pattern.
+      </action>
+      <action dev="NM" type="enhancement" context="all">
+        Mavenized the project.
+      </action>
+      <action dev="JW" type="fix" context="js">
+        Upgrade to the latest version of java15.g.
+      </action>
+      <action dev="JW" type="enhancement" context="all">
+        Upgrade from Maven 1 to Maven 2.
+      </action>
+      <action dev="JW" type="enhancement" context="api">
+        Upgraded the API to JAXB 2.1, so that Java 6 can be supported.
+      </action>
+      <action dev="JW" type="fix">
+        Fixed an endless loop when handling patterns.
+      </action>
+    </release>
+    <release version="0.5.3" date="Unpublished">
+      <action dev="JW" type="fix" context="runtime">
+        The detection, whether the CharSetXMLWriter could be
+        used, failed on IBM JDK 1.3.1.
+        (Vincent Reviol, vincent.reviol@gmail.com)
+      </action>
+      <action dev="JW" type="fix" context="js">
+        The Java parser does now support wildcard imports.
+        (Kenney Westerhof, kenney@apache.org, JAXME-77)
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        Fixed an NPE, which occurred, if an attribute was referencing an unknown
+        type.
+      </action>
+      <action dev="JW" type="fix" context="js">
+        The JavaParser wasn't able to handle "implements I1, I2, ...", or
+        "extends C1, C2, ...".
+        (Andreas Neumann, Andreas.Neumann@arvato-mobile.de, JAXME-89)
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        The "blockDefaults" handling has been inverted.
+        (Brian Uri, buri@fgm.com)
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        Fixed an NPE when using minExclusive.
+        (Brian Uri, buri@fgm.com)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The handling for primitive boolean default values was incorrect.
+      </action>
+      <action dev="JW" type="fix" context="runtime">
+        The base64 handling was dependent on the sun.* classes, which are
+        locked in late Java versions.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        XSEntities and XSIDREFs didn't implement the XSListType.
+      </action>
+      <action dev="JW" type="fix" context="runtime">
+        The DOMSerializer was mismatching localName and qName for attributes.
+      </action>
+      <action dev="JW" type="fix" context="js">
+        The JavaParser wasn't handling inner interfaces properly.
+        (David Karnok, karnok@sztaki.hu)
+      </action>
+    </release>
+    <release version="0.5.2" date="25-Oct-2006">
+      <action dev="JW" type="enhancement" context="generator">
+        Added the "xmlCatalog" element to the JaxMe Ant task.
+      </action>
+      <action dev="JW" type="fix" context="pm">
+        The TaminoAPI4JPM wasn't supporting query parameters.
+        (Theo Straeten, theo.straeten at softwareag.com)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Fixed a serious performance problem, if mixed content elements
+        had large embedded text segments.
+      </action>
+      <action dev="JW" type="add" context="generator">
+        External schema bindings are now supported recursively.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The GroupHandlerSG was generating invalid class names in some cases.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The jaxb:class customization wasn't honoured by anonymous types.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The element jaxb:property/jaxb:baseType/jaxb:javaType wasn't honured.
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        Eliminated a runtime dependency, which caused the test suite to fail
+        on JRE 1.6.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        A jaxb:baseType definition was ignored, if it modified a global type,
+        which has already been in use.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Invalid code was generated for an xs:list with item type xs:QName.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The object factory wasn't properly initialized, if a schema was using
+        multiple package names.
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        If an extending types content was reduced to the extending types
+        content particle (in other words, if the extended type had empty
+        content), then the content particles minOccurs and maxOccurs
+        values haven't been inherited. (JAXME-84)
+      </action>
+    </release>
+	<release version="0.5.1" date="Not yet published">
+      <action dev="JW" type="enhancement" context="js">
+        Added several methods for modifying and querying the
+        methods signature.
+		(Frederic Ahring, fahring at de.ibm.com)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The ChoiceHandlerSG did not treat a choice
+        with minOccurs="0" as optional. (JAXME-65)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The source distribution did not contain the necessary
+        build scripts. (JAXME-67, Boris Gruschke,
+        boris at gruschke.de)
+      </action>
+      <action dev="JW" type="fix" context="runtime">
+        It wasn't possible to set the properties JAXME_FORMAT_*.
+        (David Gilliland, dgilliland62 at users.sourceforge.net)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The generated marshallers didn't honor the JAXME_FORMAT_*.
+        properties.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The "indexed" collection type didn't handle strings properly.
+        (Ricardo Brito da Rocha, ricardo.rocha at cern.ch)
+      </action>
+      <action dev="JW" type="fix" context="js">
+        Added the BeanSchemaWriter, which converts a Java bean
+        into an XML schema.
+      </action>
+      <action dev="JW" type="enhancement" context="generator">
+        The separation between "Java source files" and "resource
+        files" is now supported. This is typically required by
+        projects, which are following the Maven directory layout.
+        The XJC Ant task and the Main frontent both have a new
+        option "resourceTarget".
+      </action>
+      <action dev="JW" type="enhancement" context="generator">
+        Added support for external binding files, based on a
+        suggestion from Ortwin Glueck (oglueck at apache.org).
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        Fixed an NPE in the DTDParser. (JAXME-79)
+      </action>
+	</release>
+	<release version="0.5" date="2005-Aug-08">
+      <action dev="JW" type="enhancement" context="js">
+        Added JavaSource.getConstructor(JavaQName[]).
+		(Frederic Ahring, fahring at de.ibm.com)
+      </action>
+      <action dev="JW" type="fix" context="js">
+        The method JavaSource.addThrows() does now verify,
+        whether an exception is already declared.
+		(Frederic Ahring, fahring at de.ibm.com)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+		A sequence was always treated as a required group,
+		even if all particles were optional.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Added a unit test for mixed content handling. Fixed
+        the handling of complex child elements in mixed
+        content types.
+      </action>
+      <action dev="JW" type="fix" context="js">
+        The method JavaSource.newBeanProperty() was mismatching
+        void and boolean when checking for "isFoo" vs. "getFoo".
+		(Frederic Ahring, fahring at de.ibm.com)
+      </action>
+      <action dev="JW" type="fix" context="js">
+        Got rid of JavaQNameImpl.getInstance(String, boolean).
+		(Frederic Ahring, fahring at de.ibm.com)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        A facet violation detected by the Unmarshaller was exposed
+        as an IllegalArgumentException. The IllegalArgumentException
+        is now trapped and converted to a proper ValidationEvent.
+        (JAXME-62)
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        If a complex type was created by referencing a group, then
+        the referencing particles maxOccurs and minOccurs values haven't
+        been inherited. (JAXME-63)
+      </action>
+      <action dev="JW" type="fix" context="js">
+        The methods AbstractJavaMethod.getParamNames() and getParamTypes()
+        are throwing an ArrayIndexOutOfBoundsException.
+      </action>
+	</release>
+	<release version="0.5beta" date="2005-Jul-13">
+	  <action dev="JW" type="enhancement" context="generator">
+	    Added support for mixed content.
+	  </action>
+      <action dev="JW" type="enhancement" context="generator">
+        Use of xs:extension is now mapped to proper Java
+        inheritance (at least for the bean classes).
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Fixed that the handler and driver classes could not
+        be compiled, if enumerations had default values.
+      </action>
+      <action dev="JW" type="fix" context="js">
+        The JavaParser didn't handle multidimensional arrays
+        properly. (Frederic Ahring, fahring at de.ibm.com)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Fixed that the generator didn't detect top level groups with
+        multiplicity > 1 in a complex type.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Fixed a ClassCastException, which appeared for unknown
+        reasons.
+      </action>
+	</release>
+    <release version="0.4" date="2005-May-19">
+      <action dev="JW" type="fix" context="xs">
+        The methods XSSimpleContentImpl.isEmpty(),
+        XSSimpleContentImpl.isMixed(), and
+        XSSimpleContentImpl.isElementOnly() are no longer
+        throwing an exception, but return false.
+        (Daniel Barclay, daniel at fgm.com)
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        Fixed, that the DTD parser wasn't generating complex
+        types properly. (Richard Calmbach,
+        RichardCalmbach at fairisaac.com)
+      </action>
+	  <action dev="JW" type="fix" context="generator">
+	    The PropertySG didn't distinguish clearly between
+	    the property name ("foo") and the generated Java
+	    fields name ("_foo"). As a consequence, invalid
+	    code has been generated in some cases. See
+	    JAXME-50 in Jira. (Geert Barentsen,
+	    geert.barentsen at telenet.be)
+	  </action>
+	  <action dev="JW" type="fix" context="generator">
+	    A proper ParseConversionEvent is now generated, if the
+	    conversion of a simple type fails.
+	  </action>
+      <action dev="NM" type="fix" context="generator">
+      	Fixed default value generation for primitive types. 
+      	See JAXME-47 in Jira.
+      </action>
+	  <action dev="JW" type="fix" context="xs">
+	    Fixed that recursive xs:include caused an endless loop.
+		(Daniel Barclay, daniel at fgm.com)
+	  </action>
+      <action dev="NM" type="fix" context="js">
+        Fixed primitive array generation in IndentationEngineImpl
+        that raised a ClassCastException.
+        See JAXME-48 in Jira.
+      </action>    
+      <action dev="JW" type="enhancement" context="generator">
+        Enabled support for xs:entity.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Fixed that the object factory methods didn't work for
+        inner classes.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Fixed a "Not implemented" IllegalStateException in the
+        UnmarshallerHandlerImpl, which caused unmarshalling of
+        nested groups to fail in some cases.
+      </action>
+    </release>
+    <release version="0.4beta" date="2005-Apr-17">
+      <action dev="JW" type="enhancement" context="generator">
+        The ObjectFactory does now contain methods for creating
+        implementations of anonymous content interfaces.
+      </action>
+      <action dev="JW" type="enhancement" context="generator">
+        Added support for collection type "indexed".
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Fixed that invalid code was generated for xs:integer in
+        combination with xs:totalDigits. (Doru Sular, dorus at savatech.ro)
+      </action>
+      <action dev="jw" type="enhancement">
+        Added support for nested groups with multiplicity &lt;= 1.
+      </action>
+      <action dev="JW" type="fix" context="runtime">
+        For compatibility reasons with the JAXB RI, an XML declaration
+        is now generated by default.
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        The xs:include statement is now properly converting a schema
+        without target namespace to the including schemas target
+        namespace. (Mik Lernout, mik at futurestreet.org)
+      </action>
+      <action dev="JW" type="enhancement" context="xs">
+        Added the DTDParser, which converts a DTD into an equivalent
+        instance of XML Schema.
+      </action>
+      <action dev="JW" type="enhancement" context="generator">
+        Added the nested element "dtd" to the Ant task, which allows
+        to use DTD's rather than instances of XML Schema.
+      </action>
+      <action dev="JW" type="enhancement" context="api">
+        Replaced JAXBSource with a streaming implementation.
+        Richard Zschech, richard.zschech at cqrdata.com
+      </action>
+    </release>
+    <release version="0.3.2" date="unreleased">
+      <action dev="JW" type="fix" context="generator">
+        Fixed bug in the unmarshalling of elements with simple
+        content. (Fredrik Vraalsen, fredrik at vraalsen.no)
+        See JAXME-38 in Jira.
+      </action>
+	  <action dev="JW" type="fix" context="generator">
+	    Fixed the handling of the Ant tasks "extension" attribute
+	    and the handling of "xjc:serializable". Ensured that
+	    Ant error messages contain a location.
+	  </action>
+      <action dev="JW" type="fix" context="xs">
+        An empty complex type with value true for the mixed attribute
+        is now exposed as content type "mixed", and not "empty".
+        (Mik Lernout, mik at futurestreet.org)
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        An empty complex type with value true for the mixed attribute
+        is now exposed as content type "mixed", and not "empty".
+        (Mik Lernout, mik at futurestreet.org)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        An attribute with an enumeration required setting the
+        "package" property. See JAXME-37 in Jira.
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        The XsDateTimeFormat parser used the values JANUARY=1,
+        FEBRUARY=2, ..., and not 0, 1, ..., as it should be.
+        Markus Holzner, MarkusHo at gmx.net
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        Restrictions of restricted simple types haven't been
+        handled properly in restrictions of simple content
+        types. (Daniel B., daniel at fgm.com) See JAXME-44
+        in Jira.
+      </action>
+      <action dev="JW" type="fix" context="runtime">
+        A namespace prefix wasn't declared for atomic elements.
+        Marshalling such elements required an outer element
+        with the same namespace. (Dogan Atay, doganatay at yahoo.com)
+        See JAXME-45 in Jira.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The "isSet" property wasn't properly triggered.
+        (Marcin Kuthan, mkuthan at pit.edu.pl) See JAXME-39
+        in Jira.
+      </action>
+    </release>
+    <release version="0.3.1" date="2004-Sep-03">
+      <action dev="JW" type="fix" context="generator">
+        The generator does now check, whether a "getClass" getter is
+        generated. If so, it produces an error message and emits a
+        hint to jaxb:property.
+        (Nacho G. Mac Dowell, igonzalez at informa.es)
+      </action>
+	  <action dev="JW" type="fix" context="runtime">
+	    The marshaller was producing unnecessary SAX events,
+	    resulting in &lt;foo&gt;&lt;/foo&gt;, rather than
+	    &lt;foo/&gt;.
+	  </action>
+	  <action dev="JW" type="fix" context="generator">
+	    The up-to-date check wasn't failing in all cases.
+	  </action>
+	  <action dev="JW" type="fix" context="generator">
+	    Added support for recursive elements and types.
+        (Nacho G. Mac Dowell, igonzalez at informa.es)
+        See JAXME-26 in Jira.
+	  </action>
+	  <action dev="JW" type="fix" context="xs">
+	    An element reference in a group wasn't flagged as global.
+	    See JAXME-13 in Jira.
+	  </action>
+	  <action dev="JW" type="fix" context="runtime">
+	    Fixed JDK 1.4 dependencies. (Nacho G. Mac Dowell, igonzalez at informa.es)
+	  </action>
+	  <action dev="JW" type="fix" context="xs">
+	    Fixed an NPE when setting jaxb:globalBindings/jaxb:javaType.
+	    See JAXME-21 in Jira.
+	  </action>
+	  <action dev="JW" type="fix" context="xs">
+	    Restrictions of simple list types didn't have the
+	    isList() property set. Likewise for restrictions of
+	    simple union types. See JAXME-20 in Jira.
+	  </action>
+      <action dev="JW" type="fix" context="generator">
+        If an attribute or element is mapped to the Java type "boolean",
+        then the getter is now called "isFoo", rather than "getFoo".
+        See JAXB SPEC, 4.5.1, and JAXME-19 in Jira.
+      </action>
+      <action dev="JW" type="fix" context="runtime">
+        Attributes in the following namespaces are now by default
+        ignored: The XML namespace (http://www.w3.org/XML/1998/namespace),
+        the XMLNS namespace (http://www.w3.org/2000/xmlns/), and the
+        XML Schema namespace (http://www.w3.org/2001/XMLSchema-instance).
+        See JAXME-17 in Jira.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        An attributes type was implicitly always generated as a local
+        type, possibly referencing a global type. See JAXME-18 in Jira.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        The xs:all type is now properly handled. See JAXME-16 and
+        JAXME-15 in Jira.
+      </action>
+      <action dev="JW" type="fix" context="runtime">
+      	The marshaller properties for setting the attributes
+      	xsi:schemaLocation, or xsi:noNamespaceSchemaLocation,
+      	are now handled properly. See JAXME-22 in Jira.
+      </action>
+    </release>
+    <release version="0.3" date="2004-Jul-19">
+      <action dev="CL" type="enhancement" context="generator">
+      	Initial work on nested groups.
+      </action>
+      <action dev="JW" type="improvement" context="build system">
+      	Added support for creating a clover report. See misc.html for a howto.
+      </action>
+      <action dev="JW" type="enhancement" context="generator">
+      	Added support for wildcard attributes (xs:anyAttribute); note that
+      	extensions must be turned on, because the JAXB Specification disallows
+      	wildcard attributes.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+      	Marshalling and unmarshalling simpleContent wasn't actually working.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+      	Typesafe enumerations had wrong code in some cases.
+      	(Peter Nagy, &lt;peter.1.nagy at nokia.com&gt;)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+      	Attention, incompatible change: The types xs:dateTime, xs:date, and
+      	xs:time are now handled as specified by XML Schema. They used to be
+      	parsed and formatted as specified by DateFormat.getDateTimeFormat().
+      </action>
+      <action dev="JW" type="enhancement" context="pm">
+      	Added the TaminoAPI4JPm.
+      </action>
+      <action dev="JW" type="fix" context="pm">
+      	Fixed a bug in the JdbcTypeSG's handling of nested classes.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+      	Fixed a bug in the JAXBSchemaSG's handling of global simple types.
+      	(Chris Kirk &lt;mrck1996 at yahoo.co.uk&gt;)
+      </action>
+      <action dev="JW" type="fix" context="generator">
+      	The object factory has not been able to generate global types.
+      	Local types are still missing, though.
+      	(Colin Bendell &lt;cbendell at point2.com&gt;)
+      </action>
+      <action dev="CL" type="fix" context="generator">
+      	Fixed a bug in the QNameSG's mis-overriding getCastToString method.
+      	Refactored JMXmlSerializer.Data.getNamespaceSupport to getNamespaceContext()
+      	in order to follow this fix up.
+      </action>
+      <action dev="JW" type="enhancement" context="xs">
+      	Added support for identity constraints.
+      	(Chris Kirk &lt;mrck1996 at yahoo.co.uk&gt;)
+      </action>
+      <action dev="JW" type="admin" context="all">
+        Changed license to ASL 2.0.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Changed the nameXmlTransformation attribute to nameXmlTransform.
+        Thanks to David Holscher &lt;David.Holscher at Nav-International.com&gt;
+        for the hint.
+      </action>
+      <action dev="JW" type="fix" context="xs">
+        Fixed a possible NPE, reported by Nina Juliadotter, &lt;nvjuliad at it.uts.edu.au&gt;.
+      </action>
+      <action dev="JW" type="fix" context="generator">
+        Fixed that the specified package name was ignored for enumerations.
+        Reported by Nicolas De Loof, &lt;nicolas.deloof at cgey.com&gt;
+      </action>
+      <action dev="JW" type="fix" context="runtime">
+        Fixed a wrong cast when assigning the JMMarshaller's XMLDeclaration property.
+        Veniamin Fichin, &lt;3ca28f66 at mail.ru&gt;
+      </action>
+    </release>
+  </changes>
+</status>

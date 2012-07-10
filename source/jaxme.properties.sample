@@ -1,0 +1,77 @@
+############################################################################
+# Copyright 2002-2004  The Apache Software Foundation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# 
+############################################################################
+#
+#   Sample property file
+#
+#   JaxMe's build system depends on some external applications, which
+#   cannot be added to CVS. Reasons include size (in the case of Apache
+#   Forrest approximately 11MB), or licensing restrictions (in the
+#   case of JAXB).
+#
+#   To customize these settings, rename this file to "jaxb.properties"
+#   and edit it. You may also copy this file to your home directory
+#   as ".jaxb.properties" (more precisely: ${user.home}/.jaxb.properties),
+#   which takes precedence, if both exist. Note, that you need to remove
+#   the hash signs in front of the variables being defined.
+#
+############################################################################
+#
+#   Location of the Java Web Services Developer Pack (JWSDP 1.4). The
+#   JWSDP is available from http://java.sun.com/webservices and is
+#   required to build the distribution.
+#
+#jaxb.home=C:/Prg/jwsdp-1.4
+#jaxb.home=/usr/local/jwsdp-1.4
+#
+############################################################################
+#
+#   Location of the Apache Forrest distribution (forrest 0.5.1). Forrest
+#   is available from http://xml.apache.org/forrest/ and is required to build
+#   the documentation.
+#
+#forrest.home=C:/Prg/apache-forrest-0.5.1-bin
+#forrest.home=/usr/local/apache-forrest-0.5.1-bin
+#
+############################################################################
+#
+#   Location of the DocBook XSL stylesheets (docbook-xsl 1.62.4).
+#   DocBook XSL is available from http://sourceforge.net/projects/docbook
+#   and required to build the documentation, because the manual is written
+#   in DocBook XML.
+#
+#docbookxsl.home=C:/Prg/docbook-xsl-1.66.1
+#docbookxsl.home=/usr/local/docbook-xsl-1.66.1
+#
+############################################################################
+#
+#   Location of the DocBook XML DTDs (docbook-xml 4.2)
+#   DocBook XML is available from http://www.oasis-open.org/docbook/xml
+#   and required to build the documentation of the manual.
+#
+#docbook.home=C:/Prg/docbook-xml-4.2
+#docbook.home=/usr/local/docbook-xml-4.2
+#docbook.home=${forrest.home}/context/resources/schema/docbook/4.2
+#
+############################################################################
+#
+#   When sitting behind a proxy and using a validating parser, you might
+#   need to set the following variables:
+#
+#http.proxySet=true
+#http.proxyHost=httpprox.software-ag.de
+#http.proxyPort=8080
+#

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+ <xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xml:lang="EN"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/group"
+	xmlns="http://ws.apache.org/jaxme/test/misc/group"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>
+      This schema is soley designed to test default values in elements.
+    </xs:documentation> 
+  </xs:annotation>
+  
+  <xs:group name="NameGroup">
+    <xs:sequence>
+      <xs:element name="FirstName" minOccurs="0" type="xs:string"/>
+      <xs:element name="LastName" minOccurs="0" type="xs:string"/>
+    </xs:sequence>
+  </xs:group>
+
+  <xs:element name="Persons">
+    <xs:complexType>
+	  <xs:sequence>
+	    <xs:element name="Person" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+	        <xs:sequence>
+	          <xs:group ref="NameGroup"/>
+   		      <xs:element name="Age" minOccurs="0" type="xs:int"/>
+	        </xs:sequence>
+	        <xs:attribute name="Alias" type="xs:string"/>
+	      </xs:complexType>
+	    </xs:element>
+	  </xs:sequence>
+	</xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>Using the JavaSourceFactory</title>
+  </properties>
+  <body>
+    <section name="Using the JavaSourceFactory">
+      <p>Using the JavaSource framework is using a
+        <a href="apidocs/org/apache/ws/jaxme/js/JavaSourceFactory.html">JavaSourceFactory</a>.
+        This class is (directly or indirectly) the single access point to all other classes.
+        We demonstrate the basic use with the following example:</p>
+      <source>
+   import java.io.File;
+
+   import javax.xml.parsers.ParserConfigurationException;
+   import javax.xml.parsers.SAXParser;
+   import javax.xml.parsers.SAXParserFactory;
+
+   import org.apache.ws.jaxme.js.JavaMethod;
+   import org.apache.ws.jaxme.js.JavaQName;
+   import org.apache.ws.jaxme.js.JavaQNameImpl;
+   import org.apache.ws.jaxme.js.JavaSource;
+   import org.apache.ws.jaxme.js.JavaSourceFactory;
+
+   public class Test {
+      public static void main(String[] args) throws Exception {
+         // Create a factory
+  	     JavaSourceFactory factory = new JavaSourceFactory();
+  	     // Let the factory create a Java source class "com.mycompany.demo.Parser"
+		 JavaQName className = JavaQNameImpl.getInstance("com.mycompany.demo", "Parser");
+		 JavaSource js = factory.newJavaSource(className, "public");
+		 // Add a method "getParser", which instantiates a new SAXParser
+		 JavaMethod jm = js.newJavaMethod("getParser", SAXParser.class, "public");
+		 jm.setStatic(true);
+		 jm.addThrows(ParserConfigurationException.class);
+		 jm.addLine(SAXParserFactory.class, " sf = ", SAXParserFactory.class, ".newInstance();");
+		 jm.addLine("return sf.newSAXParser();");
+		 factory.write(null, factory.getLocation(js));
+      }
+   }
+      </source>
+      <p>The example creates a new class <code>com.mycompany.demo.Parser</code>. The class
+        has a single, static method <code>getParser</code>, which instantiates a new
+        SAX parser. Of couse, you could achieve the same effect much easier with</p>
+      <source>
+   import java.io.File;
+   import java.io.FileWriter;
+
+   public class Test {
+      public static void main(String[] args) throws Exception {
+         FileWriter fw = new FileWriter("com/mycompany/demo/Parser.java");
+         fw.write("package com.mycompany.demo;\n");
+         fw.write("\n");
+         fw.write("import javax.xml.parsers.ParserConfigurationException;\n");
+         fw.write("import javax.xml.parsers.SAXParser;\n");
+         fw.write("import javax.xml.parsers.SAXParserFactory;");
+         fw.write("\n");
+         fw.write("public class Parser {");
+         fw.write("  public SAXParser getParser() throws ParserConfigurationException {\n");
+         fw.write("    SAXParserFactory sf = SAXParserFactory.newInstance();");
+         fw.write("    return sf.newSAXParser();");
+         fw.write("  }");
+         fw.write("}");
+      }
+   }
+      </source>
+      <p>The second example has the obvious advantage that it looks better and simpler.
+        However, it is even larger and you've got to care for indentation,
+        imports and the like. You'll never have a chance to postprocess the generated
+        source, unless you are actually parsing it. That's what the JavaSource framework
+        gives you.</p>
+    </section>
+  </body>
+</document>

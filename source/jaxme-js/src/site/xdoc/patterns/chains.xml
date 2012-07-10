@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>Proxy chains (also known as: Delegator pattern)</title>
+  </properties>
+  <body>
+    <anchor id="chains"/>
+    <section name="Proxy chains (also known as: Delegator pattern)">
+      <p>The proxy chain is best explained with the situation it was made for.
+        Suggest a really complex source generator with varying options. For example,
+        a child element of an object can have multiplicity zero, one or more: In
+        the latter case the child element will most probably be represented by a
+        list. Quite necessarily the source generator will sonner or later be
+        bloated with statements like</p>
+      <source>
+    if (child.isMultiple()) {
+        // Do something, working with a List
+        ...
+    } else {
+        // Do something else, working with a single element
+    }
+      </source>
+      <p>Even worse, the code will in both cases look quite similar: As soon as the
+        list item is fetched and casted to a proper type, this is just like working
+        with a single item. As time goes by, more and more similar options come into
+        play: Localization, varying datatypes, and so on. Soon you start to think of
+        better solutions.</p>
+      <p>The first attempt is typically subclassing. For example, if you have
+        a source generator for the case multiplicity zero or one, it can well
+        be expanded to the general case, with multiplicity two or more being
+        handled in the subclass. Localization is handled in the next subclass,
+        and so on. Your code looks much better now and becomes maintainable
+        again.</p>
+      <p>However, time goes by, and more options are added to the source generator:
+        Transaction handling, encoding issues, and so on. Soon you find yourself in
+        trouble again: The subclassing approach doesn't work so well anymore, because
+        in a subclass chain E -> D -> C -> B -> A (where B is a subclass of A, C is
+        a subclass of B, and so on) you sometimes want all of them, but sometimes
+        only D -> C -> A or E -> A. At that point of thinking a new approach was born:
+        The event chain.</p>
+      <p>The idea is replacing the subclasses with an event interface. For example,
+        suggest that the source generator might contain code like the following:</p>
+      <source>
+    public class FooGeneratorImpl implements FooGenerator {
+        public JavaSource getFooClass() {
+            JavaSource js = factory.newJavaSource(fooClassName, "public");
+            getXMethod(js);
+            getYMethod(js);
+            getZMethod(js);
+        }
+        ...
+    }
+      </source>
+      <p>The corresponding interface might look like this:</p>
+      <source>
+    public interface FooGenerator {
+        public JavaSource getFooClass();
+        public JavaMethod getXMethod(JavaSource js);
+        public JavaMethod getYMethod(JavaSource js);
+        public JavaMethod getZMethod(JavaSource js);
+    }
+      </source>
+      <p>If you take this methods as events, then you might well write a default
+        class A implementing the interface. The other classes are implemented as
+        subclasses of an automatically generated <a href="proxy.html">proxy class</a>.
+        For example, the class B might just add another method to the <code>Foo</code>.
+        This might look like the following:</p>
+      <source>
+    public class B extends FooGeneratorProxy {
+       // Override only the getFooClass() method, all other methods are
+       // passed to the base generator by the proxy.
+       public JavaSource getFooClass() {
+           JavaSource result = super.getFooClass();
+           JavaMethod bMethod = result.newJavaMethod("bMethod", "void", "public");
+           return result;
+       }
+    }
+      </source>
+      <p>Likewise, the C class might change the interface of method X, and so on.
+        Any feature is implemented by a single class, which you can optionally add
+        to the chain (turning the feature on) or remove from the chain (turning the
+        feature off).</p>
+      <p>However, there's still a problem left: When you are inside A (the topmost
+        class) and do a <code>getXMethod()</code>, then you call your own class and
+        not the chains bottom. This problem is fixed by the following design:</p>
+      <table>
+        <tr>
+          <td colspan="5">Controller</td><td>Implements FooGenerator</td>
+        </tr>
+        <tr>
+          <td>E</td><td>D</td><td>C</td><td>B</td><td>A</td>
+            <td>Implements ChainedFooGenerator</td></tr>
+      </table>
+      <p>The <code>ChainedFooGenerator</code> is exactly matching the
+        <code>FooGenerator</code> interface, the exception being an additional
+        parameter <code>FooGenerator pController</code> in all methods. The
+        FooGenerator interface can be created automatically, also an
+        implementation of FooGenerator calling the first element in the chain of
+        <code>ChainedFooGenerator</code> implementations. The manually created classes
+        have to be changed slightly, here's the updated <code>FooGeneratorImpl</code>:</p>
+      <source>
+    public class FooGeneratorImpl implements ChainedFooGenerator {
+        public JavaSource getFooClass(FooGenerator pController) {
+            JavaSource js = factory.newJavaSource(fooClassName, "public");
+            pController.getXMethod(js);
+            pController.getYMethod(js);
+            pController.getZMethod(js);
+        }
+        ...
+    }
+      </source>
+      <p>Likewise, here is the updated B class:</p>
+      <source>
+    public class B extends ChainedFooGeneratorProxy {
+       // Override only the getFooClass() method, all other methods are
+       // passed to the base generator by the proxy.
+       public JavaSource getFooClass(FooGenerator pController) {
+           JavaSource result = super.getFooClass(pController);
+           JavaMethod bMethod = result.newJavaMethod("bMethod", "void", "public");
+           return result;
+       }
+    }
+      </source>
+      <p>The proxy chain pattern is implemented by the
+        <a href="../apidocs/org/apache/ws/jaxme/js/pattern/ChainGenerator.html">ChainGenerator</a>.
+        From within Ant, it looks like the following:</p>
+      <source>
+    &lt;chainGenerator destDir="src"&gt;
+	     &lt;chain
+	        controllerInterfaceName="com.dcx.sein.dbtk.generator.javasg.IModelSG"
+	        chainInterfaceName="com.dcx.sein.dbtk.generator.javasg.auto.IChainedModelSG"
+	        proxyClassName="com.dcx.sein.dbtk.generator.javasg.auto.ChainedModelSGProxy"
+	        implementationClassName="com.dcx.sein.dbtk.generator.javasg.auto.ModelSGImpl"/&gt;
+	     &lt;chain
+	        controllerInterfaceName="com.dcx.sein.dbtk.generator.javasg.IObjectSG"
+	        chainInterfaceName="com.dcx.sein.dbtk.generator.javasg.auto.IChainedObjectSG"
+	        proxyClassName="com.dcx.sein.dbtk.generator.javasg.auto.ChainedObjectSGProxy"
+	        implementationClassName="com.dcx.sein.dbtk.generator.javasg.auto.ObjectSGImpl"/&gt;
+    &lt;/chainGenerator&gt;	  
+      </source>
+      <p>The <code>controllerInterfaceName</code> is the name of the basic interface.
+        This is what you actually want to use from the outside. The controller interface
+        must be available as a compiled class, because it is inspected with Java reflection.
+        The other classes are generated: The <code>chainInterfaceName</code> is the interface
+        being implemented by the manually written classes. The <code>proxyClassName</code>
+        is an automatically generated implementation of the <code>chainInterface</code>,
+        which passes all events to the next element in the chain. And the
+        <code>implementationClassName</code> is an also automatically generated implementation
+        of <code>controllerInterface</code>, that works internally by passing all events
+        to the first element in the chain.</p>
+    </section>
+  </body>
+</document>

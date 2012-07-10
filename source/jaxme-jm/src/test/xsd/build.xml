@@ -1,0 +1,149 @@
+<!--
+
+	This build script is invoked twice: Once for the JAXB compiler and once
+	for JaxMe.
+
+-->
+<project name="test.jaxb" default="all">
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+  
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+  <target name="init" depends="init.clover">
+    <condition property="params.available">
+      <and>
+        <isset property="build"/>
+        <isset property="dist"/>
+        <isset property="preqs"/>
+
+		<!-- Exactly one of the following must be set. -->
+        <or>
+          <isset property="run.jaxme"/>
+          <isset property="run.jaxb"/>
+        </or>
+        <not>
+          <and>
+            <isset property="run.jaxme"/>
+            <isset property="run.jaxb"/>
+          </and>
+        </not>
+      </and>
+    </condition>
+  </target>
+
+  <target name="init.clover" if="build.clover.db">
+    <taskdef resource="clovertasks"/>
+    <clover-setup initString="${build.clover.db}">
+      <files>
+        <exclude name="**/test/**/*.java"/>
+      </files>
+    </clover-setup>
+  </target>
+
+  <target name="check.params" unless="params.available" depends="init">
+    <echo>You must invoke this Ant script from the top level directory</echo>
+    <echo>in order to have the required parameters set.</echo>
+    <fail>Invalid invocation</fail>
+  </target>
+
+  <target name="check.jaxb.home" unless="jaxb.home" depends="init" if="run.jaxb">
+    <echo>The property jaxb.home is not set. This property should contain the</echo>
+    <echo>location of the Java Web Services Developer Pack 1.2, which includes</echo>
+    <echo>JAXB. The JWSDP is required to build the JaxMe 2 distribution. The</echo>
+    <echo>property can be set in ${jaxme.properties.location.1},</echo>
+    <echo>in ${jaxme.properties.location.2},</echo>
+    <echo>or on the command line using -Djaxb.home=&lt;directory&gt;.</echo>
+    <echo>The JWSDP is available from http://java.sun.com/webservices/</echo>
+    <fail>Missing JWSDP, terminating.</fail>
+  </target>
+
+  <target name="taskdef.jaxme" depends="check.params" if="run.jaxme">
+    <path id="xjc.class.path">
+      <pathelement location="${dist}/jaxme2-${version}.jar"/>
+      <pathelement location="${dist}/jaxmejs-${version}.jar"/>
+      <pathelement location="${dist}/jaxmexs-${version}.jar"/>
+      <pathelement location="${dist}/jaxmeapi-${version}.jar"/>
+    </path>
+	<property name="srcdir" location="${build}/test/jaxme/src"/>
+	<property name="classdir" location="${build}/test/jaxme/classes"/>
+	<property name="xjcclass" value="org.apache.ws.jaxme.generator.XJCTask"/>
+  </target>
+
+  <target name="taskdef.jaxb" depends="check.params,check.jaxb.home" if="run.jaxb">
+    <path id="xjc.class.path">
+      <fileset dir="${jaxb.home}/jaxb/lib" includes="*.jar"/>
+      <fileset dir="${jaxb.home}/jwsdp-shared/lib"
+          includes="jax-qname.jar,namespace.jar,relaxngDatatype.jar,xsdlib.jar"/>
+    </path>
+	<property name="srcdir" location="${build}/test/jaxb/src"/>
+	<property name="classdir" location="${build}/test/jaxb/classes"/>
+	<property name="xjcclass" value="com.sun.tools.xjc.XJCTask"/>
+  </target>
+
+  <!-- Runs either of taskdef.jaxme or taskdef.jaxb -->
+  <target name="taskdef" depends="taskdef.jaxme,taskdef.jaxb">
+    <taskdef name="xjc" classname="${xjcclass}" classpathref="xjc.class.path"/>
+    <mkdir dir="${srcdir}"/>
+    <mkdir dir="${classdir}"/>
+  </target>
+
+  <target name="generate" depends="taskdef">
+    <xjc target="${srcdir}">
+      <schema dir="${basedir}">
+        <include name="*.xsd"/>
+        <include name="jira/*.xsd"/>
+        <exclude name="enumeration.xsd"/>
+        <exclude name="wildcards.xsd"/>
+        <exclude name="rss.xsd"/>
+        <exclude name="**/xjc*.xsd"/>
+      </schema>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/misc/address/*"/>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/misc/defaults/*"/>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/misc/group/*"/>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/misc/jaxb/*"/>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/misc/rss/*"/>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/misc/types/*"/>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/recursion/*"/>
+    </xjc>
+    <xjc target="${srcdir}" extension="true">
+      <schema dir="${basedir}">
+        <include name="enumeration.xsd"/>
+        <include name="wildcards.xsd"/>
+		<!--  <include name="rss.xsd"/>  -->
+        <include name="**/xjc*.xsd"/> 
+      </schema>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/misc/enumeration/*"/>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/misc/wildcards/*"/>
+    </xjc>
+  	<xjc target="${srcdir}">
+  	  <schema dir="${basedir}/bindings" includes="*.xsd"/>
+      <binding dir="${basedir}/bindings" includes="*.jxb"/>
+      <produces dir="${srcdir}" includes="org/apache/ws/jaxme/test/bindings/**/*"/>
+    </xjc>
+  </target>
+
+  <target name="compile" depends="generate">
+    <javac classpathref="xjc.class.path"
+                  debug="${debug}"
+               optimize="${optimize}"
+                 source="1.3"
+                 target="1.3"   
+                destdir="${classdir}">
+      <src location="${srcdir}"/>
+      <src location="${testsrc}"/>   
+    </javac>
+  </target>
+
+  <target name="all" depends="compile"/>
+</project>

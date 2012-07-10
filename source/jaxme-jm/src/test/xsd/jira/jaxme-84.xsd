@@ -1,0 +1,32 @@
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://namespaces.softwareag.com/de/s/xDWS/soap-api"
+    xmlns:xdws="http://namespaces.softwareag.com/de/s/xDWS/soap-api"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+  <xs:complexType name="xdwsResultInfo">
+    <xs:attribute name="rc" type="xs:int" use="required"/>
+    <xs:attribute name="message" type="xs:string" use="optional"/>
+    <xs:attribute name="details" type="xs:string" use="optional"/>
+  </xs:complexType>
+  <xs:element name="xdwsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="response" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="xdws:xdwsResultInfo">
+                <xs:choice minOccurs="0">
+                  <xs:element name="a" type="xs:string"/>
+                  <xs:element name="b" type="xs:string"/>
+                </xs:choice>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="result" type="xdws:xdwsResultInfo"/>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:int" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

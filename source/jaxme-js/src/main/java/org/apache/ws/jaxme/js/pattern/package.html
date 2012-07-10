@@ -1,0 +1,65 @@
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<html><head><title>The pattern package</title></head>
+<body>
+<h1>The pattern package</h1>
+<p>This package contains a set of design patterns implemented with
+the JaxMe JavaSource generator framework. It is provided both for
+demonstration and actual use. Each pattern is accompanied with a
+corresponding Ant task that allows to invoke the respective generator
+from within an Ant build script. The patterns are:</p>
+<table border="1">
+  <tr><th>Design pattern(s)</th><th>Class</th><th>Ant task</th><th>Description</th></tr>
+  <tr>
+    <td>Proxy objects<br>Multiple inheritance</td>
+    <td>{@link org.apache.ws.jaxme.js.pattern.ProxyGenerator}</td>
+    <td>proxyGenerator</td>
+    <td>Proxy are instances that delegate most or all method calls to another
+      object. Proxy objects in Java are typically created by the class
+      {@link java.lang.reflect.Proxy}. Compared to this class, the generator
+      has the advantage, that it is much easier to adapt the proxy object
+      to your own needs: In our case you simple subclass the generated
+      Proxy class.<br>
+      Proxy objects can also be used to implement something like multiple
+      inheritance. This is demonstrated in the Unit test
+      {@link org.apache.ws.jaxme.js.junit.MultipleInheritanceTest},
+      where a subclass of {@link java.util.Observable} is created,
+      that is also an instance of {@link java.util.List} by inheriting
+      from {@link java.util.ArrayList}.</td>
+  </tr>
+  <tr>
+    <td>Typesafe enumerations</td>
+    <td>{@link org.apache.ws.jaxme.js.pattern.TypesafeEnumerationGenerator}</td>
+    <td>enumGenerator</td>
+    <td>A typesafe enumeration is a Java class that guarantees that only a
+      specified set of instances can exist. These instances are part of the
+      class and accessible through public, static, final fields.</td>
+  </tr>
+  <tr>
+    <td>Proxy chains</td>
+    <td>{@link org.apache.ws.jaxme.js.pattern.ChainGenerator}</td>
+    <td>chainGenerator</td>
+    <td>A proxy chain can be viewed as a set of event handlers implementing
+      a common interface. The interface methods are the events being processed.
+      Each element in the chain can decide to process an event alone (by
+      returning immediately), to delegate the event to the next element
+      in the chain (by calling the interface method in its superclass)
+      or to post process the result of the delegated event.</td>
+  </tr>
+</table>
+</body></html>

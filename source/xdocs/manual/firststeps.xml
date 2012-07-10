@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<chapter><title>First steps</title>
+  <para>This chapter introduces the first steps of using JaxMe. In what follows,
+    we will create some simple examples. All examples deal with addresses
+    stored in XML documents like the following (quoted from the file
+    <filename>examples/misc/address.xml</filename> in the JaxMe 2 distribution):
+    &address;
+    </para>
+  <para>Our target is to convert this into convenient, standard Java bean code, much like the
+    following:
+    <programlisting>
+      Address address = new Address();
+      Name name = new Name();
+      address.setName(name);
+      name.setFirst("Jane");
+      name.addMiddle("Lee");
+      name.addMiddle("Chris");
+      name.setSur("Doe");
+      name.setInitials("JD");
+      ...
+    </programlisting></para>
+
+  <sect1><title>Generating Java Code</title>
+    <para>After you've downloaded JaxMe, you're ready to use it. In this section
+      we will demonstrate how to generate sources.</para>
+
+    <sect2><title>Creating a JaxMe Schema</title>
+      <para>
+        The usual way to use JaxMe is to start from a schema and generate source code
+        from that schema. So (with the address example in mind) we create an XML Schema
+        from which the sources will be generated. When using JaxMe in the wild sometimes
+        the schema will already exist, in other cases the application developer will
+        develop the schema as the application develops. In either case, the way
+        that JaxMe is used is very similar.</para>
+      <para>
+        The schema can
+        be regarded as a description of compliant document instances (in our case
+        addresses). For example 
+        (<filename>examples/misc/address.xsd</filename> in the JaxMe 2 distribution): &addressxsd;
+        You will easily note that <token>xs:element</token> is used to define elements.
+        An attribute is added using <token>xs:attribute</token>, and so on. XML schema
+        are very expressive (which is why they support source generation so well) but
+        with this expressiveness comes complexity. Getting to grips with the XML schema
+        standard is worth the effort but some users may choose to use one of the numerous tools
+        that help with XML schema generation.</para>
+      </sect2>
+
+    <sect2><title>Running The Generator</title>
+      <para>The easiest way to run the generator is by invoking an Ant task. Here is a typical ant target:
+        <programlisting><![CDATA[
+    <target name="taskdef">
+      <!--
+      Set up the classpath for the generation task.
+      Include all the standard jaxme jars.
+      -->
+      <path id="generate.class.path">
+        <pathelement location="jaxme2.jar"/>
+        <pathelement location="jaxmejs.jar"/>
+        <pathelement location="jaxmexs.jar"/>
+        <pathelement location="jaxmeapi.jar"/>
+      </path>
+      <!--
+      Defines the generation task using that classpath.
+      -->
+      <taskdef name="xjc"
+        classname="org.apache.ws.jaxme.generator.XJCTask"
+        classpathref="generate.class.path"/>
+      <!--
+      Generate source code.
+      The 'schema' attribute gives the path to the schema the sources
+      will be generated from.
+      The 'target' attribute specifies the base directory that the source
+      will be generated into. Sources will be created in subdirectories
+      corresponding to the package structure.
+      -->
+      <xjc 
+        schema="examples/misc/address.xsd" 
+        target="build/src">
+            <!--
+            The source files being created. The xjc task uses these for
+            a check, whether they are uptodate. If so, the generation is
+            skipped, for improved speed.
+            Specifying the package isn't necessary, unless you have other
+            files in the target directory as well, for example manually
+            written files or files created by another generator or xjc call.
+            If so, these need to be excluded from the uptodate check.
+            -->
+            <produces includes="org/apache/ws/jaxme/examples/misc/address/*.java"/>
+      </xjc>
+    </target>
+]]></programlisting></para>
+      <para>The example demonstrates how a classpath called <token>generate.class.path</token> is
+        created and used to define a new ant task called "xjc". 
+        This new task is used to compile a schema file called <filename>examples/misc/address.xsd</filename>.
+        The generated sources will reside in the directory <filename>build/src</filename>. The target
+        package is <token>org.apache.ws.jaxme.examples.misc.address</token>, hence the effective location is
+        <filename>build/src/org/apache/ws/jaxme/examples/misc/address</filename>.</para>
+      <para>After running the task, looking into that directory, we find that the 
+      following files have been created:
+        <variablelist><title>Files Generated by the JaxMe Binding Compiler</title>
+          <varlistentry><term><filename>Address.java</filename></term>
+            <listitem><para>Contains the Java interface describing the document type
+              <token>Address</token>. This interface extends the interface
+              specified by <filename>AddressType.java</filename>.</para></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>AddressType.java</filename></term>
+            <listitem><para>Contains the Java interface describing the inner contents
+              of the document type <token>Address</token>. The best way to think of it is
+              to assume that they are the same, except that the latter is anonymous and
+              doesn't have an element name.</para></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>Configuration.xml</filename></term>
+            <listitem><para>This file is used by the JaxMe runtime internally. Typically
+              you'll never notice that it is even there (though you will need to ensure that it remains 
+              on the classpath). The main task of the file is a mapping
+              between XML element names (like <token>Address</token> in namespace
+              <token>http://ws.apache.org/jaxme/examples/misc/address</token>) and Java classes.</para>
+            <tip><para>In theory you are able to replace the implementations generated by
+              <application>JaxMe</application>
+              with your own classes. This is particularly useful, if you want to modify a certain
+              behaviour by deriving a subclass.</para></tip></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>jaxb.properties</filename></term>
+            <listitem><para>The <acronym>JAXB</acronym> standard uses this file. Typically you'll
+              never even notice that it exists (though again, it must be found on the classpath). 
+              The task of the file is to ensure that
+              the <acronym>JAXB</acronym> runtime correctly initializes the <application>JaxMe</application>
+              runtime.</para></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>impl/AddressHandler.java</filename></term>
+            <listitem><para>A <acronym>SAX2</acronym> <classname>ContentHandler</classname>, which can
+              convert XML documents of type <token>Address</token> into implementations of the Java
+              interface <classname>Address</classname>. This is rarely called directly. Usually it will be
+              created and invoked automatically by the <acronym>JAXB</acronym>
+              <classname>Marshaller</classname>.</para></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>impl/AddressImpl.java</filename></term>
+            <listitem><para>Default implementation of the <classname>Address</classname> interface.</para></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>impl/AddressType.java</filename></term>
+            <listitem><para>Default implementation of the <classname>AddressType</classname>
+              interface.</para></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>impl/AddressTypeHandler.java</filename></term>
+            <listitem><para>Similar to its subclass <classname>AddressHandler</classname>,
+              this is a <acronym>SAX2</acronym> <classname>ContentHandler</classname> for reading
+              instances of <classname>AddressType</classname>. The
+              main difference to the subclass is that the subclass doesn't have a fixed
+              element name.</para></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>impl/AddressTypeImpl.java</filename></term>
+            <listitem><para>Default implementation of <classname>AddressType</classname>.</para></listitem>
+            </varlistentry>
+          <varlistentry><term><filename>impl/AddressTypeSerializer.java</filename></term>
+            <listitem><para>Converts instances of <classname>AddressType</classname>
+            into XML documents. It is also used to convert instances of <classname>Address</classname>.</para>
+            </listitem></varlistentry>
+          </variablelist>
+        </para>
+      </sect2>
+  </sect1>
+
+  <sect1><title>Working with XML</title>
+    <para>In this section we'll show how to create XML from the beans generated earlier. 
+      XML (or better an XML document) exists in various
+      flavours: you might want to have it serialized into a String or you may prefer character or
+      byte streams (typically instances of <classname>Writer</classname> or <classname>OutputStream</classname>).
+      In other cases, a DOM representation is more useful. Feeding SAX events to a pipeline may be more
+      efficient on other occasions.</para>
+    <para>  
+      The important questions are: how do I
+      create a serialized XML document (a String, a character or byte stream)? And, vice versa, how
+      do I read such a document and convert it back into Java objects?</para>
+    <sect2><title>Writing XML Documents</title>
+    <para>In the case of JaxMe, you'll start from simple Java beans whose source has typically
+      been generated. An address implementation is constructed by instantiating
+      an <classname>AddressImpl</classname> (which implements <classname>Address</classname>).
+      For example:
+      <programlisting><![CDATA[
+import java.io.FileWriter;
+import java.io.Writer;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.apache.ws.jaxme.examples.misc.address.Address;
+import org.apache.ws.jaxme.examples.misc.address.AddressType.EmailDetailsType.EmailType;
+import org.apache.ws.jaxme.examples.misc.address.AddressType.PhoneDetailsType.PhoneType;
+import org.apache.ws.jaxme.examples.misc.address.impl.AddressImpl;
+import org.apache.ws.jaxme.examples.misc.address.impl.AddressTypeImpl.EmailDetailsTypeImpl;
+import org.apache.ws.jaxme.examples.misc.address.impl.AddressTypeImpl.EmailDetailsTypeImpl.EmailTypeImpl;
+import org.apache.ws.jaxme.examples.misc.address.impl.AddressTypeImpl.PhoneDetailsTypeImpl;
+import org.apache.ws.jaxme.examples.misc.address.impl.AddressTypeImpl.PhoneDetailsTypeImpl.PhoneTypeImpl;
+import org.apache.ws.jaxme.examples.misc.address.impl.AddressTypeImpl.NameTypeImpl;
+import org.apache.ws.jaxme.examples.misc.address.impl.AddressTypeImpl.PostalTypeImpl;
+
+public class AddressCreator {
+
+  public static void writeAddress(Writer pWriter) throws JAXBException {
+    // Create the element:
+    Address addr = new AddressImpl();
+    addr.setName(new NameTypeImpl());
+    addr.getName().setFirst("Jane");
+    addr.getName().setLast("Doe");
+    addr.setPostal(new PostalTypeImpl());
+    addr.getPostal().setStreet("34 Main Street");
+    addr.getPostal().setCity("Boston");
+    addr.getPostal().setState("MA");
+    addr.getPostal().setZIP("02215");
+    addr.setEmailDetails(new EmailDetailsTypeImpl());
+
+    /* Lots of similar lines omitted for brevity ...
+     * ...
+     */
+
+    // And save it into the file "Address.xml"
+    JAXBContext context = JAXBContext.newInstance("org.apache.ws.jaxme.examples.misc.address");
+    Marshaller marshaller = context.createMarshaller();
+    marshaller.marshal(addr, pWriter);
+  }
+
+  public static void main(String[] args) throws Exception {
+    FileWriter fw = new FileWriter("Address.xml");
+    writeAddress(fw);
+    fw.close();
+  }
+}
+        ]]></programlisting>
+        The complete example code can be found in the JaxMe distribution 
+        (<filename>src/java/org/apache/ws/jaxme/examples/misc/address/AddressCreator.java</filename>).
+      </para>
+      <para>There are several things you should note here:
+        <itemizedlist>
+          <listitem>The class and property names directly correspond to element and
+            attribute names.</listitem>
+          <listitem>Although the <token>Address</token> document uses namespaces, attributes,
+            and child elements, the example does not require that the developers have extensive
+            knowledge of XML. For example, you do not need to care for character escaping.
+            This is particularly useful when those without great knowledge of xml wish to develop 
+            code against an existing schema.</listitem>
+          <listitem>Complex child elements are java beans themselves, like the <token>Address</token>
+            element. For example, this means that the <token>Name</token> element has to be instantiated.
+            </listitem>
+          <listitem>To convert the object into an XML string, the <classname>JAXBContext</classname>
+            and <classname>Marshaller</classname> are used. These objects are specified by
+            <acronym>JAXB</acronym>. The example uses no JaxMe specific
+            features and should run with any compliant JAXB implementation.</listitem>
+        </itemizedlist>
+      </para>
+      </sect2>
+
+      <sect2><title>Reading XML</title>
+        <para>The example on writing XML was surprisingly simple. In fact, the only
+          nasty part was creating the object, which requires invocation of lots of
+          setters and getters. Quite opposed to the marshalling, which took place in
+          three lines. And, as we soon will see: unmarshalling (the process of reading
+          a document) is by no means more complex.</para>
+        <para>To demonstrate the unmarshalling process, we'll quote an example from
+          the JaxMe distribution again. This time it's the file
+          <filename>src/java/org/apache/ws/jaxme/examples/misc/address/AddressPrinter.java</filename>:
+          <programlisting><![CDATA[
+package org.apache.ws.jaxme.examples.misc.address;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.StringWriter;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.ws.jaxme.examples.misc.address.Address;
+import org.xml.sax.InputSource;
+
+
+public class AddressPrinter {
+  public static Address getAddress(InputSource pSource) throws JAXBException {
+    JAXBContext context = JAXBContext.newInstance("org.apache.ws.jaxme.examples.misc.address");
+    Unmarshaller unmarshaller = context.createUnmarshaller();
+    return (Address) unmarshaller.unmarshal(pSource);
+  }
+
+  public static String getAddressAsString(Address pAddress) throws JAXBException {
+    StringWriter sw = new StringWriter();
+    JAXBContext context = JAXBContext.newInstance("org.apache.ws.jaxme.examples.misc.address");
+    Marshaller marshaller = context.createMarshaller();
+    marshaller.marshal(pAddress, sw);
+    return sw.toString();
+  }
+
+  public static void main(String[] args) throws Exception {
+    File f = new File("Address.xml");
+    InputSource isource = new InputSource(new FileInputStream(f));
+    isource.setSystemId(f.toURL().toString());
+    Address addr = getAddress(isource);
+
+    // A simpler variant might be:
+    // Address addr = unmarshaller.unmarshal(f);
+
+    if (addr.getName() == null) {
+      System.out.println("Loaded address without name.");
+    } else {
+      System.out.println("Loaded address " + addr.getName().getLast() +
+                         ", " + addr.getName().getFirst() + ".");
+    }
+    System.out.println("Details:" + getAddressAsString(addr));
+  }
+}
+          ]]></programlisting></para>
+        <para>How this example works:
+          <orderedlist>
+            <listitem>It reads the file <filename>Address.xml</filename>. This is the
+              very same file created in the first example. JaxMe supports true round-tripping.</listitem>
+            <listitem>An instance of <classname>InputSource</classname> is constructed. The
+              <classname>InputSource</classname> is part of the <acronym>SAX</acronym>
+              API and can be viewed as an abstract data source from which XML can be read.
+              Typically, the <classname>InputSource</classname> will be backed by 
+              an <classname>InputStream</classname> or a <classname>Writer</classname>.</listitem>
+            <listitem>The method <function>getAddress()</function> is invoked
+              to convert the XML document into an instance of <token>Address</token>.
+              These are the promised three lines, again using classes and methods
+              specified by <acronym>JAXB</acronym>.</listitem>
+            <listitem>Finally the method <function>getAddressAsString</function>
+              is invoked to convert the <token>Address</token> instance back into a
+              printable String, which we may use to verify that everything went fine.
+              (It is always nice to see a result being displayed on the screen. :-)</listitem>
+          </orderedlist></para>
+      </sect2>
+    </sect1>
+</chapter>

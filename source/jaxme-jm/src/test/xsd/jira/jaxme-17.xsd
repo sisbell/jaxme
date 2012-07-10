@@ -1,0 +1,51 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<schema xmlns = "http://www.w3.org/2001/XMLSchema"
+         targetNamespace = "http://www.verticon.com/jaxb/schema"
+         xmlns:s = "http://www.verticon.com/jaxb/schema"
+         elementFormDefault = "qualified"
+         attributeFormDefault = "unqualified">
+	<element name="TestConfiguration" type="s:TestConfigurationType"/>
+
+	<complexType name="TestConfigurationType">
+		<choice>
+			<element name="ChildOne" type="s:ChildOneType"/>
+			<element name="ChildTwo" type="s:ChildTwoType"/>
+        </choice>
+    </complexType>
+
+    <complexType name="ChildTwoType">
+		<choice>
+        	<element name="Resource" type="s:ResourceType"/>
+        	<element name="Commands" type="string"/>
+        </choice>
+       <attribute name="name" use="required" type="string"/>
+       <attribute name="type" use="required" type="s:ChildTwoTypeType"/>
+    </complexType>
+
+    <complexType name="ChildOneType">
+        <attribute name="location" use="required" type="anyURI"/>
+        <attribute name="name" use="required" type="string"/>
+    </complexType>
+
+    <complexType name="ResourceType">
+        <attribute name="location" use="required" type="anyURI"/>
+    </complexType>
+
+   <simpleType name='ChildTwoTypeType'>
+      <annotation>
+          <documentation>supported child two types</documentation>
+      </annotation>
+      <restriction base='string'>
+        <enumeration value='groovy'>
+          <annotation>
+              <documentation>Groovy scripting language.</documentation>
+          </annotation>
+        </enumeration>
+        <enumeration value='jython'>
+          <annotation>
+              <documentation>Jython scripting language.</documentation>
+          </annotation>
+        </enumeration>
+      </restriction>
+  </simpleType>
+</schema>

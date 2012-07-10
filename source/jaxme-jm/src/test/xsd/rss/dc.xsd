@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified"
+	targetNamespace="http://purl.org/dc/elements/1.1/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<xs:element name="date" type="xs:date"/>
+	<xs:element name="language" type="xs:language"/>
+	<xs:element name="publisher" type="xs:string"/>
+	<xs:element name="creator" type="xs:string"/>
+	<xs:element name="rights" type="xs:string"/>
+</xs:schema>

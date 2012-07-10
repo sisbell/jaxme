@@ -1,0 +1,82 @@
+~~
+~~
+~~  Copyright 2005  The Apache Software Foundation
+~~
+~~  Licensed under the Apache License, Version 2.0 (the "License");
+~~  you may not use this file except in compliance with the License.
+~~  You may obtain a copy of the License at
+~~
+~~  http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~  Unless required by applicable law or agreed to in writing, software
+~~  distributed under the License is distributed on an "AS IS" BASIS,
+~~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~~  See the License for the specific language governing permissions and
+~~  limitations under the License.
+~~
+~~
+           ----------------
+           Using the Plugin
+           ----------------
+
+Using the Plugin
+
+  Using the plugin is relatively simple and requires the following steps:
+
+* Creating a schema folder
+
+  By default, the plugin searches for schema files in
+  <<<src/main/jaxme>>>. More precisely, it uses the wildcard
+  <<<src/main/jaxme/*.xsd>>> when looking for schema files. In other
+  words, you put your schema files into <<<src/main/jaxme>>>, and
+  call them <<<something.xsd>>>. That way, the plugin will
+  automatically detect them.
+
+  If you wish to have another location, use the "schema" element
+  for configuring it. See below for an example.
+
+* Plugin declaration in the POM
+
+  Your POM needs to declare, that you want to use the plugin.
+  The declaration occurs by adding the following lines:
+
+--------------------------------------------------------------------
+    <plugins>
+      ... Possibly more plugin declarations here
+      <plugin>
+        <groupId>org.apache.ws.jaxme</groupId>
+        <artifactId>maven-jaxme-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jaxme</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+--------------------------------------------------------------------
+
+  Note, that the "plugin" section might also contain a
+  "configuration" element, if you need additional configuration.
+  For example, the following might advice the plugin to search
+  for schema files in "src/xsd", rather than "src/main/jaxme":
+
+--------------------------------------------------------------------
+        <configuration>
+          <schemas>
+            <schema>
+              <directory>src/xsd/*.xsd</directory>
+            </schema>
+          </schemas>
+        </configuration>
+--------------------------------------------------------------------
+
+  See the {{{./properties.html}property page}} for more details
+  on the plugins configuration.
+
+* That's it!
+
+  Really, you're done. Maven will automatically invoke the plugin
+  for you. The plugin will generate sources, and advice Maven to
+  compile them. Nice, isn't it? :-)

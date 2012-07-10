@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rss="http://purl.org/rss/1.0/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:attribute name="about" type="xs:anyURI"/>
+	<xs:attribute name="resource" type="xs:anyURI"/>
+	<xs:element name="RDF">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any namespace="##any" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="itemID">
+			<xs:annotation>
+				<xs:documentation>This constraints should not be placed inside the RDF schema, but XSD v1.1 leaves us no option</xs:documentation>
+			</xs:annotation>
+			<xs:selector xpath="rss:item"/>
+			<xs:field xpath="@rdf:about"/>
+		</xs:unique>
+		<xs:unique name="resourceUniqueness">
+			<xs:selector xpath="rss:item"/>
+			<xs:field xpath="@rdf:resource"/>
+		</xs:unique>
+		<xs:key name="resourceKey">
+			<xs:selector xpath=".//rdf:li"/>
+			<xs:field xpath="@rdf:resource"/>
+		</xs:key>
+		<xs:keyref name="resourceRef" refer="rdf:resourceKey">
+			<xs:selector xpath=".//rss:item"/>
+			<xs:field xpath="@rdf:about"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="li">
+		<xs:complexType>
+			<xs:attribute ref="rdf:resource"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Seq">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="rdf:li" maxOccurs="25"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

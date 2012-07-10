@@ -1,0 +1,6 @@
+Apache JaxMe JAXB 2 API
+Copyright 2006 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+  

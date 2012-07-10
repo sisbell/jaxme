@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	
+	Copyright 2004 The Apache Software Foundation.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	
+-->
+<document>
+	<properties>
+		<title>
+			JaxMe JAXB API: A clean room implementation of the JAXB API
+		</title>
+	</properties>
+	<body>
+		<section
+			name="JaxMe JAXB API: A clean room implementation of the JAXB API">
+			<p>
+				JaxMe JAXB API is clean room implementation of the JAXB API.
+				Unlike the
+				<a href="https://jaxb.dev.java.net/">reference implementation</a>
+				this one comes under a very moderate open source
+				license, the
+				<a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>.
+			</p>
+			<table border="1">
+				<tr>
+					<th>Note</th>
+				</tr>
+				<tr>
+					<td>
+						The reference implementation is now distributed
+						from
+						<a href='https://jaxb.dev.java.net/'>https://jaxb.dev.java.net/</a>.
+                        As of this writing, it will soon be available under the
+                        <a href="http://www.gnu.org/copyleft/gpl.html">GPL
+                        (GNU General Public License)</a>.
+						Therefore, we continue to recommend our implementation.
+					</td>
+				</tr>
+			</table>
+			<p>
+				In terms of Jar files, the JaxMe JAXB API is equivalent to the
+				Jar file jaxb-api-2.1.jar from the reference implementation.
+			</p>
+			<p>
+				JaxMe JAXB API was written as a part of the 
+				<a href="http://ws.apache.org/jaxme/">JaxMe 2</a>
+				project. It is available as a separate module to be
+				included in source distributions of JAXB client
+				applications. Perhaps other JAXB provider
+				implementations. might be interested too at some point.
+			</p>
+		</section>
+	</body>
+</document>

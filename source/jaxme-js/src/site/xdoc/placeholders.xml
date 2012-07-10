@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>Placeholders</title>
+  </properties>
+  <body>
+    <section name="Placeholders">
+      <p>Before describing what JaxMeJS placeholders are, we recall the use of
+      placeholders in JDBC: By preparing a statement like</p>
+      <source>
+  INSERT INTO someTable VALUES (?, ?, ?)
+      </source>
+      <p>you create the statement at one point. At some other point (typically immediately
+        after creating the statement, but not necessarily so) you add parameters to the
+        statement. For example, you tell the JDBC driver: "Replace the first question mark
+        (the first placeholder) with the string 'foo'". Likewise, you would say: "Replace
+        the second question mark with the integer 5".</p>
+      <p>A JaxMeJS placeholder is quite comparable to a JDBC placeholder. The main idea
+        is that you create one part of a method at some place and another part elsewhere.
+        The method creating the other part must know where to add code. It finds the right
+        place by using the placeholder, which the first part has set.</p>
+    </section>
+
+    <anchor id="creating"/>
+    <section name="Creating a placeholder">
+      <p>A placeholder is created by invoking the method
+        <a href="apidocs/org/apache/ws/jaxme/js/IndentationEngine.html#newPlaceHolder(String,boolean)">
+          newPlaceHolder(String,boolean)</a>. For example:</p>
+      <source>
+    JavaMethod jm;
+    PlaceHolder p = jm.newPaceHolder("MyPlaceholder", true);
+      </source>
+      <p>The method takes two arguments:</p>
+      <dl>
+        <dt>pName</dt>
+        <dd>Any placeholder has got a name. The name is the identifier by which you find the
+          placeholder. (See the <a href="#using">next section</a> for details.)</dd>
+        <dt>pAutoRemovable</dt>
+        <dd>The boolean argument indicates whether you expect to use the placeholder in
+          either case. If so, you set the "autoRemovable" argument to false. In that case,
+          you <em>must</em> remove the placeholder before serializing the method. An
+          IllegalStateException is thrown otherwise. However, if you set the "pAutoRemovable"
+          argument to true, then an existing placeholder is simply ignored while serializing
+          the method.</dd>
+      </dl>
+    </section>
+
+    <anchor id="using"/>
+    <section name="Using the placeholder">
+      <p>To insert code after the placeholder, simply find it. For example:</p>
+      <source>
+    JavaMethod jm;
+    PlaceHolder p = jm.getPlaceHolder("MyPlaceholder");
+    jm.addLine("// This line follows immediately after the placeholder.");
+      </source>
+      <p>Do not forget to remove the placeholder, if the "pAutoRemovable" flag was set
+        to false while creating it:</p>
+      <source>
+    p.remove();
+        </source>
+    </section>
+  </body>
+</document>

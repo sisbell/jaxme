@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://ws.apache.org/jaxme/test/jira/jaxme58" 
+		xmlns="http://ws.apache.org/jaxme/test/jira/jaxme58" 
+		xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		elementFormDefault="qualified">
+  <xs:complexType name="bookType">
+    <xs:attribute name="title" type="xs:string"/>
+    <xs:attribute name="author" type="xs:IDREF"/>
+  </xs:complexType>
+
+  <xs:complexType name="authorType">
+    <xs:attribute name="id" type="xs:ID"/>
+	<xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:element name="booklist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="book" type="bookType" maxOccurs="unbounded"/>
+		<xs:element name="author" type="authorType" maxOccurs="unbounded"/>
+	  </xs:sequence>
+	</xs:complexType>
+  </xs:element>
+</xs:schema>

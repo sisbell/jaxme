@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<!--
+
+  Copyright 2005  The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+-->
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.ws.jaxme</groupId>
+    <artifactId>jaxme-parent</artifactId>
+    <version>2</version>
+  </parent>
+  <artifactId>jaxmepm</artifactId>
+  <version>0.6-SNAPSHOT</version>
+  <name>JaxMe PM</name>
+  <description>
+    JaxMe Persistence Management means the ability to read JaxMe objects
+    from, insert them into, update them in, or delete them from the
+    database. These operations are supported by JaxMe's persistence
+    managers. The word database has a very broad meaning. The PM layer
+    restricts itself to the most basic operations. As a result, almost
+    arbitrary types of databases may be used: Relational databases via
+    JDBC, native XML databases via XML:DB, or native XML databases via
+    proprietary API's or protocols.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.ws.jaxme</groupId>
+      <artifactId>jaxme2</artifactId>
+      <version>0.6-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>xmldb</groupId>
+      <artifactId>xmldb-api</artifactId>
+      <version>20021118</version>
+    </dependency>
+
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.7.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>${basedir}/target/generated-test-sources/antrun</directory>
+        <includes>
+          <include>**/*.properties</include>
+          <include>**/*.xml</include>
+        </includes>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <testSourceRoot>${project.build.directory}/generated-test-sources/antrun/</testSourceRoot>
+              <tasks>
+                <property name="testSrcGenDir"	value="${project.build.directory}/generated-test-sources/antrun/"/>
+
+                <property name="build.pm.db" location="${project.build.directory}/db"/>
+                <property name="build.pm.db.db" location="${build.pm.db}/db"/>
+
+                <property name="jdbc.pm.driver" value="org.hsqldb.jdbcDriver"/>
+                <property name="jdbc.pm.url" value="jdbc:hsqldb:${build.pm.db.db}"/>
+                <property name="jdbc.pm.user" value="sa"/>
+                <property name="jdbc.pm.password" value=""/>
+
+                <mkdir dir="${testSrcGenDir}"/>
+
+
+                <!-- PM.init.db -->
+                <delete dir="${build.pm.db}"/>
+                <mkdir dir="${build.pm.db}"/>
+                <sql
+                    src="${basedir}/src/test/db/initdb.sql"
+                    driver="${jdbc.pm.driver}"
+                    url="${jdbc.pm.url}"
+                    userid="${jdbc.pm.user}"
+                    password="${jdbc.pm.password}" 
+                    classpathref="maven.test.classpath"/>
+
+                <!-- PM.generate -->
+                <!-- TODO: use the maven-jaxme-plugin (chicken and egg maybe..) -->
+                <taskdef classname="org.apache.ws.jaxme.generator.XJCTask"
+                  name="xjc"
+                  classpathref="maven.test.classpath"
+                />
+
+                <xjc target="${testSrcGenDir}">
+                  <schema dir="${basedir}/src/test/xsd" includes="*.xsd"/>
+                  <sgFactoryChain className="org.apache.ws.jaxme.pm.generator.jdbc.JaxMeJdbcSG"/>
+                  <schemaReader className="org.apache.ws.jaxme.generator.sg.impl.JaxMeSchemaReader"/>
+                  <produces dir="${testSrcGenDir}" includes="org/apache/ws/jaxme/test/pm/session/*"/>
+                  <property name="jdbc.driver" value="${jdbc.pm.driver}"/>
+                  <property name="jdbc.url" value="${jdbc.pm.url}"/>
+                  <property name="jdbc.user" value="${jdbc.pm.user}"/>
+                  <property name="jdbc.password" value="${jdbc.pm.password}"/>
+                </xjc>
+
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <property>
+              <name>jdbc.pm.driver</name>
+              <value>org.hsqldb.jdbcDriver</value>
+            </property>
+            <property>
+              <name>jdbc.pm.url</name>
+              <value>jdbc:hsqldb:${basedir}/target/db/db</value>
+            </property>
+            <property>
+              <name>jdbc.pm.user</name>
+              <value>sa</value>
+            </property>
+            <property>
+              <name>jdbc.pm.password</name>
+              <value></value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/org/apache/ws/jaxme/**/api4j/*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+
+    </plugins>
+  </build>
+
+  <contributors>
+    <contributor>
+      <name>Theo Straeten</name>
+      <email>theo.straeten at softwareag.com</email>
+    </contributor>
+  </contributors>
+</project>

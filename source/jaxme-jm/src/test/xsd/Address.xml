@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!-- A sample document for the Address.xsd schema. This
+     sample document is used in the docs, see
+     docs/GenerateJava.html. -->
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+  
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<Address xmlns="http://ws.apache.org/jaxme/test/misc/address">
+  <Name>
+    <First>Jane</First>
+    <Middle>Lee</Middle>
+    <Middle>Chris</Middle>
+    <Last>Doe</Last>
+    <Initials>(JD)</Initials>
+  </Name>
+  <Postal>
+    <Street>34 Main Street</Street>   
+    <ZIP>02215</ZIP>
+    <City>Boston</City>
+    <State>MA</State>   
+  </Postal>
+  <PhoneDetails>
+    <Phone type="Work">
+    <PhoneNumber>555.5789</PhoneNumber>
+    </Phone>
+    <Phone type="Fax">
+    <PhoneNumber>555.1212</PhoneNumber>
+    </Phone>
+  </PhoneDetails>
+  <EmailDetails>
+    <Email type="Private">
+      <EmailAddress>jdoe@yourcompany.com</EmailAddress>
+    </Email>
+    <Email type="Office">
+      <EmailAddress>josephdoe@mycompany.com</EmailAddress>
+    </Email>
+  </EmailDetails>
+</Address>
+

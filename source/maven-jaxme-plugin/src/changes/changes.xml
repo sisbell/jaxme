@@ -1,0 +1,67 @@
+<document>
+  <properties>
+    <title>Maven JaxMe Plugin Changes</title>
+  </properties>
+  <body>
+    <release version="2.0" date="Not yet released" desc="Version 2">
+      <action dev="jochen" type="add">
+        Added the concept of schema collections, which allows to compile
+        multiple schema files within one project using different
+        configurations. You had to use subprojects before.
+      </action>
+      <action dev="jochen" type="fix">
+        Upgrade to JaxMe 0.5.2.
+      </action>
+      <action dev="jochen" type="fix">
+        File sets are now built using the Plexus utilities, which is the
+        standard for Maven plugins. Unfortunately, this means that the
+        syntax for configuring the plugin has changed.
+      </action>
+      <action dev="jochen" type="add">
+        Added support for entity resolvers.
+      </action>
+      <action dev="jochen" type="add">
+        The input files may now be added to the generated jar file, so that
+        they can be used for documentation or validation.
+      </action>
+      <action dev="jochen" type="add">
+        Sources and resources may now have different target directories,
+        which matches the Maven standards.
+      </action>
+    </release>
+
+    <release version="1.0.3" date="2006-02-18" desc="The Vito release">
+      <action dev="jochen" type="fix" due-to="Anthony Vito"
+          due-to-email="anthony.vito@gmail.com">
+        Adding the generated sources to the compilers input
+        was not done, if the generated sources where already
+        uptodate.
+      </action>
+      <action dev="jochen" type="fix" due-to="Anthony Vito"
+          due-to-email="anthony.vito@gmail.com">
+        The packageName property wasn't used.
+      </action>
+      <action dev="jochen" type="fix" due-to="Anthony Vito"
+          due-to-email="anthony.vito@gmail.com">
+        Fixed, that the element name "schema", and not "schemas"
+        was used in the docs.
+      </action>
+    </release>
+
+    <release version="1.0.2" date="2006-01-10">
+      <action dev="jochen" type="fix" due-to="Robert Eric Reeves"
+          due-to-email="robert@phurnace.com">
+        Fixed that the inital release was compiled for Java 5.
+      </action>
+    </release>
+
+    <release version="1.0.1" date="2006-01-07">
+      <action dev="jochen" type="update">
+        Release of JaxMe 0.5.1, which is now used as a dependency.
+      </action>
+    </release>
+
+    <release version="1.0" date="2005-12-28" desc="Initial release">
+    </release>
+  </body>
+</document>

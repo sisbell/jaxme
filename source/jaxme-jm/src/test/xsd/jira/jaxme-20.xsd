@@ -1,0 +1,20 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<schema xmlns = "http://www.w3.org/2001/XMLSchema"
+         targetNamespace = "http://asi.sbc.com/cpsosasos/trouble/data"
+         xmlns:s = "http://asi.sbc.com/cpsosasos/trouble/data"
+         elementFormDefault = "qualified"
+         attributeFormDefault = "unqualified">
+  <element name="foo">
+    <complexType>
+      <attribute name="bar" type="s:ServiceIDType"/>
+    </complexType>
+  </element>
+
+  <simpleType name="ServiceIDType">
+    <restriction base="s:NameTypeType"/>
+  </simpleType>
+
+  <simpleType name="NameTypeType">
+    <union memberTypes="integer string"/>
+  </simpleType>
+</schema>

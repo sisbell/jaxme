@@ -1,0 +1,73 @@
+<project name="ws-site">
+  <bannerLeft>
+    <name>Apache JaxMe</name>
+    <src>http://ws.apache.org/jaxme/images/group-logo.gif</src>
+    <href>http://ws.apache.org/jaxme/</href>
+  </bannerLeft>
+  <body>
+    <links>
+      <item name="Apache" href="http://www.apache.org/"/>
+      <item name="Webservices" href="http://ws.apache.org/"/>
+      <item name="JaxMe" href="http://ws.apache.org/jaxme/"/>
+    </links>
+
+    <menu name="JaxMe 2">
+      <item name="About"                    href="index.html"/>
+      <item name="News"                     href="news.html"/>
+      <item name="Downloads"                href="downloads.html"/>
+      <item name="Mailing Lists"            href="mail-lists.html"/>
+      <item name="License"                  href="license.html"/>
+      <item name="Resources"                href="resources.html"/>
+      <item name="Related Projects"         href="related.html"/>
+      <item name="Documentation" collapse="true">
+        <item name="Manual"                 href="manual/index.html"/>
+	    <item name="Javadocs"               href="apidocs/index.html"/>
+      </item>
+      <item name="Developer Resources" collapse="true">
+        <item name="How to create a release" href="release.html"/>
+	    <item name="Missing features"        href="features.html"/>
+	    <item name="Miscellaneous"           href="misc.html"/>
+      </item>
+    </menu>
+
+    <menu name="JAXB API">
+      <item name="Introduction"             href="api/index.html"/>
+    </menu>
+
+    <menu name="JaxMe JS">
+      <item name="Introduction"             href="js/index.html"/>
+      <item name="The JavaSource factory"   href="js/factory.html"/>
+      <item name="Writing methods"          href="js/methods.html"/>
+      <item name="Placeholders"             href="js/placeholders.html"/>
+      <item name="Optimizations"            href="js/optimizations.html"/>
+      <item name="Writing SQL"              href="js/sql.html"/>
+      <item name="Java Source Reflection"   href="js/jparser.html"/>
+      <item name="Patterns" collapse="true">
+        <item name="Proxy Objects"          href="js/patterns/proxy.html"/>
+	<item name="Multiple Inheritance"   href="js/patterns/proxy.html#multiple_inheritance"/>
+	<item name="Typesafe Enumerations"  href="js/patterns/typesafeenum.html"/>
+	<item name="Proxy chains"           href="js/patterns/chains.html"/>
+	<item name="Versioning"             href="js/patterns/versioning.html"/>
+      </item>
+      <item name="Applications" collapse="true">
+        <item name="Apache XML-RPC Clients" href="js/apps/xmlrpc.html"/>
+      </item>
+    </menu>
+
+    <menu name="JaxMe XS">
+      <item name="Introduction"        href="xs/index.html"/>
+      <item name="Generic XML Parser"  href="xs/generic.html"/>
+      <item name="Syntax Parser"       href="xs/syntax.html"/>
+      <item name="Logical Parser"      href="xs/logical.html"/>
+    </menu>
+
+    <menu name="JaxMe PM">
+      <item name="Introduction" href="pm/index.html"/>
+      <item name="JDBC"         href="pm/jdbc.html"/>
+      <item name="Tamino"       href="pm/ino.html"/>
+    </menu>
+
+    ${reports}
+
+  </body>
+</project>

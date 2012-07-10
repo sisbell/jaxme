@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	targetNamespace="http://ws.apache.org/jaxme/test/recursion"
+	xmlns:rec="http://ws.apache.org/jaxme/test/recursion"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <complexType name="EmployeeTypeDirect">
+    <sequence>
+      <element name="Employees" type="rec:EmployeeTypeDirect" minOccurs="0"/>
+    </sequence>
+    <attribute name="id" type="string" use="required" />
+    <attribute name="name" type="string" use="required" />
+  </complexType>
+  <element name="DirectEmployee" type="rec:EmployeeTypeDirect" />
+
+  <complexType name="EmployeeTypeIndirect">
+    <sequence>
+      <element name="Manager">
+	    <complexType>
+	      <sequence>
+	        <element name="Employees" type="rec:EmployeeTypeIndirect" minOccurs="0"/>
+	      </sequence>
+	    </complexType>
+      </element>
+    </sequence>
+    <attribute name="id" type="string" use="required" />
+    <attribute name="name" type="string" use="required" />
+  </complexType>
+  <element name="IndirectEmployee" type="rec:EmployeeTypeIndirect"/>
+
+
+  <complexType name="PotManagerType">
+    <annotation><documentation>
+      Schema for testing potential recursion. It is actually not
+      potential recursion. It is potential direct/indirect recursion.
+    </documentation></annotation>
+    <sequence>
+      <element maxOccurs="unbounded" name="Employees"
+        type="rec:PotEmployeeType"/>
+    </sequence>
+  </complexType>
+  <complexType name="PotEmployeeType">
+    <choice>
+      <element name="Manager" type="rec:PotManagerType" minOccurs="0"/>
+      <element name="Employees"	type="rec:PotEmployeeType"/>
+    </choice>
+    <attribute name="id" type="string" use="required" />
+    <attribute name="name" type="string" use="required" />
+  </complexType>
+  <element name="PotEmployee" type="rec:PotEmployeeType" />
+
+  <element name="Attribute">
+	<complexType>
+	  <sequence>
+        <element name="AttributeList">
+          <complexType>
+            <sequence>
+              <element ref="rec:Attribute" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
+          </complexType>
+        </element>
+	  </sequence>
+	  <attribute name="id" type="string" use="required"/>
+	  <attribute name="name" type="string" use="required"/>
+	  <attribute name="value" type="string" use="optional"/>
+	</complexType>
+  </element>
+</schema>

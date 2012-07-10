@@ -1,0 +1,44 @@
+<html>
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+  
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<head><title>DB2 support for the SQL generator</title></head>
+<body>
+<h1>DB2 support for the SQL generator</h1>
+<p>This package contains some classes and interfaces enhancing the
+SQL generator with DB2 specific features. In particular, these classes
+enable you to create buffer pools and table spaces.</p>
+<p>The DB2 support works by instantiating a different
+{@link org.apache.ws.jaxme.sqls.SQLFactory}: By default, you would enable
+{@link org.apache.ws.jaxme.sqls.impl.SQLFactoryImpl}. However, for DB2
+support you would choose {@link org.apache.ws.jaxme.sqls.db2.DB2SQLFactoryImpl},
+which is a subclass of the default factory.</p>
+<p>Likewise, you need to replace the default implementation of the SQL generator,
+{@link org.apache.ws.jaxme.sqls.SQLGenerator} with
+{@link org.apache.ws.jaxme.sqls.db2.DB2SQLGeneratorImpl}
+
+<p>The difference between the factories is as follows: When using the
+DB2 factory, you may cast your instances of
+{@link org.apache.ws.jaxme.sqls.SQLFactory},
+{@link org.apache.ws.jaxme.sqls.Schema},
+{@link org.apache.ws.jaxme.sqls.Table}, and
+{@link org.apache.ws.jaxme.sqls.Column} to
+{@link org.apache.ws.jaxme.sqls.db2.DB2SQLFactory},
+{@link org.apache.ws.jaxme.sqls.db2.DB2Schema},
+{@link org.apache.ws.jaxme.sqls.db2.DB2Table}, and
+{@link org.apache.ws.jaxme.sqls.db2.DB2Column}, respectively, and use the
+additional methods.</p>
+
+</body></html>

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xml:lang="EN"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/types"
+    xmlns:ex="http://ws.apache.org/jaxme/test/misc/types"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    jaxb:version="1.0"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+  <xs:complexType name="AllSimpleTypes">
+    <xs:annotation>
+      <xs:documentation>
+        A complex type which includes the builtin simple types.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="StringElem" type="xs:string"/>
+      <xs:element name="IntElem" type="xs:int"/>
+      <xs:element name="LongElem" type="xs:long"/>
+      <xs:element name="ShortElem" type="xs:short"/>
+      <xs:element name="DoubleElem" type="xs:double"/>
+      <xs:element name="FloatElem" type="xs:float"/>
+      <xs:element name="DateTimeElem" type="xs:dateTime"/>
+      <xs:element name="DateElem" type="xs:date"/>
+      <xs:element name="TimeElem" type="xs:time"/>
+      <xs:element name="DurationElem" type="xs:duration"/>
+      <xs:element name="HexBinaryElem" type="xs:hexBinary"/>
+      <xs:element name="Base64BinaryElem" type="xs:base64Binary"/>
+      <xs:element name="NmTokenElem" type="xs:NMTOKEN"/>
+      <xs:element name="NmTokensElem" type="xs:NMTOKENS"/>
+      <xs:element name="DecimalElem" type="xs:decimal"/>
+      <xs:element name="IntegerElem" type="xs:integer"/>
+      <xs:element name="NonNegativeIntegerElem" type="xs:nonNegativeInteger"/>
+      <xs:element name="PositiveIntegerElem" type="xs:positiveInteger"/>
+      <xs:element name="NonPositiveIntegerElem" type="xs:nonPositiveInteger"/>
+      <xs:element name="NegativeIntegerElem" type="xs:negativeInteger"/>
+      <xs:element name="QNameElem" type="xs:QName"/>
+      <xs:element name="BooleanElem" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="EAllSimpleTypeAttrs" type="ex:AllSimpleTypeAttrs"/>
+
+  <xs:complexType name="AllSimpleTypeAttrs">
+    <xs:annotation><xs:documentation>
+      A complex type which includes the same type as attributes.
+    </xs:documentation></xs:annotation>
+    <xs:attribute name="StringAttr" type="xs:string"/>
+    <xs:attribute name="IntAttr" type="xs:int"/>
+    <xs:attribute name="LongAttr" type="xs:long"/>
+    <xs:attribute name="ShortAttr" type="xs:short"/>
+    <xs:attribute name="DoubleAttr" type="xs:double"/>
+    <xs:attribute name="FloatAttr" type="xs:float"/>
+    <xs:attribute name="DateTimeAttr" type="xs:dateTime"/>
+    <xs:attribute name="DateAttr" type="xs:date"/>
+    <xs:attribute name="TimeAttr" type="xs:time"/>
+    <xs:attribute name="DurationAttr" type="xs:duration"/>
+    <xs:attribute name="HexBinaryAttr" type="xs:hexBinary"/>
+    <xs:attribute name="Base64BinaryAttr" type="xs:base64Binary"/>
+    <xs:attribute name="NmTokenAttr" type="xs:NMTOKEN"/>
+    <xs:attribute name="NmTokensAttr" type="xs:NMTOKENS"/>
+    <xs:attribute name="DecimalAttr" type="xs:decimal"/>
+    <xs:attribute name="IntegerAttr" type="xs:integer"/>
+    <xs:attribute name="NonNegativeIntegerAttr" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="PositiveIntegerAttr" type="xs:positiveInteger"/>
+    <xs:attribute name="NonPositiveIntegerAttr" type="xs:nonPositiveInteger"/>
+    <xs:attribute name="NegativeIntegerAttr" type="xs:negativeInteger"/>
+    <xs:attribute name="QNameAttr" type="xs:QName"/>
+    <xs:attribute name="BooleanAttr" type="xs:boolean"/>
+  </xs:complexType>
+
+  <xs:simpleType name="ListType">
+    <xs:annotation>
+      <xs:documentation>
+        A simple type which is in fact a list of integers.
+        The list is implemented as an instance of java.util.List.
+        The generated clas includes a method
+        addListType(Integer) and a method Integer[] getListType.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:list itemType="xs:integer"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="UnionType">
+    <xs:annotation>
+      <xs:documentation>
+        A simple type which max in fact be either an Integer,
+        an instance of java.util.Calendar, or a String. When
+        reading an XML document with an element of type
+        UnionType, then the implementation will attempt to
+        perform new Integer(String), DateFormat.parse(String)
+        and new String(String), in that order. The first
+        one that can be performed without throwing an
+        exception, wins. Note that the order of the member
+        types matters, as new String(String) will always
+        succeed.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="xs:int xs:dateTime xs:string"/>
+  </xs:simpleType>
+
+  <xs:element name="AllTypesElement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="ex:AllSimpleTypes" name="AllSimpleTypesElement"/>
+        <xs:element type="ex:ListType" name="ListTypeElement"/>
+        <xs:element type="ex:UnionType" name="UnionTypeElement"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="AllTypesAttrs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="ex:AllSimpleTypeAttrs" name="AllSimpleTypesAttrElement"/>
+      </xs:sequence>
+      <xs:attribute type="ex:ListType" name="ListTypeAttr"/>
+      <xs:attribute type="ex:UnionType" name="UnionTypeAttr"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="Rated">
+    <xs:annotation><xs:documentation>
+      Another sample: A complex type with simple Content.
+    </xs:documentation></xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="rating" type="xs:int"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:element name="Author" type="ex:Rated"/>
+
+  <xs:element name="AllSimpleTypesWrapper">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ex:AllTypesElement" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="parameter">
+    <xs:attribute name="key" type="xs:string"/>
+    <xs:attribute name="value" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:element name="Array">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ArrayElement" minOccurs="0" maxOccurs="unbounded"
+        	type="xs:int">
+          <xs:annotation><xs:appinfo>
+            <jaxb:property collectionType="indexed"/>
+          </xs:appinfo></xs:annotation>
+        </xs:element>
+        <xs:element name="ListElement" minOccurs="0" maxOccurs="unbounded"
+        	type="xs:int"/>
+        <xs:element name="StringArrayElement" minOccurs="0" maxOccurs="unbounded"
+        	type="xs:string">
+          <xs:annotation><xs:appinfo>
+            <jaxb:property collectionType="indexed"/>
+          </xs:appinfo></xs:annotation>
+        </xs:element>
+        <xs:element name="StringListElement" minOccurs="0" maxOccurs="unbounded"
+            type="xs:string"/>
+        <xs:element name="ComplexArrayElement" minOccurs="0" maxOccurs="unbounded"
+            type="ex:parameter">
+          <xs:annotation><xs:appinfo>
+            <jaxb:property collectionType="indexed"/>
+          </xs:appinfo></xs:annotation>
+        </xs:element>
+        <xs:element name="ComplexListElement" minOccurs="0" maxOccurs="unbounded"
+            type="ex:parameter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="AllElement">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>
+          An xs:all element with all the builtin simple types.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:all>
+        <xs:element name="StringElem" type="xs:string"/>
+        <xs:element name="IntElem" type="xs:int"/>
+        <xs:element name="LongElem" type="xs:long"/>
+        <xs:element name="ShortElem" type="xs:short"/>
+        <xs:element name="DoubleElem" type="xs:double"/>
+        <xs:element name="FloatElem" type="xs:float"/>
+        <xs:element name="DateTimeElem" type="xs:dateTime"/>
+        <xs:element name="DateElem" type="xs:date"/>
+        <xs:element name="TimeElem" type="xs:time"/>
+        <xs:element name="DurationElem" type="xs:duration"/>
+        <xs:element name="HexBinaryElem" type="xs:hexBinary"/>
+        <xs:element name="Base64BinaryElem" type="xs:base64Binary"/>
+        <xs:element name="NmTokenElem" type="xs:NMTOKEN"/>
+        <xs:element name="NmTokensElem" type="xs:NMTOKENS"/>
+        <xs:element name="DecimalElem" type="xs:decimal"/>
+        <xs:element name="IntegerElem" type="xs:integer"/>
+        <xs:element name="NonNegativeIntegerElem" type="xs:nonNegativeInteger"/>
+        <xs:element name="PositiveIntegerElem" type="xs:positiveInteger"/>
+        <xs:element name="NonPositiveIntegerElem" type="xs:nonPositiveInteger"/>
+        <xs:element name="NegativeIntegerElem" type="xs:negativeInteger"/>
+        <xs:element name="QNameElem" type="xs:QName"/>
+        <xs:element name="BooleanElem" type="xs:boolean"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+	<xs:element name="row">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="cell" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="id" type="xs:string" use="required"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+    <xs:element name="date">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="year">
+            <xs:simpleType>
+              <xs:restriction base="xs:positiveInteger">
+                <xs:totalDigits value="4"/>
+              </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+       </xs:sequence>
+     </xs:complexType>
+   </xs:element>
+
+   <xs:complexType name="FsNode">
+     <xs:sequence>
+       <xs:element ref="ex:acl" minOccurs="0"/>
+     </xs:sequence>
+     <xs:attribute name="id" type="xs:long" use="required"/>
+     <xs:attribute name="name" type="xs:string" use="required"/>
+     <xs:attribute name="parent" type="xs:long" use="required"/>
+   </xs:complexType>
+
+   <xs:element name="FsFile" type="ex:FsNode"/>
+
+   <xs:element name="FsDirectory">
+     <xs:complexType>
+       <xs:complexContent>
+         <xs:extension base="ex:FsNode">
+           <xs:attribute name="hidden" type="xs:boolean" use="optional" default="false"/>
+         </xs:extension>
+       </xs:complexContent>
+     </xs:complexType>
+   </xs:element>
+
+   <xs:element name="acl">
+     <xs:complexType>
+       <xs:sequence>
+         <xs:element name="rule" minOccurs="0" maxOccurs="unbounded">
+           <xs:complexType>
+             <xs:attribute name="principal" type="xs:string" use="required"/>
+             <xs:attribute name="mode">
+               <xs:simpleType>
+                 <xs:restriction base="xs:string">
+                   <xs:enumeration value="allow"/>
+                   <xs:enumeration value="deny"/>
+                 </xs:restriction>
+               </xs:simpleType>
+             </xs:attribute>
+           </xs:complexType>
+         </xs:element>
+       </xs:sequence>
+     </xs:complexType>
+   </xs:element>
+
+    <xs:element name="html">
+      <xs:complexType mixed="true">
+        <xs:sequence>
+          <xs:element name="dummy" type="xs:string"/>
+          <xs:element name="head">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="title" type="xs:string"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="body">
+            <xs:complexType>
+              <xs:sequence>
+			    <xs:element name="p" maxOccurs="unbounded">
+                  <xs:complexType/>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+
+   <xs:element name="jira62">
+     <xs:complexType>
+       <xs:attribute name="a" use="optional">
+         <xs:simpleType>
+           <xs:restriction base="xs:string">
+             <xs:maxLength value="4"/>
+           </xs:restriction>
+         </xs:simpleType>
+       </xs:attribute>
+       <xs:attribute name="b" use="optional">
+         <xs:simpleType>
+           <xs:restriction base="xs:string">
+             <xs:minLength value="4"/>
+           </xs:restriction>
+         </xs:simpleType>
+       </xs:attribute>
+       <xs:attribute name="c" use="optional">
+         <xs:simpleType>
+           <xs:restriction base="xs:string">
+             <xs:length value="4"/>
+           </xs:restriction>
+         </xs:simpleType>
+       </xs:attribute>
+     </xs:complexType>
+   </xs:element>
+
+   <xs:element name="patterns">
+     <xs:complexType>
+       <xs:attribute name="foo">
+         <xs:simpleType>
+           <xs:restriction base="xs:string">
+             <xs:pattern value=".{3,5}"/>
+             <xs:pattern value="[a-z][A-Z].*"/>
+           </xs:restriction>
+         </xs:simpleType>
+       </xs:attribute>
+     </xs:complexType>
+   </xs:element>
+
+   <xs:element name="QNameListTest">
+     <xs:complexType>
+       <xs:attribute name="qnames" use="optional">
+         <xs:simpleType>
+           <xs:list itemType="xs:QName"/>
+         </xs:simpleType>
+       </xs:attribute>
+     </xs:complexType>
+   </xs:element>
+</xs:schema>

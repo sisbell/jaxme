@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>The version generator</title>
+  </properties>
+  <body>
+
+    <anchor id="introduction"/>
+    <section name="The version generator">
+      <p>A versioned object is an object with a composed primary key:
+        We call the first part the version ID and the second part the version number.
+        Objects with the same ID are called versions of the object. If the versioned
+        object is stored in a single SQL table, a new version can obviously be derived
+        as follows:</p>
+      <ol>
+        <li>Read the row containing the base version.</li>
+        <li>Create a copy of the row in memory.</li>
+        <li>Update the version number in the in-memory clone.</li>
+        <li>Insert the clone into the database.</li>
+      </ol>
+      <p>There is nothing special. Things look quite different, if we have multiple
+        tables. For example, suggest that we have a database with the tables
+        "Organization", "Person", and "Email Address". Any organization might have
+        associated persons as contacts. Organizations and persons, however, might
+        have an unlimited number of email addresses. Foreign keys are used to
+        join the different tables. The organization can be viewed as a collection
+        of a row in "Organization" and zero or more rows in "Person". How about
+        creating a new version of an organization? This is not so convenient:</p>
+      <ol>
+        <li>Read the row containing the organization and clone it,
+          following the above steps.</li>
+        <li>The cloned row doesn't have any associated email addresses,
+          but the base organization probably does. In other words, we need
+          to read the relevant email addresses into memory, update the
+          organization reference and create new instances of the in-memory
+          email addresses, possibly creating a new ID.</li>
+        <li>The cloned organization doesn't have any associated persons,
+          but the base organization probably does. You guess the following:
+          We need to clone the persons as well, updating references and
+          assigning new ID's.</li>
+        <li>We are not yet done: The persons might be referenced by email
+          adresses. So we continue ... you guess.</li>
+      </ol>
+      <p>The version generator is able to create Java code for you, which is
+        doing exactly the above. It takes as input a list of tables and an
+        ID generation procedure for any table, and that's it.</p>
+    </section>
+
+    <anchor id="limitations"/>
+    <section name="Limitations">
+      <p>The current version of the version generator has some restrictions. In
+        particular the following rules apply:</p>
+      <ol>
+        <li>Let <code>T1</code>, <code>T2</code>, <code>T3</code>, ... be the
+          tables being cloned.</li>
+        <li>No table may reference itself. For example, <code>T3</code> must
+          not have a reference to <code>T3</code>.</li>
+        <li>No table may have forward references. A forward reference is a
+          foreign key to another table, which is positioned behind itself
+          in the table. For example, <code>T2</code> and <code>T3</code>
+          may reference <code>T1</code>, but neither <code>T2</code> nor
+          <code>T3</code> may reference <code>T1</code> nor may <code>T3</code>
+          reference <code>T2</code>.</li>
+        <li>All foreign keys must reference the primary key. As a consequence,
+          each referenced table must have a primary key.</li>
+      </ol>
+      <p>In essence, the requirements are, that there are no direct or indirect
+        circular references and that there is a set of columns that allow to
+        remember, which rows already have been cloned.</p>
+    </section>
+
+    <anchor id="columnUpdaters"/>
+    <section name="Column updaters">
+      <p>Column updaters are used to perform the required modifications for the
+        in-memory rows. For example, there is a column updater that updates a
+        foreign keys value from an object that has already been cloned to its
+        clone. Column updaters are implementing the interface
+        <a href="../apidocs/org/apache/ws/jaxme/js/pattern/VersionGenerator.ColumnUpdater.html">
+          VersionGenerator.ColumnUpdater</a>.</p>
+      <p>The main thing to understand when writing a column updater is that it
+        is not invoked at runtime, but as a part of the source generation stage.
+        It emits Java code taking an object array as input and modifying the
+        array. As an example, we demonstrate a very basic column updater,
+        which is simply incrementing the version number. We assume that the
+        version number is an integer, stored in the tables second column:</p>
+      <source>
+    public class VerNumIncrementer implements VersionGenerator.ColumnUpdater {
+      public void update(JavaMethod pMethod,
+                         VersionGenerator.TableInfo pTableInfo,
+                         DirectAccessible pConnection,
+                         DirectAccessible pMap,
+                         DirectAccessible pRow) {
+        pMethod.addLine(pRow, "[2] = new Integer(((Integer) ",
+                        pRow, "[2]).intValue()+1);");
+      }
+    }
+      </source>
+      <p>The column updaters arguments are as follows:</p>
+      <dl>
+        <dt>pMethod</dt><dd>The method being generated.</dd>
+        <dt>pTableInfo</dt><dd>Holds the generators view of the table being
+          cloned by the method <code>pMethod</code>. The most important property
+          is the <code>table</code> property, which returns an instance of
+          <a href="../apidocs/org/apache/ws/jaxme/sqls/Table.html">Table</a> with the table name
+          and column list.</dd>
+        <dt>pConnection</dt><dd>A variable name which is holding an open
+          database connection in the generated source.</dd>
+        <dt>pMap</dt><dd>A variable name with a map used to note the column
+          which have already been cloned. The tables keys are the primary keys before cloning,
+          and the tables values are the keys after cloning. The map is used
+          to adjust foreign key references.</dd>
+        <dt>pRow</dt><dd>A variable name representing an array of objects,
+          one for any column in the table. The object types correspond to the
+          column data types: For example, a VARCHAR or CHAR column is mapped
+          to a String, INT, or BIGINT, columns are mapped to Integer and
+          Long, respectively, and so on.</dd>
+      </dl>
+    </section>
+
+    <anchor id="use"/>
+    <section name="Using the version generator">
+      <p>To use the version generator, you need a set of tables (subject to the
+        limitations described <a href="#limitations">above</a>). For any table,
+        you also need a ColumnUpdater. If you have that, the generator is invoked
+        like this:</p>
+      <source><![CDATA[
+  import org.apache.ws.jaxme.js.JavaQNameImpl;
+  import org.apache.ws.jaxme.js.JavaSource;
+  import org.apache.ws.jaxme.js.JavaSourceFactory;
+  import org.apache.ws.jaxme.js.pattern.VersionGenerator;
+  import org.apache.ws.jaxme.js.pattern.VersionGenerator.ColumnUpdater;
+  import org.apache.ws.jaxme.sqls.Table;
+
+  Table[] tables;             // Supplied by you
+  ColumnUpdater updaters;     // Supplied by you, same length than tables array
+
+  JavaSourceFactory factory = new JavaSourceFactory();
+  VersionGenerator vgen = new VersionGenerator();
+  vgen.setGeneratingLogging(true);
+  for (int i = 0;  i < tables.length;  i++) {
+    vgen.addTable(tables[i], updaters[i]);
+  }
+  JavaSource js = factory.newJavaSource(JavaQNameImpl.getInstance("com.foo", "Bar"),
+                                        JavaSource.PUBLIC);
+  vgen.getCloneMethod(js);
+]]>   </source>
+      <p>You might replace the VersionGenerator with a subclass, because the above
+        code would emit logging statements using the 
+        <a href="../apidocs/org/apache/ws/jaxme/logging/package-summary.html">
+          org.apache.ws.jaxme.logging package</a>.
+        If you do not favour this, replace the methods <code>logEntering</code>,
+        <code>logExiting</code>, <code>logFinest</code>, <code>logFinestEntering</code>,
+        and <code>logFinestEntering</code> with your own implementations.</p>
+    </section>
+  </body>
+</document>

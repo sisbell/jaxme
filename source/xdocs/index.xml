@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<document> 
+  <properties> 
+    <title>Welcome to JaxMe 2</title> 
+  </properties> 
+  <body> 
+  <section name="Welcome to JaxMe 2">
+      <p>
+        JaxMe 2 is an open source implementation of
+        <link href="site:jaxb"><code>JAXB</code></link>, the specification for
+        Java/XML binding. 
+      </p>
+      <p>A Java/XML binding compiler takes as input a schema
+        description (in most cases an XML schema but it may be a DTD, a
+        RelaxNG schema, a Java class inspected via reflection or a database
+        schema). The output is a set of Java classes:
+      </p>
+        <ul>
+          <li>A Java bean class compatible with the schema description. (If the schema was
+            obtained via Java reflection, then the original Java bean class.)</li>
+          <li>An unmarshaller that converts a conforming XML document into the equivalent Java bean.</li>
+          <li>Vice versa, a marshaller that converts the Java bean back into the original XML document.</li>
+        </ul>
+      <p>
+        In the case of JaxMe, the generated classes may also
+      </p>
+        <ul>
+          <li>Store the Java bean into a database. Preferrably an XML database like
+            <link href="site:exist"><code>eXist</code></link>,
+            <link href="site:xindice"><code>Xindice</code></link>, or
+            <link href="site:tamino"><code>Tamino</code></link>, but it may also
+            be a relational database like <link href="site:mysql"><code>MySQL</code></link>.
+            (If the schema is sufficiently simple. :-)</li>
+          <li>Query the database for bean instances.</li>
+          <li>Implement an EJB entity or session bean with the same abilities.</li>
+        </ul>
+      <p>
+        In other words, by simply creating a schema and running the JaxMe binding
+        compiler,
+      </p>
+      <img src="images/jaxme-compiler-workflow.png" alt="Running the JaxMe 2 compiler"/>
+      <p>
+        you have automatically generated classes that implement the complete
+        workflow of a typical web application:</p>
+      <img src="images/jaxme-application-workflow.png" alt="Workflow of a JaxMe 2 application"/>
+	</section>      
+  </body>
+</document>

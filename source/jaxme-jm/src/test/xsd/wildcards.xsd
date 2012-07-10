@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright 2003, 2004  The Apache Software Foundation
+  
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+  
+ http://www.apache.org/licenses/LICENSE-2.0
+  
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xml:lang="EN"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/wildcards"
+    xmlns:ex="http://ws.apache.org/jaxme/test/misc/wildcards"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+  <xs:element name="AnyAttribute">
+    <xs:complexType>
+      <xs:anyAttribute namespace="##any"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="OtherAttribute">
+    <xs:complexType>
+      <xs:anyAttribute namespace="##other"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ListAttribute">
+    <xs:complexType>
+      <xs:anyAttribute namespace="##targetNamespace http://ws.apache.org/jaxme/test/misc/wildcards/2"/>
+    </xs:complexType>
+  </xs:element>
+
+<!--
+  <xs:element name="AnyElement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Header" type="xs:string"/>
+        <xs:any namespace="##any"/>
+        <xs:element name="Footer" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="OtherElement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Header" type="xs:string"/>
+        <xs:any namespace="##other"/>
+        <xs:element name="Footer" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ListElement">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Header" type="xs:string"/>
+        <xs:any namespace="##targetNamespace http://ws.apache.org/jaxme/test/misc/wildcards/2"/>
+        <xs:element name="Footer" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+-->
+</xs:schema>

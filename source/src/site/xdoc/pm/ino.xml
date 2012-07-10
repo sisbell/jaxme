@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<document>
+  <properties><title>Accessing a Tamino database</title></properties>
+  <body>
+  <section name="Accessing a Tamino database">  
+  	<p><a hrefkey="link.tamino">Tamino</a> is a native XML database by
+      <a hrefkey="link.sag">Software AG</a>. Compared to a relational
+  	  database, it has the disadvantage of being not very popular.
+  	  However, if your data is structured (more structured than
+  	  conveniently expressible by relational data structures, that is)
+  	  you will soon find a lot of advantages and possibly prefer it
+  	  over a traditional SQL database engine. From within JaxMe, Tamino
+  	  may be accessed in either of three ways:</p>
+  	<ul>
+  	  <li>Via the XML:DB API, implemented by the
+  	  	<a href="./apidocs/org/apache/ws/jaxme/pm/xmldb/XmlDbPM.html">XmlDbPM</a>.
+  	  	This is the recommended way if you want your application to be
+  	  	portable amongst various XML databases. The XML:DB API is
+  	  	being described in a separate document. (To be done.)</li>
+  	  <li>Via native HTTP, implemented by the
+  	  	<a href="./apidocs/org/apache/ws/jaxme/pm/ino/InoManager.html">InoManager</a>.
+  	    This solution is recommended, if you need a very low memory
+  	    profile, even for processing a large result set. In particular
+  	    it offers a true streaming mode.</li>
+  	  <li>Via the official Tamino Java API, called TaminoAPI4J.
+  	  	This is recommended for enterprise applications, as it
+  	  	allows to embed Tamino into the transactional context of
+  	  	an EJB container.</li>
+  	</ul>
+	</section>
+	<section name="Preparations">
+		<p>Tamino is accessible via two different query languages.
+		  The elder variant is called <em>X-Query</em> and is best
+		  compared with <em>XPath</em>. The newer language is based
+		  on <em>XQuery</em>.
+		</p>
+		<p>XPath and X-Query share an important problem when using
+		  namespaces: They have no mapping between namespace prefixes
+		  and namespace URIs. In other words, if you perform a query
+		  like</p>
+		<source>
+			_xql=ad:Address
+		</source>
+		<p>then the database <em>must know</em>, that the prefix
+		  <code>ad</code> is mapped to the namespace URI
+		  <code>http://ws.apache.org/jaxme/test/misc/address</code>.
+		  </p>
+		<p>Tamino and the JaxMe managers overcome the absence of a
+		  mapping in the query by storing the mapping from the
+		  schema and using that. In other words, if you are
+		  using namespaces, then you should:</p>
+		<ol>
+			<li>Specify a prefix for the namespace in the schema.</li>
+			<li>Use the same schema (and thus the same prefix) for
+				the database schema as well as the JaxMe generator.
+				(Obviously this is recommended anyways.)</li>
+			<li>Use the same prefix for specifying queries.</li>
+		</ol>
+	</section>
+
+	<section name="Preparing the Tamino Resource Adapter">
+		<p>If you are not using the Tamino Resource Adapter (which
+		  is typically the case, if you are <em>not</em> using
+		  an EJB container like JBoss, WebSphere, or the like.
+		  In that case you may very well skip this section and
+		  proceed to the next section, which is about creating
+		  the schema file.</p>
+		<p>Adding the Tamino Resource Adapter is covered in the
+		  documentation of the TaminoAPI4J. However, we'll provide
+		  specific details for JBoss 3.2 here, because the docs
+		  are for JBoss 3.0 only and because we disagree with
+		  the recommendation to add the Tamino jar files to the
+		  JBoss lib directory. So here's what we've done, step
+		  by step:
+		</p>
+		<ul>
+		  <li>Add the jar file <code>TaminoAPI4J.jar</code>
+		  	to the rar file, for example
+		  	<code>TaminoJCA_localTx.rar</code>. Copy the
+		  	RAR file to the JBoss deploy directory.
+		  </li>
+		  <li>Create a deployment descriptor file <code>tamino-service.xml</code>
+		  	with the following contents and copy it to the
+		  	JBoss deploy directory. (Of course you should adapt
+		  	the database URL, user and password to your local
+		  	settings. Most probably you would also want to change
+		  	the JNDI name <code>MyTaminoLocalTxConnector</code>.
+		  </li>
+		</ul>
+		<source><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<server>
+  <!-- ==================================================================== -->
+  <!-- New ConnectionManager setup for Tamino -->
+  <!-- ==================================================================== -->
+  <mbean code="org.jboss.resource.connectionmanager.LocalTxConnectionManager"
+         name="jboss.jca:service=LocalTxCM,name=MyTaminoLocalTxConnector">
+    <attribute name="JndiName">MyTaminoLocalTxConnector</attribute>
+
+    <depends optional-attribute-name="ManagedConnectionPool">
+      <!--embedded mbean-->
+      <mbean code="org.jboss.resource.connectionmanager.JBossManagedConnectionPool"
+             name="jboss.jca:service=LocalTxPool,name=MyTaminoLocalTxConnector">
+	    <attribute name="MinSize">0</attribute>
+        <attribute name="MaxSize">50</attribute>
+	    <attribute name="BlockingTimeoutMillis">5000</attribute>
+	    <attribute name="IdleTimeoutMinutes">15</attribute>
+	    <!-- criteria indicates if Subject (from security domain) or app supplied
+		     parameters (such as from getConnection(user, pw)) are used to distinguish
+		     connections in the pool. Choices are
+		     ByContainerAndApplication (use both),
+		     ByContainer (use Subject),
+		     ByApplication (use app supplied params only),
+		     ByNothing (all connections are equivalent, usually if adapter supports
+		     reauthentication)-->
+	    <attribute name="Criteria">ByContainer</attribute>
+
+	    <depends optional-attribute-name="ManagedConnectionFactoryName">
+	      <!--embedded mbean-->
+		  <mbean code="org.jboss.resource.connectionmanager.RARDeployment"
+			     name="jboss.jca:service=LocalTxDS,name=MyTaminoLocalTxConnector">
+		    <attribute name="ManagedConnectionFactoryProperties">
+		      <properties>
+			    <config-property name="TaminoURL" type="java.lang.String">http://localhost/tamino/test</config-property>
+			    <config-property name="UserName" type="java.lang.String">ejb</config-property>
+			    <config-property name="Password" type="java.lang.String">xxx</config-property>
+		      </properties>
+		    </attribute>
+
+		    <!--Below here are advanced properties -->
+		    <depends optional-attribute-name="OldRarDeployment">jboss.jca:service=RARDeployment,name=Tamino Resource Adapter for local transactions</depends>
+		  </mbean>
+	    </depends>
+	  </mbean>
+    </depends>
+    <depends optional-attribute-name="CachedConnectionManager">jboss.jca:service=CachedConnectionManager</depends>
+    <depends optional-attribute-name="JaasSecurityManagerService">jboss.security:service=JaasSecurityManager</depends>
+    <depends optional-attribute-name="TransactionManagerService">jboss:service=TransactionManager</depends>
+
+    <!--make the rar deploy! hack till better deployment-->
+    <depends>jboss.jca:service=RARDeployer</depends>
+  </mbean>
+</server>
+]]>   	</source>
+		<ul>
+			<li>The Tamino driver is internally using the method
+			  <code>XMLReaderFactory.createXMLReader()</code>. Unfortunately
+			  this method is using <code>Class.forName(String)</code>
+			  internally to load the SAX driver class. This won't work
+			  in an environment with complex class loaders. In order to
+			  make sure, that the latest SAX version is used, I did the
+			  following:
+			  <ol>
+			  	<li>Downloaded the jar file <code>sax2r2.jar</code> and
+			  	  extracted the jar file <code>sax.jar</code> from it.</li>
+			  	<li>Moved that file to the directory
+			  	  <code>jre/lib/endorsed</code> in my Java SDK directory.</li>
+			  </ol>
+			</li>
+		</ul>
+	</section>
+
+	<section name="An example schema for TaminoAPI4J">
+	  <p>As an example, we'll reuse the schema from the marshaller
+		examples, <code>Address.xsd</code>:</p>
+	  <source><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:ad="http://ws.apache.org/jaxme/test/misc/address"
+    xmlns:inoapi="http://ws.apache.org/jaxme/namespaces/jaxme2/TaminoAPI4J"
+    xmlns:tsd="http://namespaces.softwareag.com/tamino/TaminoSchemaDefinition"
+    jaxb:extensionBindingPrefixes="xjc inoapi"
+    xml:lang="EN"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/address"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+  <xs:annotation>
+    <xs:documentation>
+      A simple JaxMe example: Personal address collection.
+    </xs:documentation>
+    <xs:appinfo>
+      <jaxb:globalBindings>
+        <xjc:serializable/>
+        <inoapi:raDetails collection="adr" jndiReference="java:MyTaminoLocalTxConnector"/>
+        <!-- If you are not using the Tamino Resource Adapter, then the following
+             will fit for you:
+          <inoapi:dbDetails collection="adr" url="http://127.0.0.1/tamino/adrDb"
+            user="me" password="MySecretPassword"/>
+        -->
+      </jaxb:globalBindings>
+      <tsd:schemaInfo name="Address">
+        <tsd:collection name="adr"></tsd:collection>
+      </tsd:schemaInfo>
+    </xs:appinfo>
+  </xs:annotation>
+
+  <xs:element name="Address">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Name">
+		  ...
+		</xs:element>
+	  </xs:sequence>
+	</xs:complexType>
+  </xs:element>
+</xs:schema>
+]]>   	</source>
+	    <p>Ignoring the details of the actual <code>Address</code> type,
+	      we only note the differences in the schema header:
+	    </p>
+	    <ul>
+	      <li>A namespace prefix <code>ad</code> is specified for the
+	      	target namespace. In the previous section we have discussed,
+	      	that this is a precondition.</li>
+	      <li>The element <code>xjc:serializable</code> element requests,
+	      	that the generated classes implement the interface
+	      	<code>java.io.Serializable</code>. This is required for
+	      	use within an EJB container, as the objects wouldn't be
+	      	serializable otherwise. The <code>xjc:serializable</code>
+	      	is a vendor extension from the JAXB RI and supported
+	      	by JaxMe too.</li>
+	      <li>The element <code>tsd:schemaInfo</code> fixes the
+	      	schema and collection name. This element is read by
+	      	Tamino when creating the schema. It is ignored by
+	      	JaxMe.</li>
+	      <li>The element <code>inoapi:raDetails</code> specifies
+	      	the same collection name and a JNDI name. The latter
+	      	name is used to lookup the Tamino resource adapter.</li>
+	      <li>The JAXB specification requires, that the element
+	      	<code>jaxb:globalBindings</code> contains no elements
+	      	from other namespace than <code>jaxb</code>. To add
+	      	vendor extensions like <code>xjc:serializable</code>
+	      	and <code>inoapi:raDetails</code>, we need to add
+	      	the attribute
+	      	<code>jaxb:extensionBindingPrefixes="jaxb inoapi"</code>
+	      	to <code>xs:schema</code>.</li>
+	    </ul>
+	</section>
+
+	<section name="Build your own JaxMe distribution">
+		<p>For licensing reasons, we cannot add the files
+		  <code>TaminoAPI4J.jar</code> and
+		  <code>TaminoJCA.jar</code> to the JaxMe SVN repository.
+		  In particular we cannot offer compiled classes based
+		  on these files in the JaxMe distribution. Unfortunately
+		  that means, that you have to build your own distribution.
+		  Fortunately, this is quite simple:</p>
+		<ul>
+		  <li>Download the JaxMe source distribution (to be
+		  	distinguished from the JaxMe binary distributon)
+		  	and extract it.</li>
+		  <li>Download the TaminoAPI4J distribution and install
+		  	it. Copy the files <code>TaminoAPI4J.jar</code>
+		  	and <code>TaminoJCA.jar</code> to the subdirectory
+		  	<code>prerequisites</code> in the JaxMe directory.</li>
+		  <li>Change to the JaxMe directory and run <code>ant</code>.
+		  	The build script will automatically detect the presence
+		  	of the Tamino API files.</li>
+		</ul>
+		<note>
+		  As of this writing, there is no official JaxMe distribution
+		  available, which includes the Tamino support. In other words,
+		  rather than downloading the sources you have to extract them
+		  from the JaxMe SVN repository.
+		</note>
+	</section>
+
+	<section name="Creating an Ant task">
+		<p>To invoke the JaxMe generator, use an Ant task like
+		  the following:</p>
+		<source><![CDATA[
+	<target name="generate">
+      <taskdef name="xjc" classname="org.apache.ws.jaxme.generator.XJCTask">
+        <classpath>
+		  <fileset dir="lib" includes="jaxme*.jar"/>
+		  <fileset dir="lib" includes="log4j-1.2.8.jar"/>
+        </classpath>
+      </taskdef>
+	  <mkdir dir="${build.src}"/>
+      <xjc target="${build.src}">
+        <schema dir="${etc}" includes="*.xsd"/>
+        <produces dir="${build.src}" includes="org/apache/ws/jaxme/test/misc/address/**/*"/>
+        <sgFactoryChain className="org.apache.ws.jaxme.generator.ino.api4j.TaminoAPI4JSG"/>
+        <schemaReader className="org.apache.ws.jaxme.generator.sg.impl.JaxMeSchemaReader"/>
+      </xjc>
+	</target>
+]]>   	</source>
+	</section>
+
+	<section name="Using the native HTTP API">
+		<p>Not yet documented. (To be done.)</p>
+	</section>
+  </body>
+</document>

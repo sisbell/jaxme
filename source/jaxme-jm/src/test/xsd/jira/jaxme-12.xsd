@@ -1,0 +1,26 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://commons.dspc.net/activitymodel2"
+    xmlns="http://commons.dspc.net/activitymodel2"
+    elementFormDefault="qualified">
+  <xs:element name="Body1">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="html-template"/>
+          <xs:attribute name="text-template"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+
+  <xs:element name="Body2">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string"/>
+      </xs:simpleContent>
+      <xs:attribute name="html-template"/>
+      <xs:attribute name="text-template"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

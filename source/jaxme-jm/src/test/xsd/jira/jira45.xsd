@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:a="http://ws.apache.org/jaxme/test/misc/xsimport/a"
+    xmlns:b="http://ws.apache.org/jaxme/test/misc/xsimport/b"
+    targetNamespace="http://ws.apache.org/jaxme/test/misc/xsimport/a"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+  <xs:import namespace="http://ws.apache.org/jaxme/test/misc/xsimport/b"
+    schemaLocation="jira45.xsi"/>
+
+	<xs:element name="outer">
+	  <xs:complexType>
+	    <xs:sequence>
+		  <xs:element ref="b:inner1"/>
+		  <xs:element ref="b:inner2"/>
+		</xs:sequence>
+	  </xs:complexType>
+	</xs:element>
+</xs:schema>

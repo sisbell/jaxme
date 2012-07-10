@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<sect1><title>Marshalling objects</title>
+<para>This section describes the various ways of marshalling JaxMe objects and
+  how to configure the marshalling process. Note, that this section uses both
+  methods and features, which are specified by JAXB and others, which are
+  proprietary to JaxMe. Explicit remarks will tell you about the latter,
+  so that you are still able to write 100% portable code.</para>
+
+  <sect2><title>Marshaller methods</title>
+    <para>The following methods are specified by JAXB. We'll present each method,
+      followed by a small piece of example code.</para>
+      <variablelist><title>Marshaller methods</title>
+        <varlistentry><term><function>public void marshal(Object, OutputStream) throws JAXBException</function></term>
+          <listitem>
+          	<para>Marshals the object into the given <classname>java.io.OutputStream</classname>.</para>
+          	<example><title>Marshalling into an OutputStream</title>
+          	  <programlisting>
+    public void writeToFile(
+                            JAXBContext pContext, 
+                            Object pObject, 
+                            String pFileName)
+                                throws  JAXBException, 
+                                        IOException {
+        
+        java.io.FileOutputStream fos = new FileOutputStream(pFileName);
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.marshal(pObject, fos);
+
+        fos.close();
+    }
+          	  </programlisting>
+          	</example>
+          	<para>The important thing to note in our case is the use of an encoding.
+          	  Depending on the encoding, the <classname>Marshaller</classname> will convert
+          	  characters (16 bit entities) into bytes (8 bit entities). The encoding may
+          	  also have influence on the marshallers decision, which characters to escape
+          	  using <token>&amp;#ddd;</token> or not.</para> 
+          </listitem>
+        </varlistentry>
+
+        <varlistentry><term><function>public void marshal(Object, Writer) throws JAXBException</function></term>
+          <listitem>
+          	<para>Marshals the object into the given <classname>java.io.Writer</classname>.</para>
+          	<example><title>Marshalling into a Writer</title>
+          	  <programlisting>
+    public void writeToFile(
+                            JAXBContext pContext, 
+                            Object pObject, 
+                            String pFileName)
+                                throws 
+                                        JAXBException, 
+                                        IOException {
+                                        
+        java.io.FileWriter fw = new FileWriter(pFileName);
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.marshal(pObject, fw);
+
+        fw.close();
+    }
+          	  </programlisting>
+          	</example>
+          	<para>This example is almost equivalent to the previous example with an <classname>OutputStream</classname>
+          	  as the target. In practice, the result may be slightly different anyways, for example, because the
+          	  <classname>Marshaller</classname> may choose a different set of characters to escape.</para> 
+          	<example><title>Marshalling into a <classname>String</classname></title>
+          	  <programlisting>
+    public String asString(
+                            JAXBContext pContext, 
+                            Object pObject)
+                                throws 
+                                    JAXBException {
+                                    
+        java.io.StringWriter sw = new StringWriter();
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.marshal(pObject, sw);
+        
+        return sw.toString();
+    }
+          	  </programlisting>
+          	</example>
+          	<para>The example shows, how to convert a JaxMe object into a <classname>String</classname>. Note
+          	  that the use of an encoding still applies, although there occurs no conversion from characters into
+          	  bytes. (In the former example using the <classname>FileWriter</classname> there has been an implicit
+          	  conversion, because any file is in fact a byte stream.) However, the <classname>Marshaller</classname>
+          	  may still choose to escape characters or not.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry><term><function>public void marshal(Object, org.w3c.dom.Node) throws JAXBException</function></term>
+          <listitem>
+            <para>This method is used to convert a JaxMe object into a DOM tree. An instance
+              of <classname>org.w3c.dom.Element</classname> will be created and appended to the given node.
+              <note>The <classname>node</classname> must be ready to accept an element as a child.
+                Suitable nodes are, for example, documents, document fragments, or elements.</note>
+              As an example, we'll demonstrate how to convert the JaxMe object into an instance
+              of <classname>org.w3c.dom.Document</classname>.</para>
+            <example>
+              <programlisting>
+    public Document asDOMDocument(
+                                    JAXBContext pContext, 
+                                    Object pObject,
+                                    javax.xml.parsers.DocumentBuilderFactory pFactory)
+                                        throws 
+                                            JAXBException, 
+                                            javax.xml.parsers.ParserConfigurationException {
+                                            
+        org.w3c.dom.Document result = pFactory.newDocumentBuild().newDocument();
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.marshal(pObject, result);
+        
+        return result;
+    }
+              </programlisting>
+            </example>
+            <para>Note, that no encoding issues arise in this example, because the DOM tree
+              is an abstract representation of the XML documents, much like JaxMe objects.
+              However, the same issues are still to be applied, if you serialize the DOM tree
+              into an <classname>OutputStream</classname> or <classname>Writer</classname>.</para>
+          </listitem>
+        </varlistentry>
+
+		<varlistentry><term><function>public void marshal(Object, org.xml.sax.ContentHandler) throws JAXBException</function></term>
+		  <listitem>
+		    <para>This method is by far the most powerfull of all the marshaller methods: A ContentHandler
+		      is in fact just a generic XML processor, implemented as an event handler. In the case of
+		      JaxMe all the other marshalling methods are just thin wrappers around this one: XML serialization
+		      is implemented by the <classname>XMLWriter</classname>, which is just an extension of the
+		      <classname>ContentHandler</classname>. As an example, we'll demonstrate how to transform a
+		      JaxMe object using an XSL stylesheet, writing the result into an <classname>OutputStream</classname>:
+		      </para>
+		    <example><title>Transformation of a JaxMe object using an XSL stylesheet</title>
+		      <programlisting>
+	public void transformToFile(JAXBContext pContext, 
+                                Object pObject,
+	                            TransformerFactory pFactory, 
+                                String pStylesheetFileName,
+	                            String pOutputFileName)
+                                    throws 
+                                        JAXBException, 
+                                        TransformerConfigurationException {
+                                        
+          javax.xml.transform.Source stylesheetSource =
+                        new javax.xml.transform.StreamSource(
+                                    new java.io.File(pStylesheetFileName));
+                                    
+          javax.xml.transform.Result outputResult =
+                        new javax.xml.transform.StreamResult(
+                                    new java.io.File(pOutputFileName));
+                                    
+          javax.xml.transform.sax.TransformerHandler handler =
+                    ((SAXTransformerFactory) pFactory).newTransformerHandler(stylesheetSource);
+                    
+          handler.setResult(outputResult);
+          handler.getTransformer().setOutputProperty("output.encoding", "UTF-8");
+          
+          Marshaller marshaller = pContext.createMarshaller();
+          marshaller.marshal(pObject, handler);
+    }
+		      </programlisting>
+		    </example>
+		    <note>
+		      <para>The SAX ContentHandler receives an abstract representation of the JaxMe object. So there's no
+		        need to set the <classname>Marshaller</classname>'s encoding. This is the same as in the
+		        DOM example.</para>
+		      <para>However, the above example contains in fact two transformations: The first one is the
+		        stylesheet transformation, performed by the <varname>transformerHandler</varname>.
+		        But there is another, implicit, transformation, which the
+		        <varname>transformerHandler</varname> also performs, because we have choosen an
+		        instance of <classname>StreamResult</classname> as the transformers destination. In other
+		        words, its the <classname>Transformer</classname> who needs to know the desired encoding and not the
+		        <classname>Marshaller</classname>. That's why we set the stylesheet parameter
+		        <token>output.encoding</token>.</para>
+		    </note>
+		  </listitem>
+		</varlistentry>
+
+        <varlistentry><term><function>public void marshal(Object, javax.xml.transform.Result) throws JAXBException</function></term>
+          <listitem>
+            <para>This marshalling method is a generalization of the methods we've seen so far. An instance
+              of <classname>Result</classname> is an abstraction of the marshalling destination. Concrete
+              implementations are the <classname>StreamResult</classname> (writing to an
+              <classname>OutputStream</classname> or <classname>Writer</classname>), the
+              <classname>DOMResult</classname> (creating a DOM tree), and the <classname>SAXResult</classname>,
+              which fires <acronym>SAX</acronym> events into a <classname>ContentHandler</classname>.</para>
+            <para>In theory, a <classname>Result</classname> can encapsulate arbitrary destinations. In
+              practice one is restricted to the above standard cases, because the <classname>Result</classname>
+              has no useful methods at all. In other words, a new implementation can only be used, if all
+              users of the <classname>Result</classname> know how to deal with it. In our case the users
+              include <application>JaxMe</application>.</para>
+            <para>The above limitations are best described, if we use the <application>JaxMe</application>
+              implementation of the method as an example:</para>
+            <example><title><application>JaxMe</application>'s implementation of the <classname>Result</classname>
+              destination</title>
+              <programlisting>
+    public void marshal(Object pObject, Result pResult) 
+                            throws JAXBException {
+                            
+        if (pResult instanceof SAXResult) {
+        
+            ContentHandler ch = ((SAXResult) pResult).getHandler();
+            if (ch == null) {
+            
+                throw new MarshalException("The SAXResult doesn't have its ContentHandler set.");
+            }
+            marshal(pObject, ch);
+            
+        } else if (pResult instanceof StreamResult) {
+        
+            StreamResult sr = (StreamResult) pResult;
+            Writer w = sr.getWriter();
+            if (w == null) {
+            
+                OutputStream s = sr.getOutputStream();
+                if (s == null) {
+                
+                    throw new MarshalException(
+                        "The StreamResult doesn't have its Writer or OutputStream set.");
+                }
+                marshal(pObject, s);
+                
+            } else {
+            
+                marshal(pObject, w);
+            }
+        } else if (pResult instanceof DOMResult) {
+        
+            Node node = ((DOMResult) pResult).getNode();
+            if (node == null) {
+            
+                throw new MarshalException("The DOMResult doesn't have its Node set.");
+            }
+            marshal(pObject, node);
+    
+        } else {
+        
+            throw new MarshalException(
+                "Unknown type of Result: " + pResult.getClass().getName() +
+                ", only SAXResult, StreamResult and DOMResult are supported.");
+        }
+    }
+              </programlisting>
+              </example>
+            <para>In other words, the method is implemented as a thin wrapper around the
+              others we've seen so far. (Funny enough, it would have been possible to go the
+              other way and implement all others as wrappers around this one. However, that
+              would require the presence of an XSLT implementation at runtime and most
+              possibly quite inefficient.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+  </sect2>
+
+  <sect2><title>Marshaller properties</title>
+    <para>In the previous section we've already seen how to configure the <classname>Marshaller</classname>'s
+      encoding by setting a <token>property</token>. In this section we'll present a complete list of all
+      the properties supported by the <application>JaxMe</application> <classname>Marshaller</classname>.
+      </para>
+	<sect3><title><acronym>JAXB</acronym> standard <classname>Marshaller</classname> properties</title>
+	  <para>The following properties are part by the <acronym>JAXB</acronym> specification. In other
+	    words: You are safe to use them with any <acronym>JAXB</acronym> compliant implementation,
+	    including <application>JaxMe</application>. Whenever possible, we recommend to use only this
+	    properties and no others.</para>
+	  <variablelist><title><acronym>JAXB</acronym> standard <classname>Marshaller</classname> properties</title>
+	    <varlistentry>
+	      <term><token>jaxb.encoding</token></term>
+	      <term><classname>Marshaller</classname>.<constant>JAXB_ENCODING</constant></term>
+	      <listitem>
+	        <para>As we have already seen, this property specifies the encoding used by the
+	          <classname>Marshaller</classname>, if applicable. The encoding is used to determine
+	          <itemizedlist>
+	            <listitem>when a character will be escaped using the notation &amp;#ddd; and</listitem>
+	            <listitem>if the method <function>marshal(Object, OutputStream)</function> is used,
+	              how the character is converted into bytes</listitem>
+	          </itemizedlist></para>
+	        <para>For example, if we have the encoding <constant>ISO-8859-1</constant> (also known as
+	          <token>Latin-1</token>), which is mainly used in the U.S. and western europe (Great
+	          Britain, France, Germany, ...) then the <classname>Marshaller</classname> knows, that
+	          no other characters that the character set should be limited to the Unicode points
+	          0..255. In other words, all other characters will be escaped. The <token>Latin-1</token>
+	          characters, however, will be passed through to the <classname>Writer</classname>, or
+	          <classname>OutputStream</classname>, because they are immediately mapped to the
+	          corresponding bytes.</para>
+	      </listitem>
+	    </varlistentry>
+
+	    <varlistentry>
+	      <term><token>jaxb.formatted.output</token></term>
+	      <term><classname>Marshaller</classname>.<constant>JAXB_FORMATTED_OUTPUT</constant></term>
+	      <listitem>
+	        <para>By default, any <classname>Marshaller</classname> will create formatted output,
+	          when marshalling to an <classname>OutputStream</classname> or <classname>Writer</classname>.
+	          In other words, the created output will look roughly like the following:
+	        <programlisting>
+<![CDATA[
+<Person>
+  <FullName>
+    <FirstName>Jochen</FirstName>
+    <SurName>Wiedmann</SurName>
+  </FullName>
+</Person>
+]]>
+	        </programlisting>
+	        As opposed to unformatted output:
+	        <programlisting>
+<![CDATA[
+<Person><FullName><FirstName>Jochen</FirstName><SurName>Wiedmann</SurName></FullName></Person>
+]]>
+	        </programlisting>
+	        The following example turns off the default handling and creates a String containing
+	        unformatted XML:</para>
+	        <example><title>Creating unformatted XML</title>
+              <programlisting>
+    public String asUnformattedString(
+                                JAXBContext pContext, 
+                                Object pObject, 
+                                String pFileName)
+                                    throws 
+                                        JAXBException {
+                                        
+        java.io.StringWriter sw = new StringWriter();
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
+        marshaller.marshal(pObject, sw);
+        
+        return sw.toString();
+    }
+                </programlisting>
+	          </example>
+	      </listitem>
+	    </varlistentry>
+	  </variablelist>
+	  </sect3>
+
+	  <sect3><title><application>JaxMe</application> specific <classname>Marshaller</classname>properties</title>
+	    <warning>The following properties must not be used for portable applications, because they are
+	      proprietary to <application>JaxMe</application>.</warning>
+		<variablelist><title><application>JaxMe</application> specific <classname>Marshaller</classname>properties</title>
+          <varlistentry>
+            <term><token>jaxme.datatype.converter</token></term>
+            <term><classname>JMControllerImpl</classname>.<constant>JAXME_DATATYPE_CONVERTER</constant></term>
+            <listitem>
+              <para>The <classname>javax.xml.bind.DatatypeConverterInterface</classname> is used by
+                <acronym>JAXB</acronym> implementations to convert various data types into strings
+                and vice versa. For example, there is a method <function>parseInt(String)</function>,
+                converting the given string into a primitive integer. Likewise, there is a reverse
+                method <function>printInt(int)</function>, converting the same integer back into a
+                string. The various "parse" methods are used by the <classname>Unmarshaller</classname>
+                and the "print" methods are used by the <classname>Marshaller</classname>.</para>
+              <para>The datatype converter is accessible for two reasons: First of all, you need one
+                when writing custom parse and print methods (as specified by the
+                <token>jaxb:property/jaxb:conversion</token> tags in the schema). In that case you
+                can use a datatype converter by invoking the static methods of the class
+                <classname>DatatypeConverter</classname>, which is internally using a single, global
+                instance of <classname>DatatypeConverterInterface</classname>.</para>
+              <para>In the special case of <application>JaxMe</application>, however, you are by no
+                means restricted to the global instance. In contrary, any <application>JaxMe</application>
+                <classname>Marshaller</classname> or <classname>Unmarshaller</classname> holds an
+                internal instance, by default the global instance from
+                <classname>DatatypeConverter</classname>.</para>
+              <para>The advantage is, that you may customize how documents marshalled by JaxMe may
+                look like. As an example, we'll show how to customize the look of the data type
+                <token>xs:datetime</token>. The XML Schema specification requests, that timestamps
+                are marshalled as <token>yyyy-MM-ddThh:mm:ss</token>, which only few people will
+                like. Additionally the specification requires that timestamps are given in UTC
+                time, not local time.</para>
+              <para>The specification does so for good reason: Timezone and Locale issues are eliminated.
+                If your XML instances conform to the XML Schema format, it is most likely that you won't
+                have interoperability problems with foreign software. Fact is, however, that
+                not all of us are working in a multinational environment and prefer human readable
+                formats and local time.</para>
+              <example><title>Using a custom datatype converter</title>
+                <programlisting>
+    // Create a subclass of the JaxMe datatype converter, overriding its parseDateTime() and
+    // printDateTime() methods.
+    public class MyDatatypeConverter extends org.apache.ws.jaxme.impl.DatatypeConverterImpl {
+
+        public Calendar parseDateTime(String arg0) {
+        
+            DateFormat df = DateFormat.getDateTimeInstance();
+            Calendar cal = Calendar.getInstance();
+            try {
+            
+                cal.setTime(df.parse(arg0));
+                
+            } catch (ParseException e) {
+            
+                if (df instanceof SimpleDateFormat) {
+                
+                    SimpleDateFormat sdf = (SimpleDateFormat) df;
+                    throw new IllegalArgumentException(
+                        "Failed to parse dateTime " + arg0 +
+                        " with pattern " + sdf.toPattern());
+                } else {
+            
+                    throw new IllegalArgumentException("Failed to parse dateTime " + arg0);
+                }
+            }
+            return cal;
+        }
+        
+        public String printDateTime(Calendar arg0) {
+        
+            return DateFormat.getDateTimeInstance().format(arg0.getTime());
+        }
+    }
+
+
+    // Convert a JaxMe object into a String, using the above converter
+    public String asString(JAXBContext pContext, Object pObject)
+                                throws JAXBException {
+                                                
+        java.io.StringWriter sw = new StringWriter();
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.setProperty(
+                                JMControllerImpl.JAXME_DATATYPE_CONVERTER, 
+                                new MyDatatypeConverter());
+        marshaller.marshal(pObject, sw);
+        
+        return sw.toString();
+    }
+                </programlisting>
+              </example>
+              <warning>The above example may cause problems, because it depends on a suitable implementation
+                of the local date format. For example, in some asiatic locales, the default format will
+                contain local characters. The effect is, that you'll need to specify a proper encoding.
+                <token>UTF-8</token> is always the recommended choice.
+              </warning>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+		    <term><token>jaxme.indentation.separator</token></term>
+		    <term><classname>JMMarshallerImpl</classname>.<constant>JAXME_INDENTATION_SEPARATOR</constant></term>
+		    <listitem>
+		      <para>This property is used in conjunction with formatted output. If formatted output is
+		        turned on, it contains the string which is used as a line terminator. The property is
+		        ignored, if formatted output is turned off or marshalling to a <acronym>DOM</acronym>
+		        tree or <acronym>SAX</acronym> <classname>ContentHander</classname> occurs.</para>
+		      <para>The default property value is <token>Line Feed</token> (<acronym>ASCII</acronym> 10,
+		        or <token>\n</token>), which is
+		        the standard on Linux or Unix. On Windows the standard is <token>Carriage Return</token>,
+		        followed by a <token>Line Feed</token> (<acronym>ASCII</acronym> 13 and 10, or
+		        <token>\r\n</token>). Rumours are, they are even using a single <token>Carriage Return</token>
+		        on some Apple Macintosh boxes.</para>
+		      <para>If you want to see the problem live, just take a file with Unix line terminators
+		        and open it in the Windows application <application>Notepad</application>. No matter,
+		        which version of Windows you choose, it remains the same after 20 years of development:
+		        You'll see a text file containing a single line and where you'd expect the lines being
+		        splitted, the editor will show you black boxes only. But rumbling doesn't help, we've got
+		        to live with it.</para>
+		      <para>The following example shows how to turn on Windows line terminators:</para>
+	        <example><title>Turning on Windows line terminators</title>
+              <programlisting>
+    public String asUnformattedString(
+                                        JAXBContext pContext, 
+                                        Object pObject, 
+                                        String pFileName)
+                                            throws JAXBException {
+                                            
+        java.io.StringWriter sw = new StringWriter();
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.setProperty(JMMarshallerImpl.JAXME_INDENTATION_STRING, "\r\n");
+        marshaller.marshal(pObject, sw);
+        
+        return sw.toString();
+    }
+                </programlisting>
+	          </example>
+		      
+		        
+		    </listitem>
+          </varlistentry>
+
+		  <varlistentry>
+		    <term><token>jaxme.indentation.string</token></term>
+		    <term><classname>JMMarshallerImpl</classname>.<constant>JAXME_INDENTATION_STRING</constant></term>
+		    <listitem>
+		      <para>This property is used in conjunction with formatted output. If formatted output is
+		        turned on, it contains the string which is used to indent one element: By default "  " (two
+		        blanks). The property is ignored, if formatted output is turned off or when marshalling
+		        to a <acronym>DOM</acronym> tree or <acronym>SAX</acronym> <classname>ContentHandler</classname>
+		        occurs.</para>
+		      <para>To demonstrate the effect, we'll show two example documents. First an instance with
+		        default indentation:
+		        <programlisting>
+<![CDATA[
+<Person>
+  <FullName>
+    <FirstName>Jochen</FirstName>
+    <SurName>Wiedmann</SurName>
+  </FullName>
+</Person>
+]]>
+                </programlisting>
+                If we set the indentation string to "    " (four blanks), we'll get
+		        <programlisting>
+<![CDATA[
+<Person>
+    <FullName>
+        <FirstName>Jochen</FirstName>
+        <SurName>Wiedmann</SurName>
+    </FullName>
+</Person>
+]]>
+                </programlisting>
+              </para>
+		    </listitem>
+		  </varlistentry>
+
+		  <varlistentry><term><token>jaxme.private.</token></term>
+		    <term><classname>JMControllerImpl</classname>.<constant>JAXME_PRIVATE_</constant></term>
+		    <listitem>
+		       <para>When writing custom code for formatting or parsing element or attribute values,
+		         you will most probably find at any time, that you wish to access data, which isn't
+		         available by default. In most cases you have the data, when invoking the
+		         <classname>Marshaller</classname> but not inside the formatter or parser.
+		         A typical example might be, that you want to localize the resulting XML
+		         document by using a resource bundle.</para>
+		       <para>The <application>JaxMe</application> <classname>Marshaller</classname> allows
+		         to set arbitrary, application specific properties, but only if they are prefixed
+		         with <token>jaxme.private.</token>. The idea is that an unknown property name
+		         is most probably just a typo or a similar problem and it is better to throw
+		         an exception to let the programmer know that there's something wrong. However,
+		         if the property name is prefixed with <token>jaxme.private.</token>, the
+		         <application>JaxMe</application> user advises, that "this unknown property is
+		         fine".</para>
+		       <warning>Custom property values are arbitrary. However, you should not attempt to
+		         distinguish the between the cases <token>null</token> and missing, because the
+		         JAXB specification has nothing like a collections method
+		         <function>contains(Object)</function>.</warning>
+		    </listitem>
+		  </varlistentry>
+
+          <varlistentry><term><token>jaxme.xml.declaration</token></term>
+            <term><classname>JMMarshallerImpl</classname>.<constant>JAXME_XML_DECLARATION</constant></term>
+            <listitem>
+              <para>When writing to an <classname>OutputStream</classname> or <classname>Writer</classname>,
+                it is likely that you want your resulting XML document to have an XML declaration like
+                <programlisting>
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+                </programlisting>
+                By default JaxMe does not create such a declaration, because that would make it difficult
+                to embed the resulting XML into a larger document.</para>
+              <para>An XML declaration is particularly important, if you use another encoding than
+                <constant>UTF-8</constant>. In that case you should consider a declaration as
+                mandatory.</para>
+              <para>The property has no effect, when marshalling to DOM trees, or SAX handlers.</para>
+              <example><title>Enabling an XML declaration</title>
+                <programlisting>
+    // Convert a JaxMe object into a String, using the above converter
+    public String asString(JAXBContext pContext, Object pObject)
+                                                throws JAXBException {
+                                                
+        java.io.StringWriter sw = new StringWriter();
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.setProperty(JMMarshallerImpl.JAXME_XML_DECLARATION, Boolean.TRUE);
+        marshaller.marshal(pObject, sw);
+        
+        return sw.toString();
+    }
+                </programlisting>
+              </example>
+            </listitem>
+          </varlistentry>
+
+		  <varlistentry><term><constant>jaxme.xml.writer</constant></term>
+		    <term><application>JMMarshallerImpl</application>.<constant>JAXME_XML_WRITER</constant></term>
+		    <listitem>
+		      <para>If the above properties still don't satisfy your needs, this property is your
+		        friend. It allows to take complete control on the created XML document, when
+		        marshalling to an <classname>OutputStream</classname> or <classname>Writer</classname>.
+		        (It takes no effect otherwise.)</para>
+		      <para>The property value is an instance of <classname>java.lang.Class</classname>
+		        implementing <classname>org.apache.ws.jaxme.XMLWriter</classname>, which is in turn
+		        extending <classname>org.xml.sax.ContentHandler</classname>. That means, that you
+		        can do arbitrary things, including use of an XSLT stylesheet and stuff like that.</para>
+		      <para><application>JaxMe</application> comes with three ready-to-use implementations:
+		        <variablelist>
+		          <varlistentry><term><classname>org.apache.ws.jaxme.impl.XMLWriterImpl</classname></term>
+		            <listitem>
+		              <para>This is the default implementation, suitable for any encoding and Java
+		                platform. It is very simple: It is in fact using the <token>US-ASCII</token>
+		                encoding, escaping all Unicode points above 126.</para>
+		            </listitem>
+		          </varlistentry>
+		          <varlistentry><term><classname>org.apache.ws.jaxme.impl.CharSetXMLWriter</classname></term>
+		            <listitem>
+		              <para>This implementation is used, whenever you are running Java 1.4 or newer.
+		                It is internally using the class <classname>java.nio.charset.CharsetEncoder</classname>
+		                to determine the Unicode points being escaped.</para>
+		            </listitem>
+		          </varlistentry>
+		          <varlistentry><term><classname>org.apache.ws.jaxme.impl.PassThroughXMLWriter</classname></term>
+		            <listitem>
+		              <para>This implementation does no escaping at all.</para>
+		            </listitem>
+		          </varlistentry>
+		        </variablelist></para>
+		      <para>As an example, we'll write and use and <classname>XMLWriter</classname> which is
+		        escaping the german Umlauts, but no other characters.</para>
+		      <example><title>Implementation of an XMLWriter escaping german Umlauts</title>
+		        <programlisting>
+    public class UmlautXMLWriter extends org.apache.ws.jaxme.impl.XMLWriterImpl {
+      protected boolean canEncode(char c) {
+        switch (c) {
+          case 228:
+          case 246:
+          case 252:
+          case 196:
+          case 214:
+          case 220:
+          case 223:
+            return false;
+          default:
+            return true;
+        }
+      }
+    }
+
+    // Convert a JaxMe object into a String, using the above XMLWriter
+    public String asString(JAXBContext pContext, Object pObject)
+                                                        throws JAXBException {
+                                                        
+        java.io.StringWriter sw = new StringWriter();
+        
+        Marshaller marshaller = pContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.setProperty(JMMarshallerImpl.JAXME_XML_WRITER, UmlautXMLWriter.class);
+        marshaller.marshal(pObject, sw);
+        
+        return sw.toString();
+    }
+		        </programlisting>
+		      </example>
+		    </listitem>
+		  </varlistentry>
+		</variablelist>
+        </sect3>
+    </sect2>
+</sect1>

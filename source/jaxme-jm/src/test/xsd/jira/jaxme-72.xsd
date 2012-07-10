@@ -1,0 +1,8 @@
+<xs:schema targetNamespace='http://apache.org/ws/jaxme/test/jira72'
+	    xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+  <xs:element name='jaxme-72'>
+    <xs:complexType>
+      <xs:attribute name="test" type="xs:QName"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

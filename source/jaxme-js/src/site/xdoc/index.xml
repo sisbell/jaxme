@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>
+	  JaxMeAPI: A clean room implementation of the JAXB API
+	</title>
+  </properties>
+  <body>
+    <section name="The JaxMe JavaSource framework">
+      <p>This is a framework for generating Java sources. It is based on an
+        abstraction of Java source files. For instance, there is an object called
+        <a href="apidocs/org/apache/ws/jaxme/js/JavaSource.html"><code>JavaSource</code></a>.
+        This object can have embedded instances of
+        <a href="apidocs/org/apache/ws/jaxme/js/JavaMethod.html"><code>JavaMethod</code></a> or
+        <a href="apidocs/org/apache/ws/jaxme/js/JavaField.html"><code>JavaField</code></a>,
+        it can have inner classes, constructors, and so on. You get the idea.
+        Compared to a basic approach of just using <code>Writer.write(String)</code>,
+        the framework has the obvious disadvantage of additional complexity and
+        overhead. However, it also has some advantages:</p>
+      <ol>
+        <li>Your sources become more readable and simpler, for example by
+          automatically importing external classes, if required.</li>
+        <li>Postprocessing the generated sources is much easier. You get
+          the chance to generate sources in multiple steps, or in a pipeline
+          like this:
+          <table><caption>Sourge generation pipeline</caption>
+            <tr>
+              <td>If collection: Generate an iterator loop, otherwise: Skip</td>
+              <td>----&gt;</td>
+              <td>Handle the case of a single value</td>
+            </tr>
+          </table>
+          </li>
+        <li>Your generator is much more controlled by the compiler and
+          suitable for refactoring. This is best illustrated by looking at the
+          following example:
+		  <source>
+  JavaMethod jm;
+  jm.addLine(MyClass.class, " myInstance = new ", MyClass.class, "();");
+		  </source>
+          This example assumes the existance of a class "MyClass". The compiler
+          verifies the existance and a refactoring module might, for example,
+          rename this class.</li>
+        <li>It has a lot of nice shortcuts, for example:
+    <source>
+  addTry();
+  addLine("int i = Integer.parseInt(s);");
+  addCatch(NumberFormatException.class);
+  addThrowNew(IllegalArgumentException.class,
+              JavaSource.getQuoted("Invalid integer argument: "), " + s");
+  addEndTry();
+    </source>
+        </li>
+      </ol>
+    </section>
+
+    <anchor id="history"/>
+    <section name="History">
+    <p>The framework was originally part of the
+      <a href="http://jaxme.sourceforge.net/docs/site/">JaxMe 1</a> generator, the predecessor of
+      <a href="http://ws.apache.org/jaxme/">JaxMe 2</a>.
+      It got greatly improved as part on the work of JaxMe 2.
+      Roughly in January 2003 it began to live a life of its own, because the framework
+      was picked up for other projects. So it made sense to separate JaxMeJS in an own
+      jar file and make JaxMe 2 based on it.</p>
+    <p>In a way, the JavaSource framework is still a part of JaxMe, because it lives
+      under the same Apache hat. The sources are located in the same
+      SVN server and the distribution comes from the same file server.
+      The administrators and developers are typically the same. We'll see, what the
+      future brings.</p>
+    </section>
+  </body>
+</document>

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>Working with SQL</title>
+  </properties>
+  <body>
+    <section name="Working with SQL">
+      <warning>As of this writing, the SQL support is in early stages.
+        Some things described here are hardly more than planned and the API
+        will probably change rapidly.</warning>
+      <p>Quite many Java applications working with source generators are also
+        working with SQL. It seems natural to develop a generic SQL generation
+        framework, because it can make the actual generator much more simple and
+        readable.</p>
+      <p>The basic concepts are comparable to the Java source generation framework:
+        There is a factory, which allows you to create schema, table, column,
+        index, statement objects and the like. And there is also an API which
+        allows to manipulate these objects on a certain level of abstraction.</p>
+      <p>In what follows we describe the concept of the SQL generator by means
+        of some examples. The generator has the same objects that the actual
+        database will have: A schema, tables, columns, statements, and so on.</p>
+    </section>
+
+	<anchor id="schema"/>
+	<section name="Creating a schema">
+      <p>The SQL generator assumes that any table belongs to a schema.
+      In other words, before creating a table, you have to create a schema:</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.Schema;
+  import org.apache.ws.jaxme.sqls.SQLFactory;
+  import org.apache.ws.jaxme.sqls.impl.SQLFactoryImpl;
+  
+  SQLFactory factory = new SQLFactoryImpl();
+  Schema schema = factory.newSchema("myschemaname");
+  System.out.println(schema.getName().toString()); // Prints myschemaname
+      </source>
+      <p>However, it is not unusual to avoid the schema. Even more, there are
+        SQL databases like <a href="http://www.mysql.org/">MySQL</a> which do not
+        even support a schema. In that case you simply use the so-called default
+        schema. The only difference between the default schema and other schemas
+        is that the former doesn't have a name.</p>
+      <source>
+  Schema schema = factory.getDefaultSchema();
+  System.out.println(schema.getName().toString()); // Prints null
+      </source>
+	</section>
+
+    <anchor id="table"/>
+    <section name="Creating a table">
+      <p>Now that we have a schema, we may populate it with tables
+        and the tables with columns. Suggest the following statement:</p>
+      <source>
+  CREATE TABLE mytable (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name VARCHAR(40) NOT NULL,
+    price DOUBLE,
+    UNIQUE(name));
+      </source>
+      <p>In the framework this looks like the following:</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.Table;
+  import org.apache.ws.jaxme.sqls.Column;
+
+  Table mytable = schema.newTable("mytable");
+  Column id = table.newColumn("id", Column.Type.INTEGER);
+  id.setNullable(false);
+  mytable.newPrimaryKey().addColumn(id);
+  Column name = table.newColumn("name", Column.Type.VARCHAR);
+  name.setLength(40);
+  name.setNullable(false);
+  mytable.newKey().addColumn(name);
+  Column price = table.newColumn("price", Column.Type.DOUBLE);
+      </source>
+    </section>
+
+    <anchor id="insert"/>
+    <section name="Creating an INSERT statement">
+      <p>Now that we have our tables, we probably want to create an
+        INSERT statement like</p>
+      <source>
+  INSERT INTO mytable (id, name, price) VALUES (?, ?, 0.0)
+      </source>
+      <p>Here's how we do this:</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.InsertStatement;
+  import org.apache.ws.jaxme.sqls.SQLGenerator;
+  import org.apache.ws.jaxme.sqls.impl.SQLGeneratorImpl;
+
+  SQLGenerator generator = new SQLGeneratorImpl();
+  InsertStatement stmt = table.getInsertStatement();
+  System.out.println(generator.getQuery(stmt));
+      </source>
+      <p>The <code>getInsertStatement()</code> method is a shortcut
+        for the following:</p>
+      <source>
+  InsertStatement stmt = factory.newInsertStatement();
+  stmt.setTable(mytable);
+  stmt.addSet(id);
+  stmt.addSet(name);
+  stmt.addSet(price, (double) 0.0);
+      </source>
+    </section>
+
+    <anchor id="select"/>
+    <section name="Creating a SELECT statement">
+      <p>Quite similar to the above is the creation of a SELECT statement:</p>
+      <source>
+  SELECT id, name, price FROM mytable
+      </source>
+      <p>A shortcut for the above would be:</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.SelectStatement;
+
+  SelectStatement stmt = table.getSelectStatement();
+  System.out.println(generator.getQuery(stmt));
+      </source>
+      <p>The longer version goes like this:</p>
+      <source>
+  SelectStatement stmt = factory.newSelectStatement();
+  stmt.setTable(mytable);
+  stmt.addResultColumn(id);
+  stmt.addResultColumn(name);
+  stmt.addResultColumn(price);
+      </source>
+      <p>However, we possible want to add a WHERE clause like</p>
+      <source>
+  WHERE id=? AND price > 1.0
+      </source>
+      <p>This can be done like the following:</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.CombinedConstraint;
+
+  CombinedConstraint whereClause = stmt.getWhere();
+  BooleanConstraint idClause = whereClause.createEQ();
+  idClause.addPart(id);
+  idClause.addPlaceHolder();
+  BooleanConstraint priceClause = whereClause.createEQ();
+  priceClause.addPart(price);
+  priceClause.addPart((double) 1.0);
+  System.out.println("SELECT statement with WHERE clause: " +
+                     generator.getQuery(stmt));
+      </source>
+    </section>
+
+    <anchor id="update"/>
+    <section name="Creating an UPDATE statement">
+      <p>A typical UPDATE statement for <code>mytable</code> would be</p>
+      <source>
+  UPDATE mytable SET name = 'foo', price = ? WHERE id = ?
+      </source>
+      <p>The SQL generator allows to do that in the following manner:</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.UpdateStatement;
+
+  UpdateStatement stmt = schema.newUpdateStatement();
+  stmt.setTable(table);
+  stmt.addSet("name", "foo");
+  stmt.addSet("price");
+  CombinedConstraint whereClause = stmt.getWhere();
+  BooleanConstraint idClause ) whereClause.createEQ();
+  idClause.addPart(id);
+  idClause.addPlaceHolder();
+  System.out.println("UPDATE statement: " +
+                     generator.getQuery(stmt));
+      </source>
+      <p>For this particular <code>UPDATE</code> query, there also
+        is a shortcut:</p>
+      <source>
+  UpdateStatement stmt = table.getUpdateStatement();
+  System.out.println("UPDATE statement: " +
+                     generator.getQuery(stmt));
+      </source>
+    </section>
+
+    <anchor id="delete"/>
+    <section name="Creating a DELETE statement">
+      <p>Most probably you already guess how to create the following
+        <code>DELETE</code> statement:</p>
+      <source>
+  DELETE FROM mytable WHERE id = ?
+      </source>
+      <p>The shortcut is:</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.DeleteStatement;
+
+  DeleteStatement stmt = table.getDeleteStatement();
+  System.out.println("DELETE statement: " +
+                     generator.getQuery(stmt));
+      </source>
+      <p>And here is the longer version:</p>
+      <source>
+  DeleteStatement stmt = schema.newDeleteStatement();
+  stmt.setTable(table);
+  CombinedConstraint whereClause = stmt.getWhere();
+  BooleanConstraint idClause ) whereClause.createEQ();
+  idClause.addPart(id);
+  idClause.addPlaceHolder();
+  System.out.println("DELETE statement: " +
+                     generator.getQuery(stmt));
+      </source>
+    </section>
+
+    <anchor id="create"/>
+    <section name="Creating one or more CREATE TABLE statements">
+      <p>Is it possible to recreate the above CREATE TABLE statement from
+        the above <code>table</code> variable? Of course it is:</p>
+        <source>
+  Collection c = generator.getCreate(table);
+  for (Iterator iter = c.iterator();  iter.hasNext();  ) {
+    String s = (String) iter.next();
+    System.out.println("Statement: " + s);
+  }
+        </source>
+      <p>You probably wonder why the <code>getCreate(Table)</code> method
+        returns a collection? And you are mostly right, as the above collection
+        will typically contain a single statement. However, it is not unusual
+        that an index must be created in a separate statement. In this case
+        it might happen, that the collection returns multiple strings.</p>
+      <p>It is also possible to create a schema:</p>
+      <source>
+  Collection c = generator.getCreate(schema);
+  for (Iterator iter = c.iterator();  iter.hasNext();  ) {
+    String s = (String) iter.next();
+    System.out.println("Statement: " + s);
+  }
+      </source>
+      <p>However, you possibly want to create not only the schema, but
+        the tables as well. Voila:</p>
+      <source>
+  Collection c = generator.getCreate(schema, true);
+  for (Iterator iter = c.iterator();  iter.hasNext();  ) {
+    String s = (String) iter.next();
+    System.out.println("Statement: " + s);
+  }
+      </source>
+    </section>
+
+    <anchor id="extensions"/>
+    <section name="Vendor specific extensions">
+      <p>Vendor specific extensions and vendor specific SQL dialects are available
+        through subclasses of <code>SQLFactoryImpl</code>. As of this writing, the
+        only available subclass is <code>DB2SQLFactoryImpl</code>. To use it,
+        simply replace</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.SQLFactory;
+  import org.apache.ws.jaxme.sqls.SQLFactoryImpl;
+
+  SQLFactory factory = new SQLFactoryImpl();
+      </source>
+      <p>with</p>
+      <source>
+  import org.apache.ws.jaxme.sqls.db2.DB2SQLFactory;
+  import org.apache.ws.jaxme.sqls.db2.DB2SQLFactoryImpl;
+
+  SQLFactory factory = new SQLFactoryImpl();
+      </source>
+      <p>In the special case of DB2 this will soon enable access to features like
+        table spaces or buffer pools.</p>
+    </section>
+  </body>
+</document>

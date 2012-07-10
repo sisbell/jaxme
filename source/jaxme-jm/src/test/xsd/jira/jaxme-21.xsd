@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xml:lang="EN"
+    targetNamespace="http://msqr.us/xsd/ieat"
+    jaxb:version="1.0"
+    xmlns:eat="http://msqr.us/xsd/ieat"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+    
+     <annotation>
+    	<appinfo>
+    		<jaxb:globalBindings>
+				<jaxb:javaType name="java.lang.Integer"  xmlType="xs:int"/>
+    		</jaxb:globalBindings>
+			<jaxb:schemaBindings>
+    			<jaxb:package name="magoffin.matt.ieat.domain"/>
+    		</jaxb:schemaBindings>
+    	</appinfo>
+    </annotation>
+	
+	<complexType name="base">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="baseId" type="int" use="optional"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="course">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="courseId" type="int"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="difficulty">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="difficultyId" type="int"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="ethnicity">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="ethnicityId" type="int"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="ingredient">
+		<sequence>
+			<element name="name" type="string" />
+			<element name="description" type="string" />
+		</sequence>
+		<attribute name="ingredientId" type="int">
+			<annotation><appinfo>
+				<jaxb:property generateIsSetMethod="true"/>
+			</appinfo></annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="prep-time">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="prepTimeId" type="int"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="recipe">
+		<sequence>
+			<element name="name" type="string" />
+			<element name="excerpt" type="string" 
+				minOccurs="0"/>
+			<element name="source" type="string"
+				minOccurs="0"/>
+			<element name="directions" type="string"/>
+			<element name="base" type="eat:base"
+				minOccurs="0"/>
+			<element name="ethnicity" type="eat:ethnicity"
+				minOccurs="0"/>
+			<element name="difficulty" type="eat:difficulty"
+				minOccurs="0"/>
+			<element name="system" type="eat:system"/>
+			<element name="ingredient" type="eat:recipe-ingredient" 
+				minOccurs="0" maxOccurs="unbounded"/>
+			<!--
+			<element name="related-recipe" type="eat:related-recipe"
+				minOccurs="0" maxOccurs="unbounded"/>-->
+		</sequence>
+		<attribute name="recipeId" type="int">
+			<annotation><appinfo>
+				<jaxb:property generateIsSetMethod="true"/>
+			</appinfo></annotation>
+		</attribute>
+		<attribute name="servingSize" type="int"/>
+		<attribute name="createdDate" type="dateTime"/>
+		<attribute name="modifiedDate" type="dateTime"/>
+	</complexType>
+	
+	<complexType name="recipe-ingredient">
+		<sequence>
+			<element name="ingredient" type="eat:ingredient"/>
+			<element name="unit" type="eat:unit"/>
+		</sequence>
+		<attribute name="quantity" type="int"/>
+		<attribute name="qualifier" type="string"/>
+		<attribute name="optional" type="boolean"/>
+		<attribute name="ordering" type="short"/>
+	</complexType>
+
+	<complexType name="related-recipe">
+		<sequence>
+			<element name="kind" type="eat:relation-kind"/>
+			<element name="recipe" type="eat:recipe"/>
+		</sequence>
+		<attribute name="relationKindId" type="int"/>
+	</complexType>
+
+	<complexType name="relation-kind">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="relationKindId" type="int"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="system">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="systemId" type="int"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="unit">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="unitId" type="int"/>
+				<attribute name="abbreviation" type="string"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="user">
+		<sequence>
+			<element name="name" type="string" />
+			<element name="email" type="string" />
+			<element name="password" type="string"/>
+		</sequence>
+		<attribute name="login" type="string"/>
+		<attribute name="accessLevel" type="int"/>
+		<attribute name="userId" type="int">
+			<annotation><appinfo>
+				<jaxb:property generateIsSetMethod="true"/>
+			</appinfo></annotation>
+		</attribute>
+		<attribute name="language" type="string"/>
+		<attribute name="country" type="string"/>
+		<attribute name="createdDate" type="dateTime"/>
+		<attribute name="lastLoginDate" type="dateTime"/>
+	</complexType>
+	
+  <complexType name="VisualType">
+    <all>
+      <element name="periodlist">
+        <complexType>
+          <sequence>
+            <element name="period" type="string" maxOccurs="unbounded">
+              <annotation><appinfo>
+                <jaxb:property generateIsSetMethod="true"/>
+              </appinfo></annotation>
+            </element>
+          </sequence>
+		</complexType>
+	  </element>
+	</all>
+  </complexType>
+</schema>

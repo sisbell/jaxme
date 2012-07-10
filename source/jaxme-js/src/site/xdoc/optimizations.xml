@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "document-v12.dtd">
+<document>
+  <properties>
+    <title>Optimizations</title>
+  </properties>
+  <body>
+    <section name="Optimizations">
+      <p>Automatically generated code tends to become unnecessarily
+        complex and unreadable. This page summarizes some optimization
+        concepts offered by JaxMeJS and possible strategies to use them.</p>
+    </section>
+
+    <anchor id="directAccessible"/>
+    <section name="The DirectAccessible interface">
+      <p>In general JaxMeJS deals with objects, in the most general sense.
+        An object can be almost everything: An array or collection containing
+        a piece of code, a variable, method, or class name or whatever else.
+        While this is fine for the most situations, it can become difficult
+        in the following example:</p>
+      <source>
+     Object value;
+     return new Object[]{"((", value, ") * (", value, "))"};
+      </source>
+      <p>The example computes the square of the given "value". This example
+        is obviously fine, if "value" contains a simple variable name or
+        something similar. But how about that:</p>
+      <source>
+     value = "Math.sin(x)";
+      </source>
+      <p>The computation of a sine can become relatively expensive, in particular,
+        if the same computation is performed twice. However, at least the example
+        works, which is no longer the case here:</p>
+      <source>
+     value = "i++";
+      </source>
+      <p>Filling this value in the above example would yield</p>
+      <source>
+     ((i++) * (i++))
+      </source>
+      <p>This is simply wrong, because the variable "i" is incremented twice.
+        The obvious solution is the use of a local Java field, as in the
+        following example:</p>
+      <source>
+     Object value;
+     JavaQName type;
+     LocalJavaField v = method.newJavaField(type);
+     v.setFinal(true);
+     v.addLine(value);
+     return new Object[]{"((", v, ") * (", v, "))"};
+      </source>
+      <p>This is obviously better, as it handles both the performance problem
+        caused by the sine computation and the logical problem caused by the
+        increment. However, if you start using such local fields, your code will
+        soon start to look like the following:</p>
+      <source>
+     String val;
+     String _1 = val;
+     String _2 = _1;
+      </source>
+      <p>Again, this is something we do not actually like to see. JaxMeJS suggests
+        the use of the
+        <a href="apidocs/org/apache/ws/jaxme/js/DirectAccessible.html">DirectAccessible</a>
+        interface. This is an interface implemented by objects, which are accessible
+        immediately and fast: Class and instance fields, method parameters, and
+        local fields. This allows the following final example:</p>
+      <source>
+     Object value;
+     JavaQName type;
+     if (!(value instanceof DirectAccessible)) {
+       LocalJavaField v = method.newJavaField(type);
+       v.setFinal(true);
+       v.addLine(value);
+       value = v;
+     }
+     return new Object[]{"((", value, ") * (", value, "))"};
+      </source>
+    </section>
+
+    <anchor id="nullChecks"/>
+    <section name="Avoiding unnecessary checks for null">
+      <p>The 
+        <a href="apidocs/org/apache/ws/jaxme/js/DirectAccessible.html">DirectAccessible</a>
+        interface can also be used to avoid situations like this:</p>
+      <source>
+  public void doThis(JavaMethod pMethod, Object pValue) {
+    pMethod.addIf(pValue, " == null");
+    pMethod.addThrowNew(NullPointerException.class, "value must not be null");
+    pMethod.addEndIf();
+    addLine("// Do this here ...");
+    doThat(pMethod, pValue);
+  }
+  public void doThat(JavaMethod pMethod, Object pValue) {
+    pMethod.addIf(pValue, " == null");
+    pMethod.addThrowNew(NullPointerException.class, "value must not be null");
+    pMethod.addEndIf();
+    addLine("// Do that here ...");
+  }
+      </source>
+      <p>If we invoke the method <code>doThis(method, someVariable)</code>, it is
+      creates the following code:</p>
+      <source>
+  if (someVariable == null) {
+    throw new NullPointerException("value must not be null");
+  }
+  // Do this here ...
+  if (someVariable == null) {
+    throw new NullPointerException("value must not be null");
+  }
+  // Do that here ...
+      </source>
+      <p>A better approach would be:</p>
+      <source>
+  public void doThis(JavaMethod pMethod, Object pValue, JavaQName pType) {
+    DirectAccessible value;
+    if (pValue instanceof DirectAccessible) {
+      value = pValue;
+    } else {
+      LocalJavaField foo = pMethod.newJavaField(pType);
+      foo.addLine(pValue);
+      value = foo;
+    }
+    if (value.isNullable()) {
+      pMethod.addIf(pValue, " == null");
+      pMethod.addThrowNew(NullPointerException.class, "value must not be null");
+      pMethod.addEndIf();
+      value.setNullable(false);
+    }
+    addLine("// Do this here ...");
+    doThat(pMethod, pValue, pType);
+  }
+  public void doThat(JavaMethod pMethod, Object pValue, JavaQName pType) {
+    DirectAccessible value;
+    if (pValue instanceof DirectAccessible) {
+      value = pValue;
+    } else {
+      LocalJavaField foo = pMethod.newJavaField(pType);
+      foo.addLine(pValue);
+      value = foo;
+    }
+    if (value.isNullable()) {
+      pMethod.addIf(pValue, " == null");
+      pMethod.addThrowNew(NullPointerException.class, "value must not be null");
+      pMethod.addEndIf();
+      value.setNullable(false);
+    }
+    addLine("// Do that here ...");
+  }
+      </source>
+      <p>In the worst case, this will create the following code:</p>
+      <source>
+  if (someVariable == null) {
+    throw new NullPointerException("value must not be null");
+  }
+  // Do this here ...
+  // Do that here ...
+      </source>
+      <p>Note, that loop variables, as generated by <code>addForArray()</code>,
+        <code>addForIterator</code>, or <code>addForList</code>, will never be
+        nullable. In other words, the following code sequence will emit no checks
+        for null at all:</p>
+      <source>
+  DirectAccessible loopVar = pMethod.addForList(list);
+  pMethod.doThis();
+  pMethod.addEndFor();
+      </source>
+    </section>
+  </body>
+</document>

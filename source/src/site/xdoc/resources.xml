@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<document> 
+  <properties> 
+    <title>Resources</title> 
+  </properties> 
+  <body> 
+    <anchor id="jira"/>
+    <section name="Bug tracking system">
+        <p>To file a bug report or search for known bugs, use
+          <link href="ext:jira">Jira</link>.</p>
+    </section>
+
+    <anchor id="view-svn"/>
+    <section name="Browse the JaxMe sources">    
+        <p>
+Thanks to Subversion, the contents of the JaxMe SVN project 
+can be <link href='ext:jaxmerepo'>browsed online</link>.
+        </p>
+    </section>
+
+    <anchor id="jelly-jaxme"/>
+    <section name="JaxMe Jelly Tag Library">
+        <p>
+<link href='ext:jelly'>Jelly</link> is a tool for turning XML into executable code.
+One common use is to drive complex build scripts typically embedding ant but Jelly's
+flexibility is it's strength. There are many uses to which Jelly can be put.
+        </p>
+        <p>
+Jelly is extensible. The principle way that Jelly can be extended is through jelly
+tag libraries. If you know JSP custom tags, then this idea should be pretty familiar.
+        </p>
+        <p>
+(Basic) Jelly tag libraries for JaxMe can be found  
+<link href='ext:jaxme-jelly-tag-library'>here</link> and a list of tags
+<link href='ext:jaxme-jelly-tags'>here</link>.
+        </p>
+    </section>
+
+    <anchor id="Wiki"/>
+    <section name="The JaxMe Wiki">
+        <p>The <link href="ext:wiki">JaxMe Wiki</link> allows
+          you to add notes, opinions, suggestions, or whatever
+          else may make sense for others to know. And, of course,
+          you may also view other peoples notes, opinions, etc.
+          there. :-)</p>
+    </section>
+
+    <anchor id="FAQ"/>
+    <section name="The JaxMe FAQ">
+        <p>A <link href="ext:faq">JaxMe FAQ</link> is available
+          as part of the <link href="ext:wiki">JaxMe Wiki</link>.
+          Note, that you are able to add questions or modify answers
+          in the Wiki.</p>
+    </section>
+
+	<anchor id="External"/>
+	<section name="External links">
+	    <p><link href="mailto:brett@oreilly.com">Brett McLaughlin</link>,
+	      author of <link href="http://www.oreilly.com/catalog/javaxml2/index.html">
+	      Java &amp; XML</link>, and
+	      <link href="http://www.oreilly.com/catalog/javaxmldatabind/index.html">
+	      Java &amp; XML Data Binding</link>, and
+	      <link href='ext:zeus'>Zeus</link>, wrote a very nice article on JaxMe:
+	      <link href="http://www-106.ibm.com/developerworks/xml/library/x-pracdb4/">
+	      Practical data binding: JaxMe - The new kid on the block</link>.
+	      The second part is
+	      <link href="http://www-106.ibm.com/developerworks/library-combined/x-pracdb5.html">
+	      Practical data binding: Converting to and from XML with JaxMe</link>.</p>	      
+	</section>
+  </body>
+</document>

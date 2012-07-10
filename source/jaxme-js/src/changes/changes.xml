@@ -1,0 +1,75 @@
+<document>
+  <properties>
+    <title>Changes in JaxMe JS</title>
+  </properties>
+  <body>
+    <release version="0.6-SNAPSHOT" date="Not yet released">
+      <action dev="jochen" type="fix">
+        Upgrade to the latest version of java15.g.
+      </action>
+      <action dev="jochen" type="fix" context="js"
+          due-to="Kenney Westerhof" due-to-email="kenney@apache.org"
+          issue="JAXME-77">
+        The Java parser does now support wildcard imports.
+      </action>
+      <action dev="jochen" type="fix" context="js"
+          due-to="Andreas Neumann" due-to-email="Andreas.Neumann@arvato-mobile.de"
+          issue="JAXME-89">
+        The JavaParser wasn't able to handle "implements I1, I2, ...", or
+        "extends C1, C2, ...".
+      </action>
+    </release>
+    <release version="0.5.2" date="25-Oct-2006"/>
+    <release version="0.5.1" date="6-Jan-2006">
+      <action dev="jochen" type="add" due-to="Frederic Ahring"
+          due-to-email="fahring@de.ibm.com">
+        Added several methods for modifying and querying the
+        methods signature.
+      </action>
+      <action dev="jochen" type="add">
+        Added the BeanSchemaWriter, which converts a Java bean
+        into an XML schema.
+      </action>
+    </release>
+    <release version="0.5" date="2005-Aug-08">
+      <action dev="jochen" type="add" due-to="Frederic Ahring"
+          due-to-email="fahring@de.ibm.com">
+        Added JavaSource.getConstructor(JavaQName[]).
+      </action>
+      <action dev="jochen" type="fix" due-to="Frederic Ahring"
+          due-to-email="fahring@de.ibm.com">
+        The method JavaSource.addThrows() does now verify,
+        whether an exception is already declared.
+      </action>
+      <action dev="jochen" type="fix" due-to="Frederic Ahring"
+          due-to-email="fahring@de.ibm.com">
+        The method JavaSource.newBeanProperty() was mismatching
+        void and boolean when checking for "isFoo" vs. "getFoo".
+      </action>
+      <action dev="jochen" type="fix" due-to="Frederic Ahring"
+          due-to-email="fahring@de.ibm.com">
+        Got rid of JavaQNameImpl.getInstance(String, boolean).
+      </action>
+      <action dev="jochen" type="fix">
+        The methods AbstractJavaMethod.getParamNames() and getParamTypes()
+        are throwing an ArrayIndexOutOfBoundsException.
+      </action>
+    </release>
+    <release version="0.5beta" date="2005-Jul-13">
+      <action dev="jochen" type="fix" due-to="Frederic Ahring"
+          due-to-email="fahring@de.ibm.com">
+        The JavaParser didn't handle multidimensional arrays
+        properly.
+      </action>
+      <action dev="mac" type="fix" issue="JAXME-48">
+        Fixed primitive array generation in IndentationEngineImpl
+        that raised a ClassCastException.
+      </action>    
+    </release>
+    <release version="0.4" date="2005-May-19"/>
+    <release version="0.4beta" date="2005-Apr-17">
+    </release>
+    <release version="0.3.1" date="2004-Sep-03"/>
+    <release version="0.3" date="2004-Jul-19"/>
+  </body>
+</document>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+<document>
+  <properties><title>Related projects</title></properties>
+  <body>
+   <section name="Related projects">
+    <p>If you are interested in JaxMe 2, you may also want to take a look
+      at the following related open source projects:</p>
+	</section>
+    <anchor id="jaxme1"/>
+    <section name="JaxMe 1">
+      <p><link href="ext:jaxme1">JaxMe 1</link> is the predecessor
+      of JaxMe 2. It has a limited support of XML structures (mainly sequences
+      and choices), but includes an integrated persistency framework that
+      allows to read the objects from or write them into the database. The
+      persistence framework includes support for JDBC mapping, XML:DB, the
+      Tamino XML database, and EJB. The framework has the additional
+      advantage of being quite mature and stable.</p>
+    </section>
+
+
+    <anchor id="jaxmexs"/>
+    <section name="JaxMeXS">
+      <p><link href="site:jaxmexs">JaxMeXS</link>, the JaxMe parser
+      for XML schema, is internally used by JaxMe 2. It is written to be
+      extensible, but not necessarily strict.</p>
+      </section>
+
+    <section name="JaxMeJS">
+      <p><link href="site:jaxmejs">JaxMeJS</link>, the
+      JaxMe Java source framework is a generic framework for writing
+      Java source  generators. It used to be a part of JaxMe 1, but grew
+      up to  be useful in itself and finally was moved to a separate
+      distribution. JaxMe 2 is still based on the latest version, which
+      also includes an SQL generator.</p>
+      </section>
+
+    <section name="eXist">
+      <p><link href="site:exist">eXist</link> is a native XML database
+      engine written in Java. It can be used standalone (via a dedicated
+      TCP port), as part of a servlet engine (accessible via HTTP),
+      or embedded into a Java application. This last approach is
+      particularly useful for JUnit testing. JaxMe 1 uses eXist for
+      testing its xml:db API.</p>
+      </section>
+
+    <section name="hsqldb">
+      <p><link href="site:hsqldb">hsqldb</link> is an SQL database
+      and also written in Java. Like eXist, it can be used in embedded
+      mode and it is also used by JaxMe 1, JaxMe 2, and JaxMeJS for JUnit
+      tests.</p>
+      </section>
+  </body>
+</document>

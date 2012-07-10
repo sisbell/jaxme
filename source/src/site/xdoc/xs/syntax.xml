@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+
+<document>
+  <properties><title>The syntax parser</title></properties>
+  <body>
+    <section name="The syntax parser">
+      <p>JaxMeXS mainly consists of three parts: A
+        <a href="generic.html">generic parser</a>, which is by no means
+        restricted to XML schema, a syntax parser, which is is dedicated to the
+        syntactical aspects of XML schema, and a structure parser, which understands
+        the logic. Extending JaxMeXS will always imply extending the syntax parser. In the
+        most cases this will even be sufficient: Who's interested in creating a language as
+        complex as XML schema?</p>
+      <p>The syntax parser is an application of the
+        <a href="generic.html">generic parser</a>. This means, that it converts
+        any element in the XML schema into a Java bean. The attributes and elements are
+        mapped to bean properties. Attributes have simple values like strings or integers,
+        but a child element is yet another bean. In what follows, we'll discuss the following
+        aspects:</p>
+      <ol>
+        <li><a href="#using">Using</a> the syntax parser.</li>
+        <li>Making the schema parser to use <a href="#XsObjectFactory">your own beans</a>.</li>
+        <li>Adding new <a href="#attributes">attributes</a> to an existing schema element.</li>
+        <li>Handling <a href="#namespaces">different namespaces</a>.</li>
+        <li>Adding new <a href="#childElements">child elements</a>.</li>
+      </ol>
+    </section>
+
+    <anchor id="using"/>
+    <section name="Using the syntax parser">
+	  <p>To use the syntax parser, instantiate the class
+	    <a href="./apidocs/org/apache/ws/jaxme/xs/XSParser.html">XSParser</a> and invoke
+	    its <code>parse()</code> method, for example like this:</p>
+	  <source>
+  import java.io.FileInputStream;
+  import org.xml.sax.InputSource;
+  import org.apache.ws.jaxme.xs.XSParser:
+
+  public class MyParser {
+    public static void main(String[] args) throws Exception {
+      FileInputStream fs = new FileInputStream(args[0]);
+      InputSource is = new InputSource(fs);
+      is.setSystemId(fs.toURL().toString()); // This is important, if you use a DTD,
+                                             // external entities, schema validation, ...
+                                             // in other words: Other files
+      XSParser parser = new XSParser();
+      XsESchema schema = parser.parseSyntax(is);
+    }
+  }
+      </source>
+      <p>That's it! The returned instance of
+        <a href="./apidocs/org/apache/ws/jaxme/xs/xml/XsESchema.html">XsESchema</a> is a
+        standard schema with methods like <code>getTargetNamespace()</code> or
+        <code>getChilds()</code>. For example, the list of global types can be retrieved
+        as follows:</p>
+      <source><![CDATA[
+  Object[] childs = schema.getChilds();
+  for (int i = 0;  i < childs.length;  i++) {
+    Object o = childs[i];
+    if (o instanceof XsETopLevelSimpleType) {
+      XsETopLevelSimpleType t = (XsETopLevelSimpleType) o;
+      System.out.println("Simple type: " + t.getName());
+    } else if (o instanceof XsTComplexType) {
+      XsTComplexType t = (XsTComplexType) o;
+      System.out.println("Complex type: " + t.getName());
+    }
+  }
+]]>   </source>
+      <p>This is not very comfortable, but the intent of the syntax parser is simplicity,
+        and not comfort.</p>
+    </section>
+
+    <anchor id="XsObjectFactory"/>
+    <section name="Forcing the schema parser to use your own beans">
+      <p>The beans returned by the schema parser are instances of
+        <a href="./apidocs/org/apache/ws/jaxme/xs/xml/impl/XsObjectImpl.html">XsObjectImpl</a>,
+        implementing the interface
+        <a href="./apidocs/org/apache/ws/jaxme/xs/xml/XsObject.html">XsObject</a>.
+        The <code>XsObject</code> interface allows access to the SAX location.</p>
+      <p>However, you might replace these completely with own implementations:
+        The <a href="./apidocs/org/apache/ws/jaxme/xs/xml/XsObjectFactory.html">object factory</a>
+        makes it possible.</p>
+      <p>Any of the standard XML schema beans is created by the object factory.
+        For example, the method <code>newXSESchema()</code> is invoked to create
+        the schema bean. We take this bean as an example and change the behaviour
+        of its attribute <code>targetNamespace</code>. For compatibility reasons
+        we want to replace the namespace <code>http://company.com/namespaces/version1</code>
+        with <code>http://company.com/namespaces/version2</code>. To achieve that,
+        we have to create three classes:</p>
+      <ol>
+        <li>A subclass of
+          <a href="./apidocs/org/apache/ws/jaxme/xs/xml/impl/XsESchemaImpl.html">XsESchemaImpl</a>
+          with a modified <code>setTargetNamespace()</code> method,</li>
+        <li>an updated object factory, that doesn't create an instance of the base class,
+          but an instance of our subclass,</li>
+        <li>and, finally, a parser that uses our own object factory.</li>
+      </ol>
+      <p>Let's begin with the first task:</p>
+      <source>
+  import org.xml.sax.Locator;
+  import org.apache.ws.jaxme.xs.xml.XsObjectFactory;
+  import org.apache.ws.jaxme.xs.xml.impl.XsESchemaImpl;
+
+  public class MySchema extends XsESchemaImpl {
+    protected MySchema(XsObjectFactory pFactory, Locator pLocator) {
+      super(pFactory, pLocator);
+    }
+    public void setTargetNamespace(XsAnyURI pURI) {
+      if (pURI.equals("http://company.com/namespaces/version1")) {
+        pURI = "http://company.com/namespaces/version2";
+      }
+      super.setTargetNamespace(pURI);
+    }
+  }
+      </source>
+      <p>Neat, isn't it? Now, here's the object factory:</p>
+      <source>
+  import org.apache.ws.jaxme.xs.xml.XsESchema;
+  import org.apache.ws.jaxme.xs.xml.impl.XsObjectFactoryImpl;
+
+  public class MyXsObjectFactory extends XsObjectFactoryImpl {
+    public XsESchema newXsESchema() {
+      return new MySchema(this, getLocator());
+    }
+  }
+      </source>
+      <p>You probably already guess how the parser looks like:</p>
+      <source>
+  import org.apache.ws.jaxme.xs.XSParser;
+
+  public class MyParser extends XSParser {
+    public MyParser() {
+      getData().setXsObjectFactory(new MyXsObjectFactory());
+    }
+  }
+      </source>
+      <p>Now we have a parser, which does no longer distinguish between
+        <code>http://company.com/namespaces/version2</code> and
+        <code>http://company.com/namespaces/version1</code> in the
+        target namespace.</p>
+    </section>
+
+    <anchor id="attributes"/>
+    <section name="Adding new attributes to an existing schema element">
+      <p>We already know how to extend the parser.This knowledge will be
+        applied in the following example: We'll have an an additional
+        attribute "ignore" in the element definition. It ought to have a
+        boolean value. (For example, the attribute might indicate that
+        a custom program should ignore the element.)</p>
+      <p>The attribute is introduced by adding a property "ignore" to
+        the "element" bean. This might look like this:</p>
+      <source>
+  import org.xml.sax.Locator;
+  import org.apache.ws.jaxme.xs.xml.XsObjectFactory;
+  import org.apache.ws.jaxme.xs.xml.impl.XsTElementImpl;
+
+  public class MyElement extends XsTElementImpl {
+    private boolean ignoreMe;
+
+    protected MyElement(XsObjectFactory pFactory, Locator pLocator) {
+      super(pFactory, pLocator);
+    }
+    public void setIgnore(boolean pIgnore) {
+      ignoreMe = pIgnore;
+    }
+    public boolean getIgnore() {
+      return ignoreMe;
+    }
+  }
+      </source>
+      <p>We are not yet done. As we are using an own bean, we have to extend
+        the object factory to return this bean, if the method
+        <code>newXsTElementImpl()</code> is invoked. We also have to extend
+        the parser to use the extended object factory. These steps have already
+        been described in the <a href="#XsObjectFactory">previous section</a>,
+        so we omit it here.</p>
+    </section>
+
+    <anchor id="namespaces"/>
+    <section name="Handling different namespaces">
+      <p>What we did in the <a href="#attributes">previous</a> section on
+        <a href="#attributes">adding attributes</a>, wasn't really conforming
+        to XML Schema. Our attribute had the default namespace, as the standard
+        XML Schema attributes do. Any other namespace had been a better choice.
+        XML Schema allows to include arbitrary attributes into a schema, as long
+        as they do not have the XML schema namespace. Surprisingly, the default
+        namespace isn't implicitly forbidden. Anyways, such behaviour cannot be
+        recommended.</p>
+      <p>To support attributes from other namespaces, we'll have to add another
+        method to our bean. The method is called</p>
+      <source>
+  public boolean setAttribute(String pQName, String pNamespaceURI,
+                              String pLocalName, String pValue)
+    throws SAXException;
+      </source>
+      <p>The boolean return value allows the method a decision to handle an
+        attribute (for example, if it is defined in a particular additional
+        namespace) by returning <code>true</code> or to leave the attribute
+        to the standard mechanisms by returning <code>false</code>. A typical
+        implementation might look like this:</p>
+      <source>
+    if (!"http://company.com/namespaces/mynamespace".equals(pNamespaceURI)) {
+      return false;
+    }
+    if ("ignore".equals(pLocalName)) {
+      setIgnore(Boolean.valueOf(pValue).booleanValue());
+    } else {
+      throw new SaxParseException("Invalid attribute: " + pValue, getLocation());
+    }
+      </source>
+      <p>The meaning is obvious: We feel responsible for the namespace
+        <code>http://company.com/namespaces/mynamespace</code>. If the attributes
+        namespace is different, we simply return false. If the namespace matches,
+        we accept the attribute "ignore", and refuse all others by throwing a
+        <code>SAXException</code>.</p>
+    </section>
+
+    <anchor id="childElements"/>
+    <section name="Adding new child elements">
+      <p>The handling of a new child is no more complex than the handling of
+        attributes. In fact, it works quite the same. Basically one creates a
+        new bean and adds a bean property to the parent element, as in the following
+        example:</p>
+      <source>
+  MyChildBean childBean;
+
+  public MyChildBean createMyChild() {
+    if (childBean != null) {
+      throw new IllegalStateException("Multiple 'myChild' elements are forbidden.");
+    }
+    childBean = new MyChildBean();
+  }
+
+  public MyChildBean getMyChild() {
+    return childBean;
+  }
+      </source>
+      <p>This code is added to the parent bean. For example, if we want to have a new
+        element <code>xs:schema/xs:myChild</code>, we could create a new subclass of
+        <a href="./apidocs/org/apache/ws/jaxme/xs/xml/impl/XsESchemaImpl.html">XsESchemaImpl</a>
+        with the above code. By extending the object factory to use our updated schema
+        bean and extending the parser to use our private object factory, we would be
+        done. (The latter steps are as in the first example section on
+        <a href="#XsObjectFactory">using our own beans</a>.)</p>
+      <p>There are two possible reasons, why the above code might be insufficient:
+        First of all, the example obviously doesn't care for namespaces. Second,
+        there's a chance that we do not want to create a simple bean. For example,
+        the standard behaviour of
+        <a href="./apidocs/org/apache/ws/jaxme/xs/xml/impl/XsEAppinfoImpl.html">XsEAppinfo</a>
+        is to convert child elements into DOM documents.</p>
+      <p>Both becomes possible by the following example:</p>
+      <source>
+  import org.xml.sax.ContentHandler;
+  import org.apache.ws.jaxme.xs.parser.impl.XsSAXParserImpl;
+
+  MyChildBean childBean;
+
+  public ContentHandler getChildHandler(String pQName, String pNamespaceURI,
+                                        String pLocalName) throws SAXException {
+    if (!"http://company.com/namespaces/mynamespace".equals(pNamespaceURI)) {
+      return null;
+    }
+    if ("myChild".equals(pLocalName)) {
+	  if (childBean != null) {
+	    throw new IllegalStateException("Multiple 'myChild' child elements are forbidden.");
+	  }
+	  childBean = new MyChildBean();
+	  return new XsSAXParserImpl(childBean);
+    } else {
+      throw new IllegalStateException("Unknown child element: " + pQName);
+    }
+  }
+
+  public MyChildBean getMyChild() {
+    return childBean;
+  }
+      </source>
+      <p>Besides the different namespace, the example is functionally equivalent to
+        the previous example.</p>
+    </section>
+  </body>
+</document>
+

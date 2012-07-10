@@ -1,0 +1,19 @@
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://ws.apache.org/jaxme/test/jira/elementref"
+    targetNamespace="http://ws.apache.org/jaxme/test/jira/elementref"
+    elementFormDefault="qualified">
+  <xs:element name="Dcr">
+    <xs:complexType>
+      <xs:attribute name="id"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="DcrLoadResult">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Dcr"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

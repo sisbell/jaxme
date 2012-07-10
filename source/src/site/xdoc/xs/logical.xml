@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2004 The Apache Software Foundation.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+
+<document>
+  <properties><title>The logical parser</title></properties>
+  <body>
+    <section name="The logical parser">
+      <p>As we have <a href="syntax.html">already said</a>, the JaxMe
+        parser for XML Schema, is an application of multiple layers. There is a
+        <a href="generic.html">generic parser</a>,
+        which is mostly independent of a certain XML language. The second layer
+        is the <a href="syntax.html">syntax parser</a>, which you typically
+        do not want to use. Most probably you are mainly interested in the topmost
+        layer: The logical parser.</p>
+      <p>The logical parser presents the XML Schema in a way, which you will
+        definitely like, because it is easy to use and frees you from the burden
+        to understand XML Schema. It handles groups, restrictions, extensions,
+        redefinitions and all that kind of stuff for you. Ideally you do not even
+        notice, that they are in use.</p>
+      <ul>
+        <li><a href="#use">Using</a> the logical parser</li>
+        <li>Accessing locical <a href="#context">context information</a></li>
+      </ul>
+    </section>
+
+	<anchor id="use"/>
+    <section name="Using the logical parser">
+      <p>The logical parser is used as follows:</p>
+      <source><![CDATA[
+    import java.io.File;
+    import java.io.FileInputStream;
+    import org.apache.ws.jaxme.xs.XSElement;
+    import org.apache.ws.jaxme.xs.XSParser;
+    import org.apache.ws.jaxme.xs.XSSchema;
+    import org.xml.sax.InputSource;
+
+    XSParser xsp = new XSParser();
+    // xsp.setValidating(false);  // In case your schema does not contain a schema declaration
+	File f = new File("myschema.xsd");
+    InputSource isource = new InputSource(new FileInputStream(f));
+    isource.setSystemId(f.toURL().toString());
+    XSSchema schema = xsp.parse(isource);  
+
+    // Print the names of all global elements:
+    XSElement[] elements = schema.getElements();
+    for (int i = 0;  i < elements.length;  i++) {
+      System.out.println(elements[i].getName());
+    }
+]]>   </source>
+    </section>
+
+	<anchor id="context"/>
+    <section name="Accessing logical context information">
+      <p>Within your own beans or bean methods, it might be interesting from
+        time to time, whether you are currently within an imported or included
+        schema. If so, you might also want to know about the outer schemas.
+        Access to these items is provided through</p>
+      <source>
+	getXSSchema().getContext().getXSLogicalParser().getSyntaxSchemas()
+      </source>
+    </section>
+  </body>
+</document>
+

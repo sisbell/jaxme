@@ -1,0 +1,11 @@
+<xs:schema targetNamespace='http://www.cnipa.it/schemas/2003/eGovIT/Busta1_0/'
+	    xmlns:eGov_IT='http://www.cnipa.it/schemas/2003/eGovIT/Busta1_0/'
+	    xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+  <xs:element name='Riferimento'>
+    <xs:complexType>
+      <xs:sequence/>
+      <xs:attribute ref='eGov_IT:id' use='required'/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attribute name='id' type='xs:ID'/>
+</xs:schema>

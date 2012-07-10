@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!--
+
+  Copyright 2005  The Apache Software Foundation
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+-->
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.ws.jaxme</groupId>
+    <artifactId>jaxme-parent</artifactId>
+    <version>2</version>
+  </parent>
+  <artifactId>jaxmexs</artifactId>
+  <version>0.6-SNAPSHOT</version>
+  <name>JaxMe XS</name>
+  <description>
+    This is JaxMeXS, a parser for XML schema. Yet another one, to be precise.
+    As there are a lot of other parsers around, the question arises: What
+    makes it different? What advantages does it have? Let's begin with a
+    disadvantage: This one is not a strict parser. In other words, it was
+    not written to detect any possible invalid schema. Strictness is a
+    secondary goal. The main purpose of JaxMeXS is being extensible. It is
+    written with XML languages in mind, that extend XML schema. The best
+    example is JAXB, the XML binding specification for Java. It extends XML
+    schema by adding some more tags.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ws.jaxme</groupId>
+      <artifactId>jaxme-jaxb-2.1-api</artifactId>
+      <version>0.6-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/Test*</exclude>
+            <exclude>**/WSDLTest.*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <contributors>
+    <contributor>
+      <name>Daniel Barclay</name>
+      <email>daniel at fgm.com</email>
+    </contributor>
+    <contributor>
+      <name>Richard Calmbach</name>
+      <email>RichardCalmbach at fairisaac.com</email>
+    </contributor>
+    <contributor>
+      <name>Mik Lernout</name>
+      <email>mik at futurestreet.org</email>
+    </contributor>
+    <contributor>
+      <name>Markus Holzner</name>
+      <email>MarkusHo at gmx.net</email>
+    </contributor>
+    <contributor>
+      <name>Chris Kirk</name>
+      <email>mrck1996 at yahoo.co.uk</email>
+    </contributor>
+    <contributor>
+      <name>Nina Juliadotter</name>
+      <email>nvjuliad at it.uts.edu.au</email>
+    </contributor>
+    <contributor>
+      <name>Brian Uri</name>
+      <email>buri@fgm.com</email>
+    </contributor>
+  </contributors>
+</project>
