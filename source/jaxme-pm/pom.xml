@@ -99,7 +99,7 @@
 
                 <property name="jdbc.pm.driver" value="org.hsqldb.jdbcDriver"/>
                 <property name="jdbc.pm.url" value="jdbc:hsqldb:${build.pm.db.db}"/>
-                <property name="jdbc.pm.user" value="sa"/>
+                <property name="jdbc.pm.user" value="SA"/>
                 <property name="jdbc.pm.password" value=""/>
 
                 <mkdir dir="${testSrcGenDir}"/>
@@ -143,6 +143,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+        <skipTests>true</skipTests>
           <systemProperties>
             <property>
               <name>jdbc.pm.driver</name>
@@ -154,7 +155,7 @@
             </property>
             <property>
               <name>jdbc.pm.user</name>
-              <value>sa</value>
+              <value>SA</value>
             </property>
             <property>
               <name>jdbc.pm.password</name>
@@ -173,7 +174,23 @@
         </configuration>
       </plugin>
 
-
+		<plugin>
+		    <groupId>org.codehaus.mojo</groupId>
+		    <artifactId>build-helper-maven-plugin</artifactId>
+		    <version>1.8</version>
+		    <executions>
+		        <execution>
+		        	<id>add-test-source</id>
+		            <phase>generate-test-sources</phase>
+		            <goals><goal>add-test-source</goal></goals>
+		            <configuration>
+		                <sources>
+		                    <source>${project.build.directory}/generated-test-sources/antrun</source>
+		                </sources>
+		            </configuration>
+		        </execution>		        
+		    </executions>	    
+		</plugin>
     </plugins>
   </build>
 
